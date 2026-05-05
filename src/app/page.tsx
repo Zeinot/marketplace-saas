@@ -1,65 +1,173 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Rocket, MessageSquare, TrendingUp, DollarSign, ArrowRight, Check } from "lucide-react";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-col gap-16 pb-16">
+      {/* Hero */}
+      <section className="container pt-16 md:pt-24">
+        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+          <Badge variant="secondary" className="mb-4">
+            Launch your SaaS today
+          </Badge>
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+            The community for{" "}
+            <span className="text-primary">SaaS builders</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-6 text-lg text-muted-foreground max-w-xl">
+            Discover, launch, and sell SaaS products. Connect with indie hackers, get feedback, and grow your business.
           </p>
+          <div className="mt-8 flex gap-4">
+            <Button asChild size="lg">
+              <Link href="/feed">
+                Explore Products
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/pricing">View Pricing</Link>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Features */}
+      <section className="container">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl font-bold text-center mb-12">Everything you need to grow</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <Rocket className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Launch</CardTitle>
+                <CardDescription>Share your SaaS with a community that cares</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
+                <TrendingUp className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Upvote</CardTitle>
+                <CardDescription>Get visibility through community upvotes</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
+                <MessageSquare className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Discuss</CardTitle>
+                <CardDescription>Collect feedback and iterate faster</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
+                <DollarSign className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Sell</CardTitle>
+                <CardDescription>List your SaaS on the marketplace</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
+                <MessageSquare className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Connect</CardTitle>
+                <CardDescription>DM other makers and collaborate</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
+                <TrendingUp className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Grow</CardTitle>
+                <CardDescription>Analytics and featured placements</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Pricing Preview */}
+      <section className="container">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl font-bold text-center mb-12">Simple pricing</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Free</CardTitle>
+                <CardDescription>Perfect for getting started</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">$0</div>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> 1 launch per month
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Community access
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Basic profile
+                  </li>
+                </ul>
+                <Button className="w-full mt-6" variant="outline" asChild>
+                  <Link href="/signup">Get started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="border-primary">
+              <CardHeader>
+                <Badge className="w-fit mb-2">Popular</Badge>
+                <CardTitle>Pro Monthly</CardTitle>
+                <CardDescription>For serious builders</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">$19</div>
+                <span className="text-sm text-muted-foreground">/month</span>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Unlimited launches
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Marketplace listings
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Direct messaging
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Analytics dashboard
+                  </li>
+                </ul>
+                <Button className="w-full mt-6" asChild>
+                  <Link href="/signup">Get started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Pro Yearly</CardTitle>
+                <CardDescription>Save 2 months</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">$190</div>
+                <span className="text-sm text-muted-foreground">/year</span>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Everything in Pro Monthly
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Featured placement
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" /> Priority support
+                  </li>
+                </ul>
+                <Button className="w-full mt-6" variant="outline" asChild>
+                  <Link href="/signup">Get started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

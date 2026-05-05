@@ -11,20 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Rocket, MessageSquare, Bell, Menu, X } from "lucide-react";
+import { Rocket, MessageSquare, Bell, Menu } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <Rocket className="h-5 w-5" />
+          <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight">
+            <Rocket className="h-5 w-5 text-primary" />
             <span>SaaS Directory</span>
           </Link>
           <nav className="hidden md:flex items-center gap-4 text-sm">
@@ -40,7 +41,9 @@ export function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+
           {session?.user ? (
             <>
               <Link href="/messages" className="hidden md:flex">
@@ -57,7 +60,7 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
+                      <AvatarFallback className="text-xs bg-primary text-primary-foreground">
                         {session.user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -77,7 +80,7 @@ export function Navbar() {
                     <Link href="/notifications">Notifications</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut()} className="text-red-600">
+                  <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
