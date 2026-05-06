@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LaunchCard } from "@/components/launch/launch-card";
 import Link from "next/link";
-import { Globe, Twitter, Github, MessageSquare } from "lucide-react";
+import { Globe, MessageSquare, ExternalLink } from "lucide-react";
 
 export default async function ProfilePage({
   params,
@@ -62,7 +62,7 @@ export default async function ProfilePage({
                 {userData.profile?.twitter && (
                   <Button variant="outline" size="sm" asChild>
                     <a href={`https://twitter.com/${userData.profile.twitter}`} target="_blank" rel="noopener noreferrer">
-                      <Twitter className="mr-1 h-3 w-3" />
+                      <ExternalLink className="mr-1 h-3 w-3" />
                       Twitter
                     </a>
                   </Button>
@@ -70,7 +70,7 @@ export default async function ProfilePage({
                 {userData.profile?.github && (
                   <Button variant="outline" size="sm" asChild>
                     <a href={`https://github.com/${userData.profile.github}`} target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-1 h-3 w-3" />
+                      <ExternalLink className="mr-1 h-3 w-3" />
                       GitHub
                     </a>
                   </Button>

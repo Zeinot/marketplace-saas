@@ -20,13 +20,15 @@ export function DevSubscriptionWidget() {
 
   if (!session?.user) return null;
 
+  const userId = session.user.id;
+
   async function grantPro() {
     setLoading(true);
     try {
       const res = await fetch("/api/dev/grant-pro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session.user.id }),
+        body: JSON.stringify({ userId }),
       });
       const data = await res.json();
       if (data.success) {
@@ -47,7 +49,7 @@ export function DevSubscriptionWidget() {
       const res = await fetch("/api/dev/revoke-pro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session.user.id }),
+        body: JSON.stringify({ userId }),
       });
       const data = await res.json();
       if (data.success) {

@@ -1,6 +1,7 @@
 import { getLaunches, getCategories } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { CategoryFilter } from "@/components/launch/category-filter";
+import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -8,14 +9,15 @@ import { Plus } from "lucide-react";
 export default async function FeedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string; category?: string }>;
+  searchParams: Promise<{ filter?: string; category?: string; search?: string }>;
 }) {
   const params = await searchParams;
   const filter = (params.filter as "latest" | "trending" | "marketplace") || "latest";
   const categorySlug = params.category;
+  const search = params.search;
 
   const [launches, categories] = await Promise.all([
-    getLaunches({ filter, categorySlug }),
+    getLaunches({ filter, categorySlug, search }),
     getCategories(),
   ]);
 
@@ -31,6 +33,18 @@ export default async function FeedPage({
             Launch Product
           </Link>
         </Button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <SearchBar
+          onSearch={(query) => {
+            const url = new URL(window.location.href);
+            if (query) url.searchParams.set("search", query);
+            else url.searchParams.delete("search");
+            window.location.href = url.toString();
+          }}
+          defaultValue={search}
+        />
       </div>
 
       <CategoryFilter categories={categories} activeFilter={filter} activeCategory={categorySlug} />

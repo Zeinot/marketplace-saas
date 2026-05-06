@@ -2,16 +2,31 @@
 
 import { db } from "@/lib/db";
 import { launch, upvote, comment, launchCategory, category, launchImage, user, profile } from "@/lib/db/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, ilike, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getLaunches({
   filter = "latest",
   categorySlug,
+  search,
 }: {
   filter?: "latest" | "trending" | "marketplace";
   categorySlug?: string;
+  search?: string;
 } = {}) {
+  let conditions = [];
+
+  if (filter === "marketplace") {
+    conditions.push(eq(launch.isForSale, true));
+  }
+
+  if (search) {
+    conditions.push(or(
+      ilike(launch.title, `%${search}%`),
+      ilike(launch.tagline, `%${search}%`)
+    ));
+  }
+
   let query = db
     .select({
       launch,
@@ -24,14 +39,21 @@ export async function getLaunches({
     .leftJoin(category, eq(launchCategory.categoryId, category.id))
     .groupBy(launch.id, user.id, user.name, user.email);
 
-  if (filter === "marketplace") {
-    query = query.where(eq(launch.isForSale, true)) as typeof query;
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as typeof query;
   }
 
   if (categorySlug) {
     const cat = await db.select().from(category).where(eq(category.slug, categorySlug)).limit(1);
     if (cat.length > 0) {
-      query = query.where(eq(launchCategory.categoryId, cat[0].id)) as typeof query;
+      // Need to filter by category in HAVING or subquery - simplified approach
+      const allResults = await query.orderBy(
+        filter === "trending" ? desc(launch.upvoteCount) : desc(launch.createdAt)
+      );
+      return allResults.filter((r) => {
+        const cats = JSON.parse(r.categories || "[]");
+        return cats.some((c: any) => c.slug === categorySlug);
+      });
     }
   }
 
