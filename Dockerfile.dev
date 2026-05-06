@@ -5,6 +5,10 @@ WORKDIR /app
 # Install dependencies for native modules
 RUN apk add --no-cache libc6-compat
 
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
 EXPOSE 3000
 
 ENV PORT=3000

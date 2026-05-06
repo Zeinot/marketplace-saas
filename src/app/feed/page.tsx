@@ -51,15 +51,7 @@ export default async function FeedPage({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <SearchBar
-          onSearch={(query) => {
-            const url = new URL(window.location.href);
-            if (query) url.searchParams.set("search", query);
-            else url.searchParams.delete("search");
-            window.location.href = url.toString();
-          }}
-          defaultValue={search}
-        />
+        <SearchBar defaultValue={search} />
       </div>
 
       <CategoryFilter categories={categories} activeFilter={filter} activeCategory={categorySlug} />

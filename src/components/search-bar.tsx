@@ -5,16 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
   defaultValue?: string;
 }
 
-export function SearchBar({ onSearch, defaultValue = "" }: SearchBarProps) {
+export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   const [value, setValue] = useState(defaultValue);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSearch(value);
+    updateSearch(value);
+  }
+
+  function updateSearch(query: string) {
+    const url = new URL(window.location.href);
+    if (query) url.searchParams.set("search", query);
+    else url.searchParams.delete("search");
+    window.location.href = url.toString();
   }
 
   return (
@@ -27,7 +33,7 @@ export function SearchBar({ onSearch, defaultValue = "" }: SearchBarProps) {
         value={value}
         onChange={(e) => {
           setValue(e.target.value);
-          onSearch(e.target.value);
+          updateSearch(e.target.value);
         }}
       />
       {value && (
@@ -35,7 +41,7 @@ export function SearchBar({ onSearch, defaultValue = "" }: SearchBarProps) {
           type="button"
           onClick={() => {
             setValue("");
-            onSearch("");
+            updateSearch("");
           }}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
         >

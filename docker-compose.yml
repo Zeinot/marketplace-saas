@@ -26,7 +26,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.next
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@db:5432/saas_directory
@@ -35,9 +34,12 @@ services:
       - RESEND_API_KEY=dev-resend-key
       - UPLOADTHING_TOKEN=dev-uploadthing-token
       - NEXT_TELEMETRY_DISABLED=1
+      - CHOKIDAR_USEPOLLING=1
+      - WATCHPACK_POLLING=true
     depends_on:
       db:
         condition: service_healthy
+    command: ["npx", "next", "dev", "--webpack"]
     stdin_open: true
     tty: true
 

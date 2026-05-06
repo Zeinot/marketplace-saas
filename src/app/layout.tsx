@@ -6,7 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/navbar";
-import { DevSubscriptionWidget } from "@/components/dev/subscription-grant";
+import { DevDebugWidget } from "@/components/dev/debug-widget";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,6 +23,19 @@ export const metadata: Metadata = {
   description: "Discover, launch, and sell SaaS products. The community for indie hackers and SaaS builders.",
 };
 
+const themeScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('theme') || 'system';
+      var resolved = theme === 'system' 
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : theme;
+      document.documentElement.classList.add(resolved);
+      document.documentElement.style.colorScheme = resolved;
+    } catch(e) {}
+  })();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,13 +47,16 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <QueryProvider>
             <Navbar />
             <main className="flex-1">{children}</main>
             <Toaster />
-            {process.env.NODE_ENV === "development" && <DevSubscriptionWidget />}
+            {(process.env.NODE_ENV === "development" || process.env.ENABLE_DEV_WIDGET === "true") && <DevDebugWidget />}
           </QueryProvider>
         </ThemeProvider>
       </body>
