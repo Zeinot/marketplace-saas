@@ -20,9 +20,8 @@ import {
 import { motion } from "framer-motion";
 
 const fadeInUp = {
-  initial: { opacity: 1, y: 0 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 const stagger = {
@@ -51,7 +50,7 @@ export default function HomePage() {
             <motion.div variants={fadeInUp}>
               <Badge variant="secondary" className="mb-6 px-3 py-1 text-sm rounded-full">
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                Launch your SaaS today
+                Launch your SaaS today!
               </Badge>
             </motion.div>
             
@@ -331,3 +330,4 @@ export default function HomePage() {
     </div>
   );
 }
+ 
