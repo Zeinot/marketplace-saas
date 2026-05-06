@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:16-alpine
@@ -18,43 +16,30 @@ services:
       timeout: 5s
       retries: 5
 
-  test-db:
-    image: postgres:16-alpine
-    container_name: saas-directory-test-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: saas_directory_test
-    ports:
-      - "5435:5432"
-    tmpfs:
-      - /var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  app:
+  web:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: saas-directory-app
+      dockerfile: Dockerfile.dev
+    container_name: saas-directory-web
     ports:
       - "3000:3000"
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/saas_directory
-      DATABASE_URL_TEST: postgres://postgres:postgres@test-db:5433/saas_directory_test
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN}
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/saas_directory
+      - BETTER_AUTH_SECRET=dev-secret-key-do-not-use-in-production
+      - BETTER_AUTH_URL=http://localhost:3000
+      - RESEND_API_KEY=dev-resend-key
+      - UPLOADTHING_TOKEN=dev-uploadthing-token
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
 
 volumes:
   postgres_data:

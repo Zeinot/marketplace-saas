@@ -14,8 +14,8 @@ vi.mock("@/lib/auth-client", async () => {
 describe("Signup Page", () => {
   it("renders signup form", () => {
     render(<SignupPage />);
-    expect(screen.getByText(/create an account/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByText(/get started/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /create account/i })).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("Signup Page", () => {
     const user = userEvent.setup();
     render(<SignupPage />);
 
-    const nameInput = screen.getByLabelText(/name/i);
+    const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
 

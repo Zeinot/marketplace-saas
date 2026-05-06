@@ -5,9 +5,10 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { AuthLayout } from "@/components/auth-layout";
+import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -18,13 +19,6 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await authClient.signIn.email({
-      email,
-      password: "",
-      callbackURL: "/feed",
-    });
-
-    // Better Auth has a separate forgotPassword method
     try {
       await fetch("/api/auth/forget-password", {
         method: "POST",
@@ -41,26 +35,40 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-3.5rem)]">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Reset password</CardTitle>
-          <CardDescription>Enter your email to receive a reset link</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {sent ? (
-            <div className="text-center space-y-4">
-              <p className="text-sm text-muted-foreground">
-                If an account exists for {email}, you will receive a password reset link shortly.
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/login">Back to login</Link>
-              </Button>
+    <AuthLayout
+      title="Reset your password"
+      subtitle="We'll send you a link to get back into your account."
+    >
+      <div className="w-full max-w-sm mx-auto">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Forgot password</h1>
+          <p className="text-muted-foreground mt-1 text-sm">No worries, we've got you covered</p>
+        </div>
+
+        {sent ? (
+          <div className="text-center space-y-5">
+            <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
+              <CheckCircle className="h-6 w-6 text-emerald-600" />
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+            <div>
+              <p className="font-medium">Check your inbox</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                If an account exists for <strong>{email}</strong>, you will receive a password reset link shortly.
+              </p>
+            </div>
+            <Button variant="outline" className="w-full rounded-lg h-11" asChild>
+              <Link href="/login">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to login
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -68,21 +76,22 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="h-11 rounded-lg pl-10"
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send reset link"}
-              </Button>
-              <p className="text-center text-sm text-muted-foreground">
-                Remember your password?{" "}
-                <Link href="/login" className="underline">
-                  Log in
-                </Link>
-              </p>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+            <Button type="submit" className="w-full h-11 rounded-lg" disabled={loading}>
+              {loading ? "Sending..." : "Send reset link"}
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Remember your password?{" "}
+              <Link href="/login" className="text-primary font-medium hover:underline">
+                Log in
+              </Link>
+            </p>
+          </form>
+        )}
+      </div>
+    </AuthLayout>
   );
 }

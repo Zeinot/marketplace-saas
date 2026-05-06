@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/navbar";
 import { DevSubscriptionWidget } from "@/components/dev/subscription-grant";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -30,16 +31,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
+      className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <ThemeProvider>
           <QueryProvider>
             <Navbar />
             <main className="flex-1">{children}</main>

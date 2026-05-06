@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.next
+.turbo
+coverage
+.git
+.github
+*.md
+!.env.local
+Dockerfile*
+docker-compose*
+scaffold-reference
+screenshots

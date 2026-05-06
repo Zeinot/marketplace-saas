@@ -1,10 +1,12 @@
-import { db } from "./src/lib/db";
-import { plan, category } from "./src/lib/db/schema";
 import { config } from "dotenv";
 
+// Load env vars BEFORE dynamic imports
 config({ path: ".env.local" });
 
 async function seed() {
+  const { db } = await import("./src/lib/db");
+  const { plan, category } = await import("./src/lib/db/schema");
+
   console.log("Seeding database...");
 
   // Seed plans

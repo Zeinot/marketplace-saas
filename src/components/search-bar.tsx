@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -23,13 +23,25 @@ export function SearchBar({ onSearch, defaultValue = "" }: SearchBarProps) {
       <Input
         type="search"
         placeholder="Search products..."
-        className="pl-9"
+        className="pl-10 pr-10 h-11 rounded-lg border-border/60 focus-visible:ring-primary/20"
         value={value}
         onChange={(e) => {
           setValue(e.target.value);
           onSearch(e.target.value);
         }}
       />
+      {value && (
+        <button
+          type="button"
+          onClick={() => {
+            setValue("");
+            onSearch("");
+          }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </form>
   );
 }
