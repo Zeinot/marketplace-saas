@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Rocket, MessageSquare, Bell, Menu, User, Settings, LogOut } from "lucide-react";
+import { Rocket, MessageSquare, Bell, Menu, User, Settings, LogOut, TrendingUp, DollarSign, Zap } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -31,7 +31,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
@@ -137,78 +137,146 @@ export function Navbar() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-80 px-0">
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-              <div className="flex flex-col gap-1 mt-8">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                      pathname === link.href
-                        ? "text-foreground bg-muted"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <div className="h-px bg-border my-3" />
+              <div className="flex flex-col h-full">
+                {/* User header */}
                 {session?.user ? (
-                  <>
-                    <Link
-                      href={`/profile/${session.user.id}`}
-                      onClick={() => setOpen(false)}
-                      className="px-3 py-2.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
-                    >
-                      <User className="h-4 w-4" />
-                      Profile
+                  <div className="px-5 py-5 border-b">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback className="text-sm bg-primary text-primary-foreground font-medium">
+                          {session.user.name?.charAt(0).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{session.user.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="px-5 py-5 border-b">
+                    <Link href="/" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
+                      <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                        <Rocket className="h-4 w-4 text-primary-foreground" />
+                      </div>
+                      SaaS Directory
                     </Link>
-                    <Link
-                      href="/messages"
-                      onClick={() => setOpen(false)}
-                      className="px-3 py-2.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      Messages
-                    </Link>
-                    <Link
-                      href="/notifications"
-                      onClick={() => setOpen(false)}
-                      className="px-3 py-2.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
-                    >
-                      <Bell className="h-4 w-4" />
-                      Notifications
-                    </Link>
-                    <Link
-                      href="/settings"
-                      onClick={() => setOpen(false)}
-                      className="px-3 py-2.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
-                    >
-                      <Settings className="h-4 w-4" />
-                      Settings
-                    </Link>
+                  </div>
+                )}
+
+                <div className="flex-1 overflow-y-auto py-3">
+                  {/* Main nav */}
+                  <div className="px-3 space-y-0.5">
+                    <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Menu</p>
+                    {navLinks.map((link) => {
+                      const isActive = pathname === link.href;
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            isActive
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          {link.href === "/feed" && <TrendingUp className="h-4 w-4 shrink-0" />}
+                          {link.href === "/marketplace" && <DollarSign className="h-4 w-4 shrink-0" />}
+                          {link.href === "/pricing" && <Zap className="h-4 w-4 shrink-0" />}
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {session?.user && (
+                    <>
+                      <div className="mx-5 my-3 h-px bg-border" />
+                      <div className="px-3 space-y-0.5">
+                        <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Account</p>
+                        <Link
+                          href={`/profile/${session.user.id}`}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            pathname === `/profile/${session.user.id}`
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <User className="h-4 w-4 shrink-0" />
+                          Profile
+                        </Link>
+                        <Link
+                          href="/messages"
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            pathname === "/messages"
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <MessageSquare className="h-4 w-4 shrink-0" />
+                          Messages
+                        </Link>
+                        <Link
+                          href="/notifications"
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            pathname === "/notifications"
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <Bell className="h-4 w-4 shrink-0" />
+                          Notifications
+                        </Link>
+                        <Link
+                          href="/settings"
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            pathname === "/settings"
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <Settings className="h-4 w-4 shrink-0" />
+                          Settings
+                        </Link>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Bottom actions */}
+                <div className="px-5 py-4 border-t">
+                  {session?.user ? (
                     <Button
                       onClick={() => { signOut(); setOpen(false); }}
-                      variant="destructive"
-                      className="mt-3"
+                      variant="outline"
+                      className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/5"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign out
                     </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login" onClick={() => setOpen(false)}>
-                      <Button variant="outline" className="w-full">Log in</Button>
-                    </Link>
-                    <Link href="/signup" onClick={() => setOpen(false)}>
-                      <Button className="w-full mt-2">Sign up</Button>
-                    </Link>
-                  </>
-                )}
+                  ) : (
+                    <div className="space-y-2">
+                      <Button asChild variant="outline" className="w-full" onClick={() => setOpen(false)}>
+                        <Link href="/login">Log in</Link>
+                      </Button>
+                      <Button asChild className="w-full" onClick={() => setOpen(false)}>
+                        <Link href="/signup">Sign up</Link>
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </SheetContent>
           </Sheet>

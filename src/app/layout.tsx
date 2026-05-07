@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { DevDebugWidget } from "@/components/dev/debug-widget";
 
 const inter = Inter({
@@ -55,6 +56,7 @@ export default function RootLayout({
           <QueryProvider>
             <Navbar />
             <main className="flex-1">{children}</main>
+            <Footer />
             <Toaster />
             {(process.env.NODE_ENV === "development" || process.env.ENABLE_DEV_WIDGET === "true") && <DevDebugWidget />}
           </QueryProvider>

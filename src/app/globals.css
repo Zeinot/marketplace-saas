@@ -127,4 +127,18 @@
   html {
     @apply font-sans;
   }
+  .container {
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container {
+      padding-inline: 1.5rem;
+    }
+  }
+  button,
+  a,
+  [role="button"] {
+    cursor: pointer;
+  }
 }

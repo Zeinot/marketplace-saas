@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PricingCards } from "@/components/pricing-cards";
 import {
   Rocket,
   MessageSquare,
@@ -48,7 +49,7 @@ export default function HomePage() {
             variants={stagger}
           >
             <motion.div variants={fadeInUp}>
-              <Badge variant="secondary" className="mb-6 px-3 py-1 text-sm rounded-full">
+              <Badge className="mb-6 px-3 py-1 text-sm rounded-full bg-primary/15 text-primary border-primary/20 hover:bg-primary/20">
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
                 Launch your SaaS today!
               </Badge>
@@ -194,17 +195,47 @@ export default function HomePage() {
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How it works</h2>
               <p className="text-muted-foreground mt-3 text-lg">From idea to acquisition in three steps</p>
             </motion.div>
-            <div className="grid gap-8 md:grid-cols-3 relative">
-              <div className="hidden md:block absolute top-8 left-[16.67%] right-[16.67%] h-px bg-border" />
+            {/* Step numbers with connecting lines */}
+            <div className="hidden md:flex items-center justify-center max-w-2xl mx-auto mb-5">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
+                01
+              </div>
+              <div className="flex-1 h-px bg-border mx-4" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
+                02
+              </div>
+              <div className="flex-1 h-px bg-border mx-4" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
+                03
+              </div>
+            </div>
+            {/* Mobile step numbers */}
+            <div className="md:hidden flex flex-col items-center gap-8">
+              {[
+                { step: "01", title: "Create", desc: "Sign up and launch your product in minutes" },
+                { step: "02", title: "Engage", desc: "Get upvotes, comments, and feedback" },
+                { step: "03", title: "Scale", desc: "Upgrade to Pro for marketplace and DMs" },
+              ].map((item, index, arr) => (
+                <motion.div key={item.step} variants={fadeInUp} className="text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold mx-auto mb-5">
+                    {item.step}
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[240px] mx-auto">{item.desc}</p>
+                  {index < arr.length - 1 && (
+                    <div className="w-px h-8 bg-border mx-auto mt-5" />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            {/* Desktop titles */}
+            <div className="hidden md:grid gap-8 md:grid-cols-3">
               {[
                 { step: "01", title: "Create", desc: "Sign up and launch your product in minutes" },
                 { step: "02", title: "Engage", desc: "Get upvotes, comments, and feedback" },
                 { step: "03", title: "Scale", desc: "Upgrade to Pro for marketplace and DMs" },
               ].map((item) => (
-                <motion.div key={item.step} variants={fadeInUp} className="text-center relative">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold mx-auto mb-5">
-                    {item.step}
-                  </div>
+                <motion.div key={item.step} variants={fadeInUp} className="text-center">
                   <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-[240px] mx-auto">{item.desc}</p>
                 </motion.div>
@@ -227,77 +258,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Simple pricing</h2>
             <p className="text-muted-foreground mt-3 text-lg">Start free, upgrade when ready</p>
           </motion.div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <motion.div variants={fadeInUp}>
-              <Card className="h-full border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-base">Free</CardTitle>
-                  <p className="text-sm text-muted-foreground">Perfect for getting started</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold tracking-tight">$0</div>
-                  <span className="text-sm text-muted-foreground">/month</span>
-                  <ul className="mt-6 space-y-3">
-                    {["1 launch per month", "Community access", "Basic profile"].map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-8" variant="outline" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeInUp}>
-              <Card className="h-full border-primary relative shadow-lg shadow-primary/5">
-                <Badge className="absolute -top-2.5 left-6 px-2.5 py-0.5">Popular</Badge>
-                <CardHeader>
-                  <CardTitle className="text-base">Pro Monthly</CardTitle>
-                  <p className="text-sm text-muted-foreground">For serious builders</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold tracking-tight">$19</div>
-                  <span className="text-sm text-muted-foreground">/month</span>
-                  <ul className="mt-6 space-y-3">
-                    {["Unlimited launches", "Marketplace listings", "Direct messaging", "Analytics dashboard"].map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-8" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeInUp}>
-              <Card className="h-full border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-base">Pro Yearly</CardTitle>
-                  <p className="text-sm text-muted-foreground">Save 2 months</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold tracking-tight">$190</div>
-                  <span className="text-sm text-muted-foreground">/year</span>
-                  <ul className="mt-6 space-y-3">
-                    {["Everything in Pro Monthly", "Featured placement", "Priority support"].map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-8" variant="outline" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+          <PricingCards />
         </motion.div>
       </section>
 
