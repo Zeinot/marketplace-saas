@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -48,9 +49,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} suppressHydrationWarning />
-      </head>
+      <Script id="theme-script" strategy="beforeInteractive">
+        {themeScript}
+      </Script>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <QueryProvider>
