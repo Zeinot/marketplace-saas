@@ -19,7 +19,13 @@ export default async function LaunchPage({
 
   return (
     <div className="container py-8 max-w-4xl">
-      <LaunchDetail launch={data.launch} maker={data.maker} categories={JSON.parse(data.categories || "[]")} images={data.images} />
+      <LaunchDetail launch={data.launch} maker={data.maker} categories={(() => {
+        try {
+          return JSON.parse(data.categories || "[]");
+        } catch {
+          return [];
+        }
+      })()} images={data.images} />
       <CommentSection launchId={data.launch.id} comments={comments} />
     </div>
   );

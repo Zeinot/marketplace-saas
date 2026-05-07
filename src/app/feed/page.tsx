@@ -62,7 +62,7 @@ export default async function FeedPage({
             key={item.launch.id}
             launch={item.launch}
             maker={item.maker}
-            categories={JSON.parse(item.categories || "[]")}
+            categories={(() => { try { return JSON.parse(item.categories || "[]"); } catch { return []; } })()}
           />
         ))}
       </div>

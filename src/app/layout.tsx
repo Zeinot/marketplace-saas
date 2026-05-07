@@ -49,7 +49,7 @@ export default function RootLayout({
       className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} suppressHydrationWarning />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
