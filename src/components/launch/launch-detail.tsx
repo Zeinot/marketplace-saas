@@ -86,13 +86,15 @@ export function LaunchDetail({ launch, categories, images }: LaunchDetailProps) 
                 <p className="text-2xl font-bold mt-1">${launch.monthlyRecurringRevenue.toLocaleString()}</p>
               </div>
             )}
-            <div className="rounded-xl bg-background border border-border/50 p-4">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Status</span>
-              <p className="text-sm font-medium mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Available
-              </p>
-            </div>
+              <div className="rounded-xl bg-background border border-border/50 p-4">
+                <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Status</span>
+                <div className="mt-3">
+                  <span className="text-sm font-medium inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Available
+                  </span>
+                </div>
+              </div>
           </div>
         </div>
       )}
