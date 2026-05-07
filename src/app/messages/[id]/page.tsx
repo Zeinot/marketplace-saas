@@ -2,15 +2,15 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { ArrowLeft, Send, MoreVertical, Pencil, Trash2, ChevronDown } from "lucide-react";
+import { ArrowLeft, Send, MoreVertical, Pencil, Trash2, ChevronDown, Loader2 } from "lucide-react";
 import {
-  getMessages,
+  getMessagePage,
   sendMessage,
   markConversationAsRead,
   editMessage,
@@ -43,6 +43,10 @@ export default function ConversationPage({
   const justSentMessageRef = useRef(false);
   const isUserScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
+  const prevScrollHeightRef = useRef<number>(0);
+  const initialScrollDoneRef = useRef(false);
+  const isFetchingOlderRef = useRef(false);
 
   useEffect(() => {
     params.then((p) => setConversationId(Number(p.id)));
@@ -50,18 +54,30 @@ export default function ConversationPage({
 
   useEffect(() => {
     return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  const {
+    data,
+    isLoading: messagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["messages", conversationId],
-    queryFn: () => (conversationId ? getMessages(conversationId) : []),
+    queryFn: ({ pageParam }) =>
+      conversationId ? getMessagePage(conversationId, pageParam as number | undefined, 30) : { messages: [], nextCursor: null },
+    getNextPageParam: (firstPage) => firstPage.nextCursor ?? undefined,
+    initialPageParam: undefined as number | undefined,
     enabled: !!conversationId && !!session?.user,
     refetchInterval: 3000,
+    // Only refetch the most-recent (last) page during polling to get new messages
+    refetchIntervalInBackground: false,
   });
+
+  // Flatten all pages into a single chronological array
+  const messages = data?.pages.flatMap((p) => p.messages) ?? [];
 
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations", session?.user?.id],
@@ -77,36 +93,51 @@ export default function ConversationPage({
     }
   }, [conversationId, session?.user]);
 
-  // Helper to scroll the message container (not the whole page)
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = messagesContainerRef.current;
     if (!container) return;
     container.scrollTo({ top: container.scrollHeight, behavior });
   }, []);
 
-  // Track user-initiated scrolls separately from auto-scrolls
+  // Initial scroll to bottom (instant, no animation) once first page loads
+  useEffect(() => {
+    if (messages.length > 0 && !initialScrollDoneRef.current) {
+      initialScrollDoneRef.current = true;
+      scrollToBottom("instant");
+    }
+  }, [messages, scrollToBottom]);
+
+  // After older messages are prepended, restore scroll position to prevent jump
+  useEffect(() => {
+    if (isFetchingOlderRef.current && !isFetchingNextPage) {
+      // Fetch just completed — restore position
+      const container = messagesContainerRef.current;
+      if (container) {
+        const newScrollHeight = container.scrollHeight;
+        container.scrollTop = newScrollHeight - prevScrollHeightRef.current;
+      }
+      isFetchingOlderRef.current = false;
+    }
+  }, [isFetchingNextPage]);
+
   const handleScroll = useCallback(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
 
     isUserScrollingRef.current = true;
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     scrollTimeoutRef.current = setTimeout(() => {
       isUserScrollingRef.current = false;
     }, 150);
 
     const threshold = 100;
-    const isBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+    const isBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
     setIsAtBottom(isBottom);
-
-    if (isBottom) {
-      setHasNewMessages(false);
-    }
+    if (isBottom) setHasNewMessages(false);
   }, []);
 
-  // Scroll to bottom on new messages, respecting user scroll position
+  // Scroll to bottom on new messages arriving (polling), respecting user scroll position
   useEffect(() => {
     if (messages.length === 0) return;
 
@@ -115,25 +146,41 @@ export default function ConversationPage({
     const isNewMessage = lastId !== null && lastId !== lastMessageIdRef.current;
     const userJustSent = justSentMessageRef.current;
 
-    // Always update the ref so we know what we've seen
     lastMessageIdRef.current = lastId;
+    if (userJustSent) justSentMessageRef.current = false;
 
-    // Reset the just-sent flag after this render
-    if (userJustSent) {
-      justSentMessageRef.current = false;
-    }
-
-    if (isNewMessage || userJustSent) {
+    // Only auto-scroll for new messages at the bottom, not when prepending older ones
+    if (isNewMessage && !isFetchingOlderRef.current) {
       if (isAtBottom || userJustSent) {
-        scrollToBottom("smooth");
-      } else if (!isUserScrollingRef.current) {
-        // If user is not actively scrolling, we can still scroll them down
         scrollToBottom("smooth");
       } else {
         setHasNewMessages(true);
       }
     }
   }, [messages, isAtBottom, scrollToBottom]);
+
+  // IntersectionObserver — watch top sentinel to load older messages
+  useEffect(() => {
+    const sentinel = topSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage && initialScrollDoneRef.current) {
+          // Save scroll height before fetch so we can restore position after
+          const container = messagesContainerRef.current;
+          if (container) prevScrollHeightRef.current = container.scrollHeight;
+          isFetchingOlderRef.current = true;
+          fetchNextPage();
+        }
+      },
+      { root: messagesContainerRef.current, threshold: 0 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -181,7 +228,7 @@ export default function ConversationPage({
     },
   });
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (!messageContent.trim()) return;
     justSentMessageRef.current = true;
@@ -247,7 +294,7 @@ export default function ConversationPage({
 
   return (
     <div className="h-full flex overflow-hidden">
-      {/* Sidebar - Conversations List */}
+      {/* Sidebar */}
       <div className="hidden lg:flex w-80 border-r flex-col bg-muted/30">
         <div className="p-4 border-b">
           <h2 className="font-semibold text-lg">Messages</h2>
@@ -264,7 +311,9 @@ export default function ConversationPage({
                 href={`/messages/${conv.id}`}
                 className={cn(
                   "flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors border-b",
-                  conv.id === conversationId ? "bg-muted/50 border-l-2 border-l-primary" : "border-l-2 border-l-transparent"
+                  conv.id === conversationId
+                    ? "bg-muted/50 border-l-2 border-l-primary"
+                    : "border-l-2 border-l-transparent"
                 )}
               >
                 <Avatar className="h-10 w-10 shrink-0">
@@ -274,10 +323,14 @@ export default function ConversationPage({
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm truncate">{conv.otherUser?.name || "Unknown"}</span>
+                    <span className="font-medium text-sm truncate">
+                      {conv.otherUser?.name || "Unknown"}
+                    </span>
                     {conv.lastMessage?.createdAt && (
                       <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(conv.lastMessage.createdAt), { addSuffix: false })}
+                        {formatDistanceToNow(new Date(conv.lastMessage.createdAt), {
+                          addSuffix: false,
+                        })}
                       </span>
                     )}
                   </div>
@@ -299,7 +352,7 @@ export default function ConversationPage({
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b">
           <Button variant="ghost" size="icon" className="rounded-lg lg:hidden" asChild>
@@ -309,11 +362,15 @@ export default function ConversationPage({
           </Button>
           <Avatar className="h-9 w-9">
             <AvatarFallback className="text-sm bg-muted font-medium">
-              {otherUser?.name?.charAt(0).toUpperCase() || activeConversation?.otherUser?.name?.charAt(0).toUpperCase() || "U"}
+              {otherUser?.name?.charAt(0).toUpperCase() ||
+                activeConversation?.otherUser?.name?.charAt(0).toUpperCase() ||
+                "U"}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="font-semibold text-sm">{otherUser?.name || activeConversation?.otherUser?.name || "Unknown"}</h1>
+            <h1 className="font-semibold text-sm">
+              {otherUser?.name || activeConversation?.otherUser?.name || "Unknown"}
+            </h1>
             <p className="text-xs text-muted-foreground">Online</p>
           </div>
         </div>
@@ -324,6 +381,25 @@ export default function ConversationPage({
           className="flex-1 overflow-y-auto px-4 py-4 space-y-1"
           onScroll={handleScroll}
         >
+          {/* Top sentinel — triggers loading older messages */}
+          <div ref={topSentinelRef} className="h-px" />
+
+          {/* Loading older messages spinner */}
+          {isFetchingNextPage && (
+            <div className="flex justify-center py-3">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          {/* End of history indicator */}
+          {!hasNextPage && messages.length > 0 && (
+            <div className="flex justify-center py-3">
+              <span className="text-[10px] text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                Beginning of conversation
+              </span>
+            </div>
+          )}
+
           {messagesLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
@@ -340,22 +416,23 @@ export default function ConversationPage({
             messages.map((item, index) => {
               const isMe = item.sender?.id === session.user.id;
               const isDeleted = item.message.isDeleted;
-              
-              // Group messages (within 2 minutes from same sender)
+
               const prevMessage = messages[index - 1];
-              const isGrouped = prevMessage &&
+              const isGrouped =
+                prevMessage &&
                 prevMessage.sender?.id === item.sender?.id &&
                 prevMessage.message.createdAt &&
                 item.message.createdAt &&
-                new Date(item.message.createdAt).getTime() - new Date(prevMessage.message.createdAt).getTime() < 120000;
+                new Date(item.message.createdAt).getTime() -
+                  new Date(prevMessage.message.createdAt).getTime() <
+                  120000;
 
-              // Show date separator
-              const showDate = index === 0 || (
-                prevMessage?.message.createdAt &&
-                item.message.createdAt &&
-                new Date(prevMessage.message.createdAt).toDateString() !==
-                new Date(item.message.createdAt).toDateString()
-              );
+              const showDate =
+                index === 0 ||
+                (prevMessage?.message.createdAt &&
+                  item.message.createdAt &&
+                  new Date(prevMessage.message.createdAt).toDateString() !==
+                    new Date(item.message.createdAt).toDateString());
 
               return (
                 <div key={item.message.id}>
@@ -366,7 +443,7 @@ export default function ConversationPage({
                       </span>
                     </div>
                   )}
-                  
+
                   <div className={`flex ${isMe ? "justify-end" : "justify-start"} group`}>
                     <div className="relative max-w-[75%]">
                       <div
@@ -376,7 +453,9 @@ export default function ConversationPage({
                             ? "bg-muted/50 text-muted-foreground italic"
                             : isMe
                             ? "bg-primary text-primary-foreground rounded-br-md"
-                            : "bg-muted rounded-bl-md"
+                            : "bg-muted rounded-bl-md",
+                          isGrouped && isMe ? "rounded-tr-md" : "",
+                          isGrouped && !isMe ? "rounded-tl-md" : ""
                         )}
                       >
                         {editingMessageId === item.message.id ? (
@@ -400,7 +479,10 @@ export default function ConversationPage({
                                 size="sm"
                                 variant="ghost"
                                 className="h-7 text-xs"
-                                onClick={() => { setEditingMessageId(null); setEditContent(""); }}
+                                onClick={() => {
+                                  setEditingMessageId(null);
+                                  setEditContent("");
+                                }}
                               >
                                 Cancel
                               </Button>
@@ -409,17 +491,19 @@ export default function ConversationPage({
                         ) : (
                           <>
                             <p>{item.message.content}</p>
-                            <span className={cn(
-                              "text-[10px] mt-1 block text-right",
-                              isMe ? "text-primary-foreground/60" : "text-muted-foreground"
-                            )}>
-                              {item.message.createdAt && format(new Date(item.message.createdAt), "h:mm a")}
+                            <span
+                              className={cn(
+                                "text-[10px] mt-1 block text-right",
+                                isMe ? "text-primary-foreground/60" : "text-muted-foreground"
+                              )}
+                            >
+                              {item.message.createdAt &&
+                                format(new Date(item.message.createdAt), "h:mm a")}
                               {item.message.updatedAt &&
                                 item.message.createdAt &&
-                                new Date(item.message.updatedAt).getTime() !== new Date(item.message.createdAt).getTime() &&
-                                !isDeleted && (
-                                <span className="ml-1">(edited)</span>
-                              )}
+                                new Date(item.message.updatedAt).getTime() !==
+                                  new Date(item.message.createdAt).getTime() &&
+                                !isDeleted && <span className="ml-1">(edited)</span>}
                             </span>
                           </>
                         )}
@@ -432,16 +516,25 @@ export default function ConversationPage({
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 rounded-full bg-background shadow-sm"
-                            onClick={() => setMenuOpenMessageId(menuOpenMessageId === item.message.id ? null : item.message.id)}
+                            onClick={() =>
+                              setMenuOpenMessageId(
+                                menuOpenMessageId === item.message.id ? null : item.message.id
+                              )
+                            }
                           >
                             <MoreVertical className="h-3 w-3" />
                           </Button>
-                          
+
                           {menuOpenMessageId === item.message.id && (
                             <div className="absolute right-0 top-7 bg-background border rounded-lg shadow-lg py-1 z-10 min-w-[120px]">
                               <button
                                 className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted flex items-center gap-2"
-                                onClick={() => startEdit({ id: item.message.id, content: item.message.content })}
+                                onClick={() =>
+                                  startEdit({
+                                    id: item.message.id,
+                                    content: item.message.content,
+                                  })
+                                }
                               >
                                 <Pencil className="h-3 w-3" /> Edit
                               </button>

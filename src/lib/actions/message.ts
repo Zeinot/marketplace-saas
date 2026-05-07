@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { conversation, conversationParticipant, message, user, profile } from "@/lib/db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { conversation, conversationParticipant, message, user } from "@/lib/db/schema";
+import { eq, and, desc, sql, lt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function safeRevalidate(path: string) {
@@ -91,6 +91,35 @@ export async function getMessages(conversationId: number) {
     .leftJoin(user, eq(message.senderId, user.id))
     .where(eq(message.conversationId, conversationId))
     .orderBy(message.createdAt);
+}
+
+export async function getMessagePage(
+  conversationId: number,
+  cursor?: number,
+  limit = 30
+) {
+  const rows = await db
+    .select({
+      message,
+      sender: { id: user.id, name: user.name },
+    })
+    .from(message)
+    .leftJoin(user, eq(message.senderId, user.id))
+    .where(
+      cursor
+        ? and(eq(message.conversationId, conversationId), lt(message.id, cursor))
+        : eq(message.conversationId, conversationId)
+    )
+    .orderBy(desc(message.id))
+    .limit(limit);
+
+  // Reverse so messages are in chronological order (oldest first)
+  const messages = rows.reverse();
+
+  // nextCursor is the ID of the oldest message in this page; null means no more history
+  const nextCursor = rows.length === limit ? messages[0]?.message?.id ?? null : null;
+
+  return { messages, nextCursor };
 }
 
 export async function sendMessage(conversationId: number, senderId: string, content: string) {
