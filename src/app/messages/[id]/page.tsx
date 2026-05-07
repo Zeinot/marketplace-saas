@@ -15,8 +15,8 @@ import {
   markConversationAsRead,
   editMessage,
   deleteMessage,
+  getConversations,
 } from "@/lib/actions/message";
-import { getConversations } from "@/lib/actions/message";
 import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -46,10 +46,17 @@ export default function ConversationPage({
   const topSentinelRef = useRef<HTMLDivElement>(null);
   const prevScrollHeightRef = useRef<number>(0);
   const initialScrollDoneRef = useRef(false);
+  // True only after initial scroll-to-bottom; gates the IntersectionObserver
+  const [observerEnabled, setObserverEnabled] = useState(false);
   const isFetchingOlderRef = useRef(false);
 
   useEffect(() => {
-    params.then((p) => setConversationId(Number(p.id)));
+    params.then((p) => {
+      setConversationId(Number(p.id));
+      // Reset per-conversation state when switching conversations
+      initialScrollDoneRef.current = false;
+      setObserverEnabled(false);
+    });
   }, [params]);
 
   useEffect(() => {
@@ -67,17 +74,23 @@ export default function ConversationPage({
   } = useInfiniteQuery({
     queryKey: ["messages", conversationId],
     queryFn: ({ pageParam }) =>
-      conversationId ? getMessagePage(conversationId, pageParam as number | undefined, 30) : { messages: [], nextCursor: null },
-    getNextPageParam: (firstPage) => firstPage.nextCursor ?? undefined,
+      conversationId
+        ? getMessagePage(conversationId, pageParam as number | undefined, 30)
+        : { messages: [], nextCursor: null },
+    // pages[0] = newest batch; getNextPageParam receives the LAST page added,
+    // which grows toward older messages as user scrolls up.
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     initialPageParam: undefined as number | undefined,
     enabled: !!conversationId && !!session?.user,
     refetchInterval: 3000,
-    // Only refetch the most-recent (last) page during polling to get new messages
     refetchIntervalInBackground: false,
   });
 
-  // Flatten all pages into a single chronological array
-  const messages = data?.pages.flatMap((p) => p.messages) ?? [];
+  // Pages are appended newest→oldest as user scrolls up.
+  // Reverse so flatMap produces chronological (oldest→newest) order.
+  const messages = data
+    ? [...data.pages].reverse().flatMap((p) => p.messages)
+    : [];
 
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations", session?.user?.id],
@@ -99,22 +112,27 @@ export default function ConversationPage({
     container.scrollTo({ top: container.scrollHeight, behavior });
   }, []);
 
-  // Initial scroll to bottom (instant, no animation) once first page loads
+  // On first page load: scroll to bottom instantly, then enable the sentinel observer.
+  // Using rAF ensures the DOM has painted before we read scrollHeight and enable the observer.
   useEffect(() => {
     if (messages.length > 0 && !initialScrollDoneRef.current) {
       initialScrollDoneRef.current = true;
-      scrollToBottom("instant");
+      requestAnimationFrame(() => {
+        scrollToBottom("instant");
+        // Another rAF so the observer only starts after the scroll has settled
+        requestAnimationFrame(() => {
+          setObserverEnabled(true);
+        });
+      });
     }
   }, [messages, scrollToBottom]);
 
-  // After older messages are prepended, restore scroll position to prevent jump
+  // Restore scroll position after older messages are prepended (prevent viewport jump)
   useEffect(() => {
     if (isFetchingOlderRef.current && !isFetchingNextPage) {
-      // Fetch just completed — restore position
       const container = messagesContainerRef.current;
       if (container) {
-        const newScrollHeight = container.scrollHeight;
-        container.scrollTop = newScrollHeight - prevScrollHeightRef.current;
+        container.scrollTop = container.scrollHeight - prevScrollHeightRef.current;
       }
       isFetchingOlderRef.current = false;
     }
@@ -137,7 +155,7 @@ export default function ConversationPage({
     if (isBottom) setHasNewMessages(false);
   }, []);
 
-  // Scroll to bottom on new messages arriving (polling), respecting user scroll position
+  // Auto-scroll when new messages arrive at the bottom (polling / send)
   useEffect(() => {
     if (messages.length === 0) return;
 
@@ -149,7 +167,7 @@ export default function ConversationPage({
     lastMessageIdRef.current = lastId;
     if (userJustSent) justSentMessageRef.current = false;
 
-    // Only auto-scroll for new messages at the bottom, not when prepending older ones
+    // Only auto-scroll for new bottom messages, not when prepending older ones
     if (isNewMessage && !isFetchingOlderRef.current) {
       if (isAtBottom || userJustSent) {
         scrollToBottom("smooth");
@@ -159,16 +177,17 @@ export default function ConversationPage({
     }
   }, [messages, isAtBottom, scrollToBottom]);
 
-  // IntersectionObserver — watch top sentinel to load older messages
+  // IntersectionObserver — watches the top sentinel to load older messages.
+  // Only active after the initial scroll-to-bottom has completed.
   useEffect(() => {
+    if (!observerEnabled) return;
     const sentinel = topSentinelRef.current;
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage && initialScrollDoneRef.current) {
-          // Save scroll height before fetch so we can restore position after
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
           const container = messagesContainerRef.current;
           if (container) prevScrollHeightRef.current = container.scrollHeight;
           isFetchingOlderRef.current = true;
@@ -180,7 +199,7 @@ export default function ConversationPage({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [observerEnabled, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -354,7 +373,7 @@ export default function ConversationPage({
       {/* Chat Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b">
+        <div className="flex items-center gap-3 px-4 py-3 border-b shrink-0">
           <Button variant="ghost" size="icon" className="rounded-lg lg:hidden" asChild>
             <Link href="/messages">
               <ArrowLeft className="h-5 w-5" />
@@ -375,23 +394,23 @@ export default function ConversationPage({
           </div>
         </div>
 
-        {/* Messages */}
+        {/* Messages — this div must be the scrollable container */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-4 py-4 space-y-1"
+          className="flex-1 overflow-y-auto px-4 py-4"
           onScroll={handleScroll}
         >
-          {/* Top sentinel — triggers loading older messages */}
+          {/* Top sentinel — observed to trigger loading older messages */}
           <div ref={topSentinelRef} className="h-px" />
 
-          {/* Loading older messages spinner */}
+          {/* Older-messages loading spinner */}
           {isFetchingNextPage && (
             <div className="flex justify-center py-3">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           )}
 
-          {/* End of history indicator */}
+          {/* Start of history */}
           {!hasNextPage && messages.length > 0 && (
             <div className="flex justify-center py-3">
               <span className="text-[10px] text-muted-foreground bg-muted px-3 py-1 rounded-full">
@@ -413,146 +432,148 @@ export default function ConversationPage({
               <p className="text-sm">No messages yet. Say hello!</p>
             </div>
           ) : (
-            messages.map((item, index) => {
-              const isMe = item.sender?.id === session.user.id;
-              const isDeleted = item.message.isDeleted;
+            <div className="space-y-1">
+              {messages.map((item, index) => {
+                const isMe = item.sender?.id === session.user.id;
+                const isDeleted = item.message.isDeleted;
 
-              const prevMessage = messages[index - 1];
-              const isGrouped =
-                prevMessage &&
-                prevMessage.sender?.id === item.sender?.id &&
-                prevMessage.message.createdAt &&
-                item.message.createdAt &&
-                new Date(item.message.createdAt).getTime() -
-                  new Date(prevMessage.message.createdAt).getTime() <
-                  120000;
-
-              const showDate =
-                index === 0 ||
-                (prevMessage?.message.createdAt &&
+                const prevMessage = messages[index - 1];
+                const isGrouped =
+                  prevMessage &&
+                  prevMessage.sender?.id === item.sender?.id &&
+                  prevMessage.message.createdAt &&
                   item.message.createdAt &&
-                  new Date(prevMessage.message.createdAt).toDateString() !==
-                    new Date(item.message.createdAt).toDateString());
+                  new Date(item.message.createdAt).getTime() -
+                    new Date(prevMessage.message.createdAt).getTime() <
+                    120000;
 
-              return (
-                <div key={item.message.id}>
-                  {showDate && item.message.createdAt && (
-                    <div className="flex justify-center my-4">
-                      <span className="text-[10px] text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                        {format(new Date(item.message.createdAt), "MMM d, yyyy")}
-                      </span>
-                    </div>
-                  )}
+                const showDate =
+                  index === 0 ||
+                  (prevMessage?.message.createdAt &&
+                    item.message.createdAt &&
+                    new Date(prevMessage.message.createdAt).toDateString() !==
+                      new Date(item.message.createdAt).toDateString());
 
-                  <div className={`flex ${isMe ? "justify-end" : "justify-start"} group`}>
-                    <div className="relative max-w-[75%]">
-                      <div
-                        className={cn(
-                          "px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
-                          isDeleted
-                            ? "bg-muted/50 text-muted-foreground italic"
-                            : isMe
-                            ? "bg-primary text-primary-foreground rounded-br-md"
-                            : "bg-muted rounded-bl-md",
-                          isGrouped && isMe ? "rounded-tr-md" : "",
-                          isGrouped && !isMe ? "rounded-tl-md" : ""
-                        )}
-                      >
-                        {editingMessageId === item.message.id ? (
-                          <div className="space-y-2">
-                            <Textarea
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="min-h-[60px] resize-none text-sm"
-                              autoFocus
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                className="h-7 text-xs"
-                                onClick={() => editMutation.mutate()}
-                                disabled={!editContent.trim()}
-                              >
-                                Save
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 text-xs"
-                                onClick={() => {
-                                  setEditingMessageId(null);
-                                  setEditContent("");
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <p>{item.message.content}</p>
-                            <span
-                              className={cn(
-                                "text-[10px] mt-1 block text-right",
-                                isMe ? "text-primary-foreground/60" : "text-muted-foreground"
-                              )}
-                            >
-                              {item.message.createdAt &&
-                                format(new Date(item.message.createdAt), "h:mm a")}
-                              {item.message.updatedAt &&
-                                item.message.createdAt &&
-                                new Date(item.message.updatedAt).getTime() !==
-                                  new Date(item.message.createdAt).getTime() &&
-                                !isDeleted && <span className="ml-1">(edited)</span>}
-                            </span>
-                          </>
-                        )}
+                return (
+                  <div key={item.message.id}>
+                    {showDate && item.message.createdAt && (
+                      <div className="flex justify-center my-4">
+                        <span className="text-[10px] text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                          {format(new Date(item.message.createdAt), "MMM d, yyyy")}
+                        </span>
                       </div>
+                    )}
 
-                      {/* Message actions menu */}
-                      {isMe && !isDeleted && editingMessageId !== item.message.id && (
-                        <div className="absolute -top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 rounded-full bg-background shadow-sm"
-                            onClick={() =>
-                              setMenuOpenMessageId(
-                                menuOpenMessageId === item.message.id ? null : item.message.id
-                              )
-                            }
-                          >
-                            <MoreVertical className="h-3 w-3" />
-                          </Button>
-
-                          {menuOpenMessageId === item.message.id && (
-                            <div className="absolute right-0 top-7 bg-background border rounded-lg shadow-lg py-1 z-10 min-w-[120px]">
-                              <button
-                                className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted flex items-center gap-2"
-                                onClick={() =>
-                                  startEdit({
-                                    id: item.message.id,
-                                    content: item.message.content,
-                                  })
-                                }
-                              >
-                                <Pencil className="h-3 w-3" /> Edit
-                              </button>
-                              <button
-                                className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted text-destructive flex items-center gap-2"
-                                onClick={() => startDelete(item.message.id)}
-                              >
-                                <Trash2 className="h-3 w-3" /> Delete
-                              </button>
+                    <div className={`flex ${isMe ? "justify-end" : "justify-start"} group`}>
+                      <div className="relative max-w-[75%]">
+                        <div
+                          className={cn(
+                            "px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
+                            isDeleted
+                              ? "bg-muted/50 text-muted-foreground italic"
+                              : isMe
+                              ? "bg-primary text-primary-foreground rounded-br-md"
+                              : "bg-muted rounded-bl-md",
+                            isGrouped && isMe ? "rounded-tr-md" : "",
+                            isGrouped && !isMe ? "rounded-tl-md" : ""
+                          )}
+                        >
+                          {editingMessageId === item.message.id ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                className="min-h-[60px] resize-none text-sm"
+                                autoFocus
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  className="h-7 text-xs"
+                                  onClick={() => editMutation.mutate()}
+                                  disabled={!editContent.trim()}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    setEditingMessageId(null);
+                                    setEditContent("");
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
                             </div>
+                          ) : (
+                            <>
+                              <p>{item.message.content}</p>
+                              <span
+                                className={cn(
+                                  "text-[10px] mt-1 block text-right",
+                                  isMe ? "text-primary-foreground/60" : "text-muted-foreground"
+                                )}
+                              >
+                                {item.message.createdAt &&
+                                  format(new Date(item.message.createdAt), "h:mm a")}
+                                {item.message.updatedAt &&
+                                  item.message.createdAt &&
+                                  new Date(item.message.updatedAt).getTime() !==
+                                    new Date(item.message.createdAt).getTime() &&
+                                  !isDeleted && <span className="ml-1">(edited)</span>}
+                              </span>
+                            </>
                           )}
                         </div>
-                      )}
+
+                        {/* Message actions menu */}
+                        {isMe && !isDeleted && editingMessageId !== item.message.id && (
+                          <div className="absolute -top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-full bg-background shadow-sm"
+                              onClick={() =>
+                                setMenuOpenMessageId(
+                                  menuOpenMessageId === item.message.id ? null : item.message.id
+                                )
+                              }
+                            >
+                              <MoreVertical className="h-3 w-3" />
+                            </Button>
+
+                            {menuOpenMessageId === item.message.id && (
+                              <div className="absolute right-0 top-7 bg-background border rounded-lg shadow-lg py-1 z-10 min-w-[120px]">
+                                <button
+                                  className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted flex items-center gap-2"
+                                  onClick={() =>
+                                    startEdit({
+                                      id: item.message.id,
+                                      content: item.message.content,
+                                    })
+                                  }
+                                >
+                                  <Pencil className="h-3 w-3" /> Edit
+                                </button>
+                                <button
+                                  className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted text-destructive flex items-center gap-2"
+                                  onClick={() => startDelete(item.message.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" /> Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </div>
           )}
         </div>
 
@@ -576,7 +597,7 @@ export default function ConversationPage({
         )}
 
         {/* Input */}
-        <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
+        <form onSubmit={handleSubmit} className="p-4 border-t bg-background shrink-0">
           <div className="flex gap-2">
             <Textarea
               placeholder="Type a message..."
