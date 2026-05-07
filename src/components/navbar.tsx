@@ -13,13 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Rocket, MessageSquare, Bell, Menu, User, Settings, LogOut, TrendingUp, DollarSign, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { getUnreadCount } from "@/lib/actions/notification";
 import { getConversations } from "@/lib/actions/message";
+import { useNotificationSound } from "@/components/notification-sound";
 
 const navLinks = [
   { href: "/feed", label: "Feed" },
@@ -47,6 +48,20 @@ export function Navbar() {
   });
 
   const unreadMessages = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+
+  const { playNotificationSound } = useNotificationSound();
+  const prevUnreadRef = useRef({ notifications: 0, messages: 0 });
+
+  // Play sound on new notifications/messages
+  useEffect(() => {
+    if (unreadNotifications > prevUnreadRef.current.notifications) {
+      playNotificationSound();
+    }
+    if (unreadMessages > prevUnreadRef.current.messages) {
+      playNotificationSound();
+    }
+    prevUnreadRef.current = { notifications: unreadNotifications, messages: unreadMessages };
+  }, [unreadNotifications, unreadMessages, playNotificationSound]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">

@@ -1,36 +1,72 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { ArrowLeft, Send } from "lucide-react";
-import { getMessages, sendMessage, markConversationAsRead } from "@/lib/actions/message";
+import { ArrowLeft, Send, MoreVertical, Pencil, Trash2, ChevronDown } from "lucide-react";
+import {
+  getMessages,
+  sendMessage,
+  markConversationAsRead,
+  editMessage,
+  deleteMessage,
+} from "@/lib/actions/message";
+import { getConversations } from "@/lib/actions/message";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function ConversationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { data: session } = useSession();
+  const { data: session, isPending: sessionLoading } = useSession();
   const queryClient = useQueryClient();
   const [messageContent, setMessageContent] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
+  const [menuOpenMessageId, setMenuOpenMessageId] = useState<number | null>(null);
+  const lastMessageIdRef = useRef<number | null>(null);
+  const justSentMessageRef = useRef(false);
+  const isUserScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     params.then((p) => setConversationId(Number(p.id)));
   }, [params]);
 
-  const { data: messages = [], isLoading } = useQuery({
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ["messages", conversationId],
     queryFn: () => (conversationId ? getMessages(conversationId) : []),
     enabled: !!conversationId && !!session?.user,
+    refetchInterval: 3000,
+  });
+
+  const { data: conversations = [] } = useQuery({
+    queryKey: ["conversations", session?.user?.id],
+    queryFn: () => (session?.user ? getConversations(session.user.id) : []),
+    enabled: !!session?.user,
     refetchInterval: 3000,
   });
 
@@ -41,10 +77,63 @@ export default function ConversationPage({
     }
   }, [conversationId, session?.user]);
 
-  // Scroll to bottom on new messages
+  // Helper to scroll the message container (not the whole page)
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior });
+  }, []);
+
+  // Track user-initiated scrolls separately from auto-scrolls
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    isUserScrollingRef.current = true;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    scrollTimeoutRef.current = setTimeout(() => {
+      isUserScrollingRef.current = false;
+    }, 150);
+
+    const threshold = 100;
+    const isBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+    setIsAtBottom(isBottom);
+
+    if (isBottom) {
+      setHasNewMessages(false);
+    }
+  }, []);
+
+  // Scroll to bottom on new messages, respecting user scroll position
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (messages.length === 0) return;
+
+    const lastMessage = messages[messages.length - 1];
+    const lastId = lastMessage?.message?.id ?? null;
+    const isNewMessage = lastId !== null && lastId !== lastMessageIdRef.current;
+    const userJustSent = justSentMessageRef.current;
+
+    // Always update the ref so we know what we've seen
+    lastMessageIdRef.current = lastId;
+
+    // Reset the just-sent flag after this render
+    if (userJustSent) {
+      justSentMessageRef.current = false;
+    }
+
+    if (isNewMessage || userJustSent) {
+      if (isAtBottom || userJustSent) {
+        scrollToBottom("smooth");
+      } else if (!isUserScrollingRef.current) {
+        // If user is not actively scrolling, we can still scroll them down
+        scrollToBottom("smooth");
+      } else {
+        setHasNewMessages(true);
+      }
+    }
+  }, [messages, isAtBottom, scrollToBottom]);
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -55,16 +144,90 @@ export default function ConversationPage({
       setMessageContent("");
       queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
       queryClient.invalidateQueries({ queryKey: ["conversations", session?.user?.id] });
+      setIsAtBottom(true);
     },
     onError: () => {
       toast.error("Failed to send message");
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingMessageId || !session?.user || !editContent.trim()) return;
+      await editMessage(editingMessageId, session.user.id, editContent.trim());
+    },
+    onSuccess: () => {
+      setEditingMessageId(null);
+      setEditContent("");
+      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+    },
+    onError: () => {
+      toast.error("Failed to edit message");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (!messageToDelete || !session?.user) return;
+      await deleteMessage(messageToDelete, session.user.id);
+    },
+    onSuccess: () => {
+      setShowDeleteDialog(false);
+      setMessageToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+    },
+    onError: () => {
+      toast.error("Failed to delete message");
+    },
+  });
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!messageContent.trim()) return;
+    justSentMessageRef.current = true;
     sendMutation.mutate();
+  }
+
+  function startEdit(msg: { id: number; content: string }) {
+    setEditingMessageId(msg.id);
+    setEditContent(msg.content);
+    setMenuOpenMessageId(null);
+  }
+
+  function startDelete(messageId: number) {
+    setMessageToDelete(messageId);
+    setShowDeleteDialog(true);
+    setMenuOpenMessageId(null);
+  }
+
+  if (sessionLoading) {
+    return (
+      <div className="h-full flex">
+        <div className="hidden lg:flex w-80 border-r flex-col bg-muted/30 p-4 gap-3">
+          <Skeleton className="h-6 w-24" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 flex flex-col p-4 gap-3">
+          <Skeleton className="h-9 w-40" />
+          <div className="flex-1 space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
+                <Skeleton className="h-12 w-48 rounded-2xl" />
+              </div>
+            ))}
+          </div>
+          <Skeleton className="h-11 w-full" />
+        </div>
+      </div>
+    );
   }
 
   if (!session?.user) {
@@ -80,114 +243,284 @@ export default function ConversationPage({
   }
 
   const otherUser = messages.find((m) => m.sender?.id !== session.user.id)?.sender;
+  const activeConversation = conversations.find((c) => c.id === conversationId);
 
   return (
-    <div className="container py-4 md:py-8 max-w-2xl h-[calc(100vh-4rem)] flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-4 pb-4 border-b">
-        <Button variant="ghost" size="icon" className="rounded-lg" asChild>
-          <Link href="/messages">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <Avatar className="h-9 w-9">
-          <AvatarFallback className="text-sm bg-muted font-medium">
-            {otherUser?.name?.charAt(0).toUpperCase() || "U"}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="font-semibold text-sm">{otherUser?.name || "Unknown"}</h1>
-          <p className="text-xs text-muted-foreground">Online</p>
+    <div className="h-full flex overflow-hidden">
+      {/* Sidebar - Conversations List */}
+      <div className="hidden lg:flex w-80 border-r flex-col bg-muted/30">
+        <div className="p-4 border-b">
+          <h2 className="font-semibold text-lg">Messages</h2>
         </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 pb-4">
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
-                <div className="h-12 w-48 rounded-2xl bg-muted/50 animate-pulse" />
-              </div>
-            ))}
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <p className="text-sm">No messages yet. Say hello!</p>
-          </div>
-        ) : (
-          messages.map((item, index) => {
-            const isMe = item.sender?.id === session.user.id;
-            const showDate =
-              index === 0 ||
-              new Date(item.message.createdAt!).getDate() !==
-                new Date(messages[index - 1].message.createdAt!).getDate();
-
-            return (
-              <div key={item.message.id}>
-                {showDate && item.message.createdAt && (
-                  <div className="flex justify-center my-4">
-                    <span className="text-[10px] text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
-                      {new Date(item.message.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
+        <div className="flex-1 overflow-y-auto">
+          {conversations.length === 0 ? (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              No conversations yet
+            </div>
+          ) : (
+            conversations.map((conv) => (
+              <Link
+                key={conv.id}
+                href={`/messages/${conv.id}`}
+                className={cn(
+                  "flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors border-b",
+                  conv.id === conversationId ? "bg-muted/50 border-l-2 border-l-primary" : "border-l-2 border-l-transparent"
                 )}
-                <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                      isMe
-                        ? "bg-primary text-primary-foreground rounded-br-md"
-                        : "bg-muted rounded-bl-md"
-                    }`}
-                  >
-                    <p>{item.message.content}</p>
-                    <span
-                      className={`text-[10px] mt-1 block ${
-                        isMe ? "text-primary-foreground/60" : "text-muted-foreground"
-                      }`}
-                    >
-                      {item.message.createdAt
-                        ? formatDistanceToNow(new Date(item.message.createdAt), { addSuffix: false })
-                        : ""}
-                    </span>
+              >
+                <Avatar className="h-10 w-10 shrink-0">
+                  <AvatarFallback className="text-sm bg-muted font-medium">
+                    {conv.otherUser?.name?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm truncate">{conv.otherUser?.name || "Unknown"}</span>
+                    {conv.lastMessage?.createdAt && (
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(conv.lastMessage.createdAt), { addSuffix: false })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground truncate">
+                      {conv.lastMessage?.content || "No messages yet"}
+                    </p>
+                    {conv.unreadCount > 0 && (
+                      <span className="shrink-0 h-5 min-w-[20px] rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center px-1.5">
+                        {conv.unreadCount}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
-            );
-          })
-        )}
-        <div ref={messagesEndRef} />
+              </Link>
+            ))
+          )}
+        </div>
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="pt-4 border-t">
-        <div className="flex gap-2">
-          <Textarea
-            placeholder="Type a message..."
-            value={messageContent}
-            onChange={(e) => setMessageContent(e.target.value)}
-            rows={1}
-            className="rounded-xl resize-none min-h-[44px] max-h-[120px]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
-          <Button
-            type="submit"
-            disabled={sendMutation.isPending || !messageContent.trim()}
-            size="icon"
-            className="rounded-xl h-11 w-11 shrink-0"
-          >
-            <Send className="h-4 w-4" />
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b">
+          <Button variant="ghost" size="icon" className="rounded-lg lg:hidden" asChild>
+            <Link href="/messages">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
           </Button>
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="text-sm bg-muted font-medium">
+              {otherUser?.name?.charAt(0).toUpperCase() || activeConversation?.otherUser?.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="font-semibold text-sm">{otherUser?.name || activeConversation?.otherUser?.name || "Unknown"}</h1>
+            <p className="text-xs text-muted-foreground">Online</p>
+          </div>
         </div>
-      </form>
+
+        {/* Messages */}
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto px-4 py-4 space-y-1"
+          onScroll={handleScroll}
+        >
+          {messagesLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
+                  <div className="h-12 w-48 rounded-2xl bg-muted/50 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <p className="text-sm">No messages yet. Say hello!</p>
+            </div>
+          ) : (
+            messages.map((item, index) => {
+              const isMe = item.sender?.id === session.user.id;
+              const isDeleted = item.message.isDeleted;
+              
+              // Group messages (within 2 minutes from same sender)
+              const prevMessage = messages[index - 1];
+              const isGrouped = prevMessage &&
+                prevMessage.sender?.id === item.sender?.id &&
+                prevMessage.message.createdAt &&
+                item.message.createdAt &&
+                new Date(item.message.createdAt).getTime() - new Date(prevMessage.message.createdAt).getTime() < 120000;
+
+              // Show date separator
+              const showDate = index === 0 || (
+                prevMessage?.message.createdAt &&
+                item.message.createdAt &&
+                new Date(prevMessage.message.createdAt).toDateString() !==
+                new Date(item.message.createdAt).toDateString()
+              );
+
+              return (
+                <div key={item.message.id}>
+                  {showDate && item.message.createdAt && (
+                    <div className="flex justify-center my-4">
+                      <span className="text-[10px] text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                        {format(new Date(item.message.createdAt), "MMM d, yyyy")}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className={`flex ${isMe ? "justify-end" : "justify-start"} group`}>
+                    <div className="relative max-w-[75%]">
+                      <div
+                        className={cn(
+                          "px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
+                          isDeleted
+                            ? "bg-muted/50 text-muted-foreground italic"
+                            : isMe
+                            ? "bg-primary text-primary-foreground rounded-br-md"
+                            : "bg-muted rounded-bl-md"
+                        )}
+                      >
+                        {editingMessageId === item.message.id ? (
+                          <div className="space-y-2">
+                            <Textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="min-h-[60px] resize-none text-sm"
+                              autoFocus
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs"
+                                onClick={() => editMutation.mutate()}
+                                disabled={!editContent.trim()}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 text-xs"
+                                onClick={() => { setEditingMessageId(null); setEditContent(""); }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p>{item.message.content}</p>
+                            <span className={cn(
+                              "text-[10px] mt-1 block text-right",
+                              isMe ? "text-primary-foreground/60" : "text-muted-foreground"
+                            )}>
+                              {item.message.createdAt && format(new Date(item.message.createdAt), "h:mm a")}
+                              {item.message.updatedAt &&
+                                item.message.createdAt &&
+                                new Date(item.message.updatedAt).getTime() !== new Date(item.message.createdAt).getTime() &&
+                                !isDeleted && (
+                                <span className="ml-1">(edited)</span>
+                              )}
+                            </span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Message actions menu */}
+                      {isMe && !isDeleted && editingMessageId !== item.message.id && (
+                        <div className="absolute -top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 rounded-full bg-background shadow-sm"
+                            onClick={() => setMenuOpenMessageId(menuOpenMessageId === item.message.id ? null : item.message.id)}
+                          >
+                            <MoreVertical className="h-3 w-3" />
+                          </Button>
+                          
+                          {menuOpenMessageId === item.message.id && (
+                            <div className="absolute right-0 top-7 bg-background border rounded-lg shadow-lg py-1 z-10 min-w-[120px]">
+                              <button
+                                className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted flex items-center gap-2"
+                                onClick={() => startEdit({ id: item.message.id, content: item.message.content })}
+                              >
+                                <Pencil className="h-3 w-3" /> Edit
+                              </button>
+                              <button
+                                className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted text-destructive flex items-center gap-2"
+                                onClick={() => startDelete(item.message.id)}
+                              >
+                                <Trash2 className="h-3 w-3" /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* New messages indicator */}
+        {hasNewMessages && (
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
+            <Button
+              size="sm"
+              variant="secondary"
+              className="rounded-full shadow-lg gap-1"
+              onClick={() => {
+                scrollToBottom("smooth");
+                setHasNewMessages(false);
+                setIsAtBottom(true);
+              }}
+            >
+              <ChevronDown className="h-4 w-4" />
+              New messages
+            </Button>
+          </div>
+        )}
+
+        {/* Input */}
+        <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
+          <div className="flex gap-2">
+            <Textarea
+              placeholder="Type a message..."
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+              rows={1}
+              className="rounded-xl resize-none min-h-[44px] max-h-[120px]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+            <Button
+              type="submit"
+              disabled={sendMutation.isPending || !messageContent.trim()}
+              size="icon"
+              className="rounded-xl h-11 w-11 shrink-0"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Delete Message"
+        description="Are you sure you want to delete this message? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => deleteMutation.mutate()}
+        destructive
+      />
     </div>
   );
 }

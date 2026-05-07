@@ -8,6 +8,13 @@
       "when": 1777999745715,
       "tag": "0000_remarkable_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778181024367,
+      "tag": "0001_cuddly_namora",
+      "breakpoints": true
     }
   ]
 }

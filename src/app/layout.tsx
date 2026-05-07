@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -25,19 +24,6 @@ export const metadata: Metadata = {
   description: "Discover, launch, and sell SaaS products. The community for indie hackers and SaaS builders.",
 };
 
-const themeScript = `
-  (function() {
-    try {
-      var theme = localStorage.getItem('theme') || 'system';
-      var resolved = theme === 'system' 
-        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-        : theme;
-      document.documentElement.classList.add(resolved);
-      document.documentElement.style.colorScheme = resolved;
-    } catch(e) {}
-  })();
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,9 +35,24 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
-      <Script id="theme-script" strategy="beforeInteractive">
-        {themeScript}
-      </Script>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme') || 'system';
+                  var resolved = theme === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : theme;
+                  document.documentElement.classList.add(resolved);
+                  document.documentElement.style.colorScheme = resolved;
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <QueryProvider>

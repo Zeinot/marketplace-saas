@@ -4,7 +4,7 @@ import { getLaunches } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, Store, ArrowRight } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 
 export default async function MarketplacePage() {
   const launches = await getLaunches({ filter: "marketplace" });
@@ -52,15 +52,6 @@ export default async function MarketplacePage() {
           ))}
         </div>
       )}
-
-      <div className="mt-12 flex justify-center">
-        <Button variant="outline" asChild className="rounded-lg">
-          <Link href="/feed?filter=marketplace">
-            View all marketplace listings
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-      </div>
     </div>
   );
 }

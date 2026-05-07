@@ -1,26 +1,47 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bell, ArrowRight, Inbox, Check, ArrowBigUp, MessageSquare } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from "@/lib/actions/notification";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
 export default function NotificationsPage() {
-  const { data: session } = useSession();
+  const { data: session, isPending: sessionLoading } = useSession();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize notification sound
+  useEffect(() => {
+    audioRef.current = new Audio("/sounds/notification.mp3");
+    audioRef.current.volume = 0.3;
+  }, []);
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications", session?.user?.id],
     queryFn: () => (session?.user ? getNotifications(session.user.id) : []),
     enabled: !!session?.user,
-    refetchInterval: 3000,
+    refetchInterval: 5000,
   });
+
+  // Play sound for new notifications
+  const prevCount = useRef(0);
+  useEffect(() => {
+    const unreadCount = notifications.filter((n) => !n.notification.read).length;
+    if (unreadCount > prevCount.current && document.hidden) {
+      audioRef.current?.play().catch(() => {});
+    }
+    prevCount.current = unreadCount;
+  }, [notifications]);
 
   const markReadMutation = useMutation({
     mutationFn: async (notificationId: number) => {
@@ -46,6 +67,42 @@ export default function NotificationsPage() {
   });
 
   const unreadCount = notifications.filter((n) => !n.notification.read).length;
+
+  function handleNotificationClick(item: typeof notifications[0]) {
+    // Mark as read immediately
+    if (!item.notification.read) {
+      markReadMutation.mutate(item.notification.id);
+    }
+
+    // Navigate based on notification type
+    if (item.notification.launchId) {
+      router.push(`/launch/${item.launch?.slug || ""}`);
+    } else if (item.notification.messageId) {
+      router.push(`/messages`);
+    } else if (item.notification.commentId) {
+      router.push(`/launch/${item.launch?.slug || ""}`);
+    }
+  }
+
+  if (sessionLoading) {
+    return (
+      <div className="container py-8 md:py-10 max-w-2xl">
+        <Skeleton className="h-8 w-40 mb-2" />
+        <Skeleton className="h-4 w-56 mb-6" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-border/50">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!session?.user) {
     return (
@@ -123,16 +180,12 @@ export default function NotificationsPage() {
             return (
               <div
                 key={item.notification.id}
-                className={`flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer ${
+                className={`flex items-start gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
                   isUnread
                     ? "border-primary/20 bg-primary/5 hover:bg-primary/10"
                     : "border-border/50 bg-card hover:bg-muted/30"
                 }`}
-                onClick={() => {
-                  if (isUnread) {
-                    markReadMutation.mutate(item.notification.id);
-                  }
-                }}
+                onClick={() => handleNotificationClick(item)}
               >
                 <div className={`mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
                   isUnread ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
@@ -148,13 +201,9 @@ export default function NotificationsPage() {
                     {item.notification.type === "follow" && "started following you"}
                     {item.notification.type === "mention" && "mentioned you"}
                     {item.launch && (
-                      <Link
-                        href={`/launch/${item.launch.slug}`}
-                        className="text-primary hover:underline ml-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <span className="text-primary hover:underline ml-1">
                         {item.launch.title}
-                      </Link>
+                      </span>
                     )}
                   </p>
                   <span className="text-xs text-muted-foreground mt-1 block">

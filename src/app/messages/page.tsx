@@ -1,24 +1,93 @@
 "use client";
 
+import { useEffect, Suspense } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { MessageSquare, ArrowRight, Inbox } from "lucide-react";
-import { getConversations } from "@/lib/actions/message";
+import { MessageSquare, ArrowRight, Inbox, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getConversations, getOrCreateConversation } from "@/lib/actions/message";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 export default function MessagesPage() {
-  const { data: session } = useSession();
+  return (
+    <Suspense fallback={
+      <div className="container py-20 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+      </div>
+    }>
+      <MessagesPageContent />
+    </Suspense>
+  );
+}
+
+function MessagesPageContent() {
+  const { data: session, isPending: sessionLoading } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const toUserId = searchParams.get("to");
+
+  // Handle ?to= parameter - create conversation and redirect
+  useEffect(() => {
+    if (toUserId && session?.user) {
+      if (toUserId === session.user.id) {
+        toast.error("You can't message yourself");
+        router.replace("/messages");
+        return;
+      }
+
+      getOrCreateConversation(session.user.id, toUserId)
+        .then((conversationId) => {
+          router.replace(`/messages/${conversationId}`);
+        })
+        .catch((error: any) => {
+          toast.error(error.message || "Failed to start conversation");
+          router.replace("/messages");
+        });
+    }
+  }, [toUserId, session?.user, router]);
 
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ["conversations", session?.user?.id],
     queryFn: () => (session?.user ? getConversations(session.user.id) : []),
     enabled: !!session?.user,
-    refetchInterval: 3000, // Real-time polling every 3s
+    refetchInterval: 3000,
   });
+
+  // Show loading while creating conversation from ?to=
+  if (toUserId && session?.user) {
+    return (
+      <div className="container py-20 text-center max-w-md mx-auto">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+        <p className="text-muted-foreground">Starting conversation...</p>
+      </div>
+    );
+  }
+
+  if (sessionLoading) {
+    return (
+      <div className="container py-8 md:py-10 max-w-2xl">
+        <Skeleton className="h-8 w-40 mb-2" />
+        <Skeleton className="h-4 w-56 mb-6" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border/50">
+              <Skeleton className="h-11 w-11 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-48" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!session?.user) {
     return (

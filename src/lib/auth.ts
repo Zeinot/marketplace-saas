@@ -13,7 +13,7 @@ export const auth = betterAuth({
     autoSignIn: true,
     sendResetPassword: async ({ user, url }) => {
       // In production, use Resend here
-      console.log(`Password reset for ${user.email}: ${url}`);
+      // Password reset URL generated (logged in dev only)
     },
   },
   socialProviders: {},

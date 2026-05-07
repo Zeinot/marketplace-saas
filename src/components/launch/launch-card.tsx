@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowBigUp, MessageSquare, DollarSign, ExternalLink } from "lucide-react";
+import { ArrowBigUp, MessageSquare, DollarSign } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleUpvote } from "@/lib/actions/launch";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { MessageButton } from "@/components/message-button";
 
 interface LaunchCardProps {
   launch: {
@@ -31,6 +33,12 @@ interface LaunchCardProps {
 export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const [upvotes, setUpvotes] = useState(launch.upvoteCount);
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+
+  useEffect(() => {
+    setUpvotes(launch.upvoteCount);
+  }, [launch.upvoteCount]);
 
   const upvoteMutation = useMutation({
     mutationFn: async () => {
@@ -38,10 +46,27 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
         toast.error("Please sign in to upvote");
         throw new Error("Not authenticated");
       }
+      if (session.user.id === maker?.id) {
+        toast.error("You can't upvote your own launch");
+        throw new Error("Can't upvote own launch");
+      }
       return toggleUpvote(launch.id, session.user.id);
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      // Optimistic update
+      const newUpvoted = !hasUpvoted;
+      setHasUpvoted(newUpvoted);
+      setUpvotes((prev) => (newUpvoted ? prev + 1 : prev - 1));
+    },
+    onSuccess: (data) => {
+      setHasUpvoted(data.upvoted);
       queryClient.invalidateQueries({ queryKey: ["launches"] });
+    },
+    onError: () => {
+      // Rollback
+      setHasUpvoted(!hasUpvoted);
+      setUpvotes((prev) => (!hasUpvoted ? prev + 1 : prev - 1));
+      toast.error("Failed to upvote");
     },
   });
 
@@ -61,13 +86,16 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
             variant="outline"
             size="sm"
             className={cn(
-              "shrink-0 flex flex-col items-center gap-0 h-auto py-1.5 px-2 rounded-xl border-border/60 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors",
+              "shrink-0 flex flex-col items-center gap-0 h-auto py-1.5 px-2 rounded-xl border-border/60 transition-colors",
+              hasUpvoted
+                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                : "hover:bg-primary hover:text-primary-foreground hover:border-primary",
               upvoteMutation.isPending && "opacity-70"
             )}
             onClick={() => upvoteMutation.mutate()}
           >
-            <ArrowBigUp className="h-5 w-5" />
-            <span className="text-xs font-semibold tabular-nums">{launch.upvoteCount}</span>
+            <ArrowBigUp className={cn("h-5 w-5", hasUpvoted && "fill-current")} />
+            <span className="text-xs font-semibold tabular-nums">{upvotes}</span>
           </Button>
         </div>
         <div className="flex flex-wrap gap-1.5 mt-3">
@@ -99,6 +127,7 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
               {maker?.name || "Anonymous"}
             </span>
           </Link>
+          {maker && session?.user?.id !== maker.id && <MessageButton userId={maker.id} variant="compact" />}
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <MessageSquare className="h-3.5 w-3.5" />

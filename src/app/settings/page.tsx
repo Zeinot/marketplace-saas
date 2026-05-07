@@ -11,10 +11,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import Link from "next/link";
 import { User, Lock, Globe, Bell, Palette } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, isPending: sessionLoading } = useSession();
   const [loading, setLoading] = useState(false);
+
+  if (sessionLoading) {
+    return (
+      <div className="container py-8 md:py-10 max-w-3xl">
+        <Skeleton className="h-8 w-32 mb-2" />
+        <Skeleton className="h-4 w-56 mb-8" />
+        <Skeleton className="h-10 w-80 mb-6" />
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-11 w-full" />
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!session?.user) {
     return (

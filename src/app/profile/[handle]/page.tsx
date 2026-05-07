@@ -9,7 +9,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LaunchCard } from "@/components/launch/launch-card";
 import Link from "next/link";
-import { Globe, MessageSquare, ExternalLink, Rocket, Mail, Calendar } from "lucide-react";
+import { Globe, ExternalLink, Rocket, Mail, Calendar } from "lucide-react";
+import { MessageButton } from "@/components/message-button";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export default async function ProfilePage({
   params,
@@ -17,6 +20,7 @@ export default async function ProfilePage({
   params: Promise<{ handle: string }>;
 }) {
   const { handle } = await params;
+  const session = await auth.api.getSession({ headers: await headers() });
 
   const userData = await db.query.user.findFirst({
     where: eq(user.id, handle),
@@ -55,12 +59,9 @@ export default async function ProfilePage({
                 {userData.email}
               </p>
             </div>
-            <Button variant="outline" size="sm" asChild className="rounded-lg h-9">
-              <Link href={`/messages?to=${userData.id}`}>
-                <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
-                Message
-              </Link>
-            </Button>
+            {session?.user?.id !== userData.id && (
+              <MessageButton userId={userData.id} variant="outline" label="Message" />
+            )}
           </div>
 
           {userData.profile?.bio && (

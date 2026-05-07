@@ -52,7 +52,12 @@ export async function getLaunches({
         filter === "trending" ? desc(launch.upvoteCount) : desc(launch.createdAt)
       );
       return allResults.filter((r) => {
-        const cats = JSON.parse(r.categories || "[]");
+        let cats = [];
+        try {
+          cats = JSON.parse(r.categories || "[]");
+        } catch {
+          cats = [];
+        }
         return cats.some((c: any) => c.slug === categorySlug);
       });
     }

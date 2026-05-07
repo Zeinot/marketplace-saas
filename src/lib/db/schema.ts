@@ -194,6 +194,47 @@ export const upvote = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.launchId] })]
 );
 
+export const post = pgTable("post", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  launchId: integer("launch_id").references(() => launch.id, { onDelete: "cascade" }),
+  upvoteCount: integer("upvote_count").notNull().default(0),
+  commentCount: integer("comment_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const postUpvote = pgTable(
+  "post_upvote",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    postId: integer("post_id")
+      .notNull()
+      .references(() => post.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.postId] })]
+);
+
+export const postComment = pgTable("post_comment", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id")
+    .notNull()
+    .references(() => post.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const comment = pgTable("comment", {
   id: serial("id").primaryKey(),
   launchId: integer("launch_id")
@@ -237,7 +278,9 @@ export const message = pgTable("message", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
+  isDeleted: boolean("is_deleted").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const notification = pgTable("notification", {
@@ -258,8 +301,11 @@ export const notification = pgTable("notification", {
 export const userRelations = relations(user, ({ one, many }) => ({
   profile: one(profile, { fields: [user.id], references: [profile.id] }),
   launches: many(launch),
+  posts: many(post),
   upvotes: many(upvote),
+  postUpvotes: many(postUpvote),
   comments: many(comment),
+  postComments: many(postComment),
   messages: many(message),
   notifications: many(notification),
   subscriptions: one(subscription, { fields: [user.id], references: [subscription.userId] }),
@@ -272,6 +318,24 @@ export const launchRelations = relations(launch, ({ one, many }) => ({
   categories: many(launchCategory),
   upvotes: many(upvote),
   comments: many(comment),
+  posts: many(post),
+}));
+
+export const postRelations = relations(post, ({ one, many }) => ({
+  user: one(user, { fields: [post.userId], references: [user.id] }),
+  launch: one(launch, { fields: [post.launchId], references: [launch.id] }),
+  upvotes: many(postUpvote),
+  comments: many(postComment),
+}));
+
+export const postUpvoteRelations = relations(postUpvote, ({ one }) => ({
+  user: one(user, { fields: [postUpvote.userId], references: [user.id] }),
+  post: one(post, { fields: [postUpvote.postId], references: [post.id] }),
+}));
+
+export const postCommentRelations = relations(postComment, ({ one }) => ({
+  user: one(user, { fields: [postComment.userId], references: [user.id] }),
+  post: one(post, { fields: [postComment.postId], references: [post.id] }),
 }));
 
 export const commentRelations = relations(comment, ({ one }) => ({

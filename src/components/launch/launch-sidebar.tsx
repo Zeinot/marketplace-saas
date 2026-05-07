@@ -1,8 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowBigUp, MessageSquare, Calendar, User, ExternalLink, DollarSign } from "lucide-react";
+import { toggleUpvote } from "@/lib/actions/launch";
+import { MessageButton } from "@/components/message-button";
+import { toast } from "sonner";
 
 interface LaunchSidebarProps {
   launch: {
@@ -19,15 +26,46 @@ interface LaunchSidebarProps {
 }
 
 export function LaunchSidebar({ launch, maker }: LaunchSidebarProps) {
+  const { data: session, isPending } = useSession();
+  const [upvotes, setUpvotes] = useState(launch.upvoteCount);
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleUpvote() {
+    if (isPending) return;
+    if (!session?.user) {
+      toast.error("Sign in to upvote");
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await toggleUpvote(launch.id, session.user.id);
+      setUpvotes((prev) => (result.upvoted ? prev + 1 : prev - 1));
+      setHasUpvoted(result.upvoted);
+      if (result.upvoted) toast.success("Upvoted!");
+    } catch {
+      toast.error("Failed to upvote");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="space-y-5 sticky top-24">
       {/* Actions Card */}
       <Card className="border-border/50">
         <CardContent className="p-5 space-y-3">
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="flex-1 flex-col items-center gap-0.5 h-auto py-3 rounded-xl border-border/60 hover:bg-muted/50">
+            <Button
+              variant="outline"
+              className={`flex-1 flex-col items-center gap-0.5 h-auto py-3 rounded-xl border-border/60 hover:bg-muted/50 ${
+                hasUpvoted ? "bg-primary/10 border-primary/30 text-primary" : ""
+              }`}
+              onClick={handleUpvote}
+              disabled={loading}
+            >
               <ArrowBigUp className="h-5 w-5" />
-              <span className="text-xs font-semibold tabular-nums">{launch.upvoteCount}</span>
+              <span className="text-xs font-semibold tabular-nums">{upvotes}</span>
             </Button>
             <div className="flex-1 flex flex-col items-center gap-0.5 py-3 rounded-xl border border-border/60 bg-muted/50">
               <MessageSquare className="h-5 w-5 text-muted-foreground" />
@@ -51,13 +89,13 @@ export function LaunchSidebar({ launch, maker }: LaunchSidebarProps) {
               </a>
             </Button>
           )}
-          {launch.isForSale && (
-            <Button variant="secondary" asChild className="w-full rounded-xl h-11">
-              <Link href={`/messages?to=${maker?.id}`}>
-                <DollarSign className="mr-2 h-4 w-4" />
-                Contact Seller
-              </Link>
-            </Button>
+          {maker && session?.user?.id !== maker.id && (
+            <MessageButton
+              userId={maker.id}
+              variant="full"
+              label={launch.isForSale ? "Contact Seller" : "Message Maker"}
+              className="w-full rounded-xl h-11"
+            />
           )}
         </CardContent>
       </Card>

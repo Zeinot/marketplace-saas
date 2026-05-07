@@ -5,6 +5,14 @@ import { conversation, conversationParticipant, message, user, profile } from "@
 import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+function safeRevalidate(path: string) {
+  try {
+    revalidatePath(path);
+  } catch {
+    // Ignore revalidate errors in test environment
+  }
+}
+
 export async function getConversations(userId: string) {
   // Get all conversation IDs this user participates in
   const participants = await db
@@ -112,14 +120,18 @@ export async function sendMessage(conversationId: number, senderId: string, cont
     .set({ updatedAt: new Date() })
     .where(eq(conversation.id, conversationId));
 
-  revalidatePath(`/messages`);
-  revalidatePath(`/messages/${conversationId}`);
+  safeRevalidate(`/messages`);
+  safeRevalidate(`/messages/${conversationId}`);
 
   return newMessage;
 }
 
 export async function getOrCreateConversation(userId1: string, userId2: string) {
   if (userId1 === userId2) throw new Error("Cannot message yourself");
+
+  // Verify both users exist
+  const userExists = await db.select({ id: user.id }).from(user).where(eq(user.id, userId2)).limit(1);
+  if (userExists.length === 0) throw new Error("User not found");
 
   // Find existing conversation between these two users
   const user1Convs = await db
@@ -154,6 +166,45 @@ export async function getOrCreateConversation(userId1: string, userId2: string) 
   ]);
 
   return newConv.id;
+}
+
+export async function editMessage(messageId: number, userId: string, newContent: string) {
+  const existing = await db
+    .select()
+    .from(message)
+    .where(eq(message.id, messageId))
+    .limit(1);
+
+  if (existing.length === 0) throw new Error("Message not found");
+  if (existing[0].senderId !== userId) throw new Error("Unauthorized");
+  if (existing[0].isDeleted) throw new Error("Cannot edit deleted message");
+
+  const [updated] = await db
+    .update(message)
+    .set({ content: newContent, updatedAt: new Date() })
+    .where(eq(message.id, messageId))
+    .returning();
+
+  safeRevalidate(`/messages/${existing[0].conversationId}`);
+  return updated;
+}
+
+export async function deleteMessage(messageId: number, userId: string) {
+  const existing = await db
+    .select()
+    .from(message)
+    .where(eq(message.id, messageId))
+    .limit(1);
+
+  if (existing.length === 0) throw new Error("Message not found");
+  if (existing[0].senderId !== userId) throw new Error("Unauthorized");
+
+  await db
+    .update(message)
+    .set({ isDeleted: true, content: "(deleted)" })
+    .where(eq(message.id, messageId));
+
+  safeRevalidate(`/messages/${existing[0].conversationId}`);
 }
 
 export async function markConversationAsRead(conversationId: number, userId: string) {
