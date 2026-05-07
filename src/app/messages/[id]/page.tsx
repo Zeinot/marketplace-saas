@@ -224,12 +224,31 @@ export default function ConversationPage({
   const editMutation = useMutation({
     mutationFn: async () => {
       if (!editingMessageId || !session?.user || !editContent.trim()) return;
-      await editMessage(editingMessageId, session.user.id, editContent.trim());
+      return editMessage(editingMessageId, session.user.id, editContent.trim());
     },
-    onSuccess: () => {
+    onSuccess: (updatedMessage) => {
       setEditingMessageId(null);
       setEditContent("");
-      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+      if (!updatedMessage) return;
+      // Patch the cache directly instead of invalidating — avoids a full refetch
+      // that would reset the infinite query page count and disrupt scroll position.
+      queryClient.setQueryData(
+        ["messages", conversationId],
+        (old: { pages: Array<{ messages: Array<{ message: typeof updatedMessage; sender: { id: string; name: string | null } | null }> }> } | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              messages: page.messages.map((m) =>
+                m.message.id === updatedMessage.id
+                  ? { ...m, message: updatedMessage }
+                  : m
+              ),
+            })),
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to edit message");
