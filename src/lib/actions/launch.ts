@@ -135,6 +135,43 @@ export async function addComment(launchId: number, userId: string, content: stri
   revalidatePath(`/launch/${launchId}`);
 }
 
+export async function editComment(commentId: number, userId: string, content: string) {
+  const existing = await db
+    .select()
+    .from(comment)
+    .where(eq(comment.id, commentId))
+    .limit(1);
+
+  if (existing.length === 0) throw new Error("Comment not found");
+  if (existing[0].userId !== userId) throw new Error("Unauthorized");
+
+  await db
+    .update(comment)
+    .set({ content, updatedAt: new Date() })
+    .where(eq(comment.id, commentId));
+
+  revalidatePath(`/launch/${existing[0].launchId}`);
+}
+
+export async function deleteComment(commentId: number, userId: string) {
+  const existing = await db
+    .select()
+    .from(comment)
+    .where(eq(comment.id, commentId))
+    .limit(1);
+
+  if (existing.length === 0) throw new Error("Comment not found");
+  if (existing[0].userId !== userId) throw new Error("Unauthorized");
+
+  await db.delete(comment).where(eq(comment.id, commentId));
+  await db
+    .update(launch)
+    .set({ commentCount: sql`${launch.commentCount} - 1` })
+    .where(eq(launch.id, existing[0].launchId));
+
+  revalidatePath(`/launch/${existing[0].launchId}`);
+}
+
 export async function getCategories() {
   return db.select().from(category).orderBy(category.name);
 }
