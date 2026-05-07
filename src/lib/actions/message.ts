@@ -59,10 +59,11 @@ export async function getConversations(userId: string) {
             .where(
               and(
                 eq(message.conversationId, convId),
-                sql`${message.createdAt} > ${participantRow.lastReadAt}`
+                sql`${message.createdAt} > ${participantRow.lastReadAt}`,
+                sql`${message.senderId} != ${userId}`
               )
             )
-        : [{ count: lastMessage.length }];
+        : [{ count: lastMessage.filter((m) => m.senderId !== userId).length }];
 
       return {
         id: convId,
