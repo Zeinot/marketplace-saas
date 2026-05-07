@@ -32,7 +32,9 @@ export default function ConversationPage({
   const [messageContent, setMessageContent] = useState("");
   const [conversationId, setConversationId] = useState<number | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [isAtBottom, setIsAtBottom] = useState(true);
+  // Tracks whether the user is near the bottom. Using a ref (not state) so the
+  // auto-scroll effect always reads the current value, never a stale render snapshot.
+  const isAtBottomRef = useRef(true);
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -151,7 +153,7 @@ export default function ConversationPage({
     const threshold = 100;
     const isBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
-    setIsAtBottom(isBottom);
+    isAtBottomRef.current = isBottom;
     if (isBottom) setHasNewMessages(false);
   }, []);
 
@@ -167,15 +169,17 @@ export default function ConversationPage({
     lastMessageIdRef.current = lastId;
     if (userJustSent) justSentMessageRef.current = false;
 
-    // Only auto-scroll for new bottom messages, not when prepending older ones
+    // Only auto-scroll for new bottom messages, not when prepending older ones.
+    // Use the ref (not state) so we read the current scroll position even if
+    // the React state update from the scroll event hasn't flushed yet.
     if (isNewMessage && !isFetchingOlderRef.current) {
-      if (isAtBottom || userJustSent) {
+      if (isAtBottomRef.current || userJustSent) {
         scrollToBottom("smooth");
       } else {
         setHasNewMessages(true);
       }
     }
-  }, [messages, isAtBottom, scrollToBottom]);
+  }, [messages, scrollToBottom]);
 
   // IntersectionObserver — watches the top sentinel to load older messages.
   // Only active after the initial scroll-to-bottom has completed.
@@ -210,7 +214,7 @@ export default function ConversationPage({
       setMessageContent("");
       queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
       queryClient.invalidateQueries({ queryKey: ["conversations", session?.user?.id] });
-      setIsAtBottom(true);
+      isAtBottomRef.current = true;
     },
     onError: () => {
       toast.error("Failed to send message");
@@ -587,7 +591,7 @@ export default function ConversationPage({
               onClick={() => {
                 scrollToBottom("smooth");
                 setHasNewMessages(false);
-                setIsAtBottom(true);
+                isAtBottomRef.current = true;
               }}
             >
               <ChevronDown className="h-4 w-4" />
