@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import { getLaunchBySlug, getLaunchComments } from "@/lib/actions/launch";
 import { LaunchDetail } from "@/components/launch/launch-detail";

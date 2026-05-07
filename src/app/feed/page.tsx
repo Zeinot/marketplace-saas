@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getLaunches, getCategories } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { CategoryFilter } from "@/components/launch/category-filter";

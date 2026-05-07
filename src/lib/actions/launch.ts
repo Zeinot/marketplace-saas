@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { launch, upvote, comment, launchCategory, category, launchImage, user, profile } from "@/lib/db/schema";
 import { eq, desc, and, sql, ilike, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "./notification";
 
 export async function getLaunches({
   filter = "latest",
@@ -122,16 +123,41 @@ export async function toggleUpvote(launchId: number, userId: string) {
       .update(launch)
       .set({ upvoteCount: sql`${launch.upvoteCount} + 1` })
       .where(eq(launch.id, launchId));
+
+    // Create notification for launch maker
+    const launchData = await db.select({ makerId: launch.makerId }).from(launch).where(eq(launch.id, launchId)).limit(1);
+    if (launchData[0]?.makerId && launchData[0].makerId !== userId) {
+      await createNotification({
+        userId: launchData[0].makerId,
+        type: "upvote",
+        actorId: userId,
+        launchId,
+      });
+    }
+
     return { upvoted: true };
   }
 }
 
 export async function addComment(launchId: number, userId: string, content: string) {
-  await db.insert(comment).values({ launchId, userId, content });
+  const [newComment] = await db.insert(comment).values({ launchId, userId, content }).returning();
   await db
     .update(launch)
     .set({ commentCount: sql`${launch.commentCount} + 1` })
     .where(eq(launch.id, launchId));
+
+  // Create notification for launch maker
+  const launchData = await db.select({ makerId: launch.makerId }).from(launch).where(eq(launch.id, launchId)).limit(1);
+  if (launchData[0]?.makerId && launchData[0].makerId !== userId) {
+    await createNotification({
+      userId: launchData[0].makerId,
+      type: "comment",
+      actorId: userId,
+      launchId,
+      commentId: newComment.id,
+    });
+  }
+
   revalidatePath(`/launch/${launchId}`);
 }
 

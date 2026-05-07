@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getLaunches } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { Button } from "@/components/ui/button";

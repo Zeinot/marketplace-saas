@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -17,6 +18,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { getUnreadCount } from "@/lib/actions/notification";
+import { getConversations } from "@/lib/actions/message";
 
 const navLinks = [
   { href: "/feed", label: "Feed" },
@@ -28,6 +31,22 @@ export function Navbar() {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  const { data: unreadNotifications = 0 } = useQuery({
+    queryKey: ["unread-notifications", session?.user?.id],
+    queryFn: () => (session?.user ? getUnreadCount(session.user.id) : 0),
+    enabled: !!session?.user,
+    refetchInterval: 5000,
+  });
+
+  const { data: conversations = [] } = useQuery({
+    queryKey: ["conversations", session?.user?.id],
+    queryFn: () => (session?.user ? getConversations(session.user.id) : []),
+    enabled: !!session?.user,
+    refetchInterval: 5000,
+  });
+
+  const unreadMessages = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -62,14 +81,24 @@ export function Navbar() {
 
           {session?.user ? (
             <>
-              <Link href="/messages" className="hidden md:flex">
+              <Link href="/messages" className="hidden md:flex relative">
                 <Button variant="ghost" size="icon" className="rounded-lg">
                   <MessageSquare className="h-[18px] w-[18px]" />
+                  {unreadMessages > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 h-4.5 min-w-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center px-1">
+                      {unreadMessages > 99 ? "99+" : unreadMessages}
+                    </span>
+                  )}
                 </Button>
               </Link>
-              <Link href="/notifications" className="hidden md:flex">
+              <Link href="/notifications" className="hidden md:flex relative">
                 <Button variant="ghost" size="icon" className="rounded-lg">
                   <Bell className="h-[18px] w-[18px]" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 h-4.5 min-w-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center px-1">
+                      {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                    </span>
+                  )}
                 </Button>
               </Link>
               <DropdownMenu>
@@ -221,7 +250,14 @@ export function Navbar() {
                               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                           )}
                         >
-                          <MessageSquare className="h-4 w-4 shrink-0" />
+                          <div className="relative">
+                            <MessageSquare className="h-4 w-4 shrink-0" />
+                            {unreadMessages > 0 && (
+                              <span className="absolute -top-1.5 -right-1.5 h-3.5 min-w-[14px] rounded-full bg-primary text-primary-foreground text-[8px] font-semibold flex items-center justify-center px-1">
+                                {unreadMessages > 99 ? "99+" : unreadMessages}
+                              </span>
+                            )}
+                          </div>
                           Messages
                         </Link>
                         <Link
@@ -234,7 +270,14 @@ export function Navbar() {
                               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                           )}
                         >
-                          <Bell className="h-4 w-4 shrink-0" />
+                          <div className="relative">
+                            <Bell className="h-4 w-4 shrink-0" />
+                            {unreadNotifications > 0 && (
+                              <span className="absolute -top-1.5 -right-1.5 h-3.5 min-w-[14px] rounded-full bg-primary text-primary-foreground text-[8px] font-semibold flex items-center justify-center px-1">
+                                {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                              </span>
+                            )}
+                          </div>
                           Notifications
                         </Link>
                         <Link
