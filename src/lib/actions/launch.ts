@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { launch, upvote, comment, launchCategory, category, launchImage, user, profile } from "@/lib/db/schema";
-import { eq, desc, and, sql, ilike, or } from "drizzle-orm";
+import { eq, desc, asc, and, sql, ilike, or, gte, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notification";
 
@@ -10,10 +10,20 @@ export async function getLaunches({
   filter = "latest",
   categorySlug,
   search,
+  sort,
+  mrrMin,
+  mrrMax,
+  priceMin,
+  priceMax,
 }: {
   filter?: "latest" | "trending" | "marketplace";
   categorySlug?: string;
   search?: string;
+  sort?: "newest" | "most_upvoted" | "price_asc" | "price_desc" | "mrr_desc";
+  mrrMin?: number;
+  mrrMax?: number;
+  priceMin?: number;
+  priceMax?: number;
 } = {}) {
   let conditions = [];
 
@@ -26,6 +36,19 @@ export async function getLaunches({
       ilike(launch.title, `%${search}%`),
       ilike(launch.tagline, `%${search}%`)
     ));
+  }
+
+  if (mrrMin !== undefined) {
+    conditions.push(gte(launch.monthlyRecurringRevenue, mrrMin));
+  }
+  if (mrrMax !== undefined) {
+    conditions.push(lte(launch.monthlyRecurringRevenue, mrrMax));
+  }
+  if (priceMin !== undefined) {
+    conditions.push(gte(launch.askingPrice, priceMin));
+  }
+  if (priceMax !== undefined) {
+    conditions.push(lte(launch.askingPrice, priceMax));
   }
 
   let query = db
@@ -44,13 +67,29 @@ export async function getLaunches({
     query = query.where(and(...conditions)) as typeof query;
   }
 
+  let orderBy;
+  switch (sort) {
+    case "most_upvoted":
+      orderBy = desc(launch.upvoteCount);
+      break;
+    case "price_asc":
+      orderBy = asc(launch.askingPrice);
+      break;
+    case "price_desc":
+      orderBy = desc(launch.askingPrice);
+      break;
+    case "mrr_desc":
+      orderBy = desc(launch.monthlyRecurringRevenue);
+      break;
+    case "newest":
+    default:
+      orderBy = desc(launch.createdAt);
+  }
+
   if (categorySlug) {
     const cat = await db.select().from(category).where(eq(category.slug, categorySlug)).limit(1);
     if (cat.length > 0) {
-      // Need to filter by category in HAVING or subquery - simplified approach
-      const allResults = await query.orderBy(
-        filter === "trending" ? desc(launch.upvoteCount) : desc(launch.createdAt)
-      );
+      const allResults = await query.orderBy(orderBy);
       return allResults.filter((r) => {
         let cats = [];
         try {
@@ -63,10 +102,7 @@ export async function getLaunches({
     }
   }
 
-  const results = await query.orderBy(
-    filter === "trending" ? desc(launch.upvoteCount) : desc(launch.createdAt)
-  );
-
+  const results = await query.orderBy(orderBy);
   return results;
 }
 

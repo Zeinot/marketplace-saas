@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { launch, launchCategory } from "@/lib/db/schema";
+import { launch, launchCategory, post } from "@/lib/db/schema";
 import { canCreateLaunch, checkFeatureAccess } from "@/lib/subscription";
 import { eq } from "drizzle-orm";
 import { saveFile } from "@/lib/upload";
@@ -91,6 +91,13 @@ export async function POST(req: NextRequest) {
       logoUrl,
     })
     .returning();
+
+  // Create a feed post for this launch
+  await db.insert(post).values({
+    userId: session.user.id,
+    content: `🚀 Just launched ${title} — ${tagline}`,
+    launchId: newLaunch.id,
+  });
 
   return NextResponse.json({ success: true, slug: finalSlug, launch: newLaunch });
 }

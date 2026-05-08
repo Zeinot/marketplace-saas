@@ -4,17 +4,36 @@ import { getPosts } from "@/lib/actions/post";
 import { PostCard } from "@/components/feed/post-card";
 import { PostForm } from "@/components/feed/post-form";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plus, MessageSquare } from "lucide-react";
+import { Plus, MessageSquare, Search, X } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { FeedFilters } from "@/components/feed/feed-filters";
 
-export default async function FeedPage() {
-  const posts = await getPosts();
+interface FeedPageProps {
+  searchParams: Promise<{
+    search?: string;
+    sort?: string;
+    type?: string;
+  }>;
+}
+
+export default async function FeedPage({ searchParams }: FeedPageProps) {
+  const params = await searchParams;
+  
+  const search = params.search;
+  const sort = (params.sort as any) || "newest";
+  const type = (params.type as any) || "all";
+
+  const posts = await getPosts({ search, sort, type });
   const session = await auth.api.getSession({ headers: await headers() });
+
+  const activeFiltersCount = [search, sort !== "newest" ? sort : undefined, type !== "all" ? type : undefined].filter(Boolean).length;
 
   return (
     <div className="container py-8 md:py-10 max-w-2xl">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
@@ -33,6 +52,40 @@ export default async function FeedPage() {
         </Button>
       </div>
 
+      {/* Search & Filters */}
+      <div className="space-y-4 mb-6">
+        <div className="flex gap-3">
+          <form className="flex-1 flex gap-3" action="/feed" method="GET">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                name="search"
+                placeholder="Search posts..."
+                defaultValue={search}
+                className="pl-9 h-11 rounded-lg"
+              />
+              {search && (
+                <Link
+                  href="/feed"
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                </Link>
+              )}
+            </div>
+            {/* Preserve other params */}
+            {sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
+            {type !== "all" && <input type="hidden" name="type" value={type} />}
+          </form>
+        </div>
+
+        <FeedFilters
+          activeSort={sort}
+          activeType={type}
+          activeFiltersCount={activeFiltersCount}
+        />
+      </div>
+
       {session?.user && <PostForm userId={session.user.id} />}
 
       <div className="space-y-4">
@@ -41,6 +94,7 @@ export default async function FeedPage() {
             key={item.post.id}
             post={item.post}
             user={item.user}
+            launch={item.launch?.id ? item.launch : null}
           />
         ))}
       </div>
@@ -50,8 +104,17 @@ export default async function FeedPage() {
           <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
             <MessageSquare className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold mb-1">No posts yet</h3>
-          <p className="text-muted-foreground text-sm mb-4">Be the first to share something!</p>
+          <h3 className="text-lg font-semibold mb-1">No posts found</h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            {activeFiltersCount > 0
+              ? "Try adjusting your filters"
+              : "Be the first to share something!"}
+          </p>
+          {activeFiltersCount > 0 && (
+            <Button asChild variant="outline">
+              <Link href="/feed">Clear all filters</Link>
+            </Button>
+          )}
         </div>
       )}
     </div>
