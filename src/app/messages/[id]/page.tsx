@@ -502,33 +502,56 @@ export default function ConversationPage({
                           )}
                         >
                           {editingMessageId === item.message.id ? (
-                            <div className="space-y-2">
-                              <Textarea
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                className="min-h-[60px] resize-none text-sm"
-                                autoFocus
-                              />
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  className="h-7 text-xs"
-                                  onClick={() => editMutation.mutate()}
-                                  disabled={!editContent.trim()}
-                                >
-                                  Save
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-7 text-xs"
-                                  onClick={() => {
-                                    setEditingMessageId(null);
-                                    setEditContent("");
+                            <div className="space-y-3 w-full min-w-[240px]">
+                              <div className="relative">
+                                <Textarea
+                                  value={editContent}
+                                  onChange={(e) => setEditContent(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" && !e.shiftKey) {
+                                      e.preventDefault();
+                                      if (editContent.trim()) {
+                                        editMutation.mutate();
+                                      }
+                                    }
+                                    if (e.key === "Escape") {
+                                      setEditingMessageId(null);
+                                      setEditContent("");
+                                    }
                                   }}
-                                >
-                                  Cancel
-                                </Button>
+                                  className="min-h-[80px] resize-none text-sm bg-background/50 border-border/50 focus:bg-background transition-colors pr-8"
+                                  autoFocus
+                                  placeholder="Edit your message..."
+                                />
+                                <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground">
+                                  {editContent.length > 0 && `${editContent.length} chars`}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-muted-foreground">
+                                  Press Enter to save, Escape to cancel
+                                </span>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 px-3 text-xs"
+                                    onClick={() => {
+                                      setEditingMessageId(null);
+                                      setEditContent("");
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    className="h-8 px-3 text-xs"
+                                    onClick={() => editMutation.mutate()}
+                                    disabled={!editContent.trim()}
+                                  >
+                                    Save Changes
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           ) : (
