@@ -110,7 +110,7 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
             className={cn(
               "shrink-0 flex flex-col items-center gap-0 h-auto py-1.5 px-2 rounded-xl border-border/60 transition-colors",
               hasUpvoted
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 dark:bg-indigo-600 dark:text-white dark:border-indigo-500 dark:hover:bg-indigo-500"
                 : "hover:bg-primary hover:text-primary-foreground hover:border-primary",
               upvoteMutation.isPending && "opacity-70"
             )}

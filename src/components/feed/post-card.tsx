@@ -231,7 +231,7 @@ export function PostCard({ post: postData, user: postUser }: PostCardProps) {
                   size="sm"
                   className={cn(
                     "h-8 gap-1.5",
-                    hasUpvoted ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    hasUpvoted ? "text-primary dark:bg-indigo-600/20 dark:text-indigo-400" : "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={handleUpvote}
                 >
