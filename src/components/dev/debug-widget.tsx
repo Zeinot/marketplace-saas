@@ -179,7 +179,7 @@ export function DevDebugWidget() {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-5 px-4">
           {/* Current User */}
           {session?.user ? (
             <div className="rounded-xl border border-border/50 p-4 space-y-3 bg-card">

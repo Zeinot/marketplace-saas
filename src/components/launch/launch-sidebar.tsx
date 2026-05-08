@@ -59,7 +59,7 @@ export function LaunchSidebar({ launch, maker }: LaunchSidebarProps) {
             <Button
               variant="outline"
               className={`flex-1 flex-col items-center gap-0.5 h-auto py-3 rounded-xl border-border/60 hover:bg-muted/50 ${
-                hasUpvoted ? "bg-primary/10 border-primary/30 text-primary" : ""
+                hasUpvoted ? "bg-primary/10 border-primary/30 text-primary dark:bg-indigo-600/20 dark:border-indigo-500/40 dark:text-indigo-400" : ""
               }`}
               onClick={handleUpvote}
               disabled={loading}

@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { post, user, postUpvote, postComment } from "@/lib/db/schema";
-import { desc, eq, and, sql } from "drizzle-orm";
+import { post, user, postUpvote, postComment, launch } from "@/lib/db/schema";
+import { desc, eq, and, sql, ilike, isNull, isNotNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function safeRevalidate(path: string) {
@@ -13,16 +13,63 @@ function safeRevalidate(path: string) {
   }
 }
 
-export async function getPosts() {
-  const results = await db
+export async function getPosts({
+  search,
+  sort,
+  type,
+}: {
+  search?: string;
+  sort?: "newest" | "most_upvoted" | "most_discussed";
+  type?: "all" | "launches" | "posts";
+} = {}) {
+  let conditions = [];
+
+  if (search) {
+    conditions.push(ilike(post.content, `%${search}%`));
+  }
+
+  if (type === "launches") {
+    conditions.push(isNotNull(post.launchId));
+  } else if (type === "posts") {
+    conditions.push(isNull(post.launchId));
+  }
+
+  let query = db
     .select({
       post,
       user: { id: user.id, name: user.name, email: user.email, image: user.image },
+      launch: {
+        id: launch.id,
+        slug: launch.slug,
+        title: launch.title,
+        tagline: launch.tagline,
+        logoUrl: launch.logoUrl,
+        upvoteCount: launch.upvoteCount,
+        commentCount: launch.commentCount,
+      },
     })
     .from(post)
     .leftJoin(user, eq(post.userId, user.id))
-    .orderBy(desc(post.createdAt));
+    .leftJoin(launch, eq(post.launchId, launch.id));
 
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as typeof query;
+  }
+
+  let orderBy;
+  switch (sort) {
+    case "most_upvoted":
+      orderBy = desc(post.upvoteCount);
+      break;
+    case "most_discussed":
+      orderBy = desc(post.commentCount);
+      break;
+    case "newest":
+    default:
+      orderBy = desc(post.createdAt);
+  }
+
+  const results = await query.orderBy(orderBy);
   return results;
 }
 

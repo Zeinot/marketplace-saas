@@ -53,7 +53,7 @@ export function MobileLaunchActions({ launch, maker }: MobileLaunchActionsProps)
         size="sm"
         className={cn(
           "flex items-center gap-1.5 h-10 rounded-xl",
-          hasUpvoted && "bg-primary text-primary-foreground border-primary",
+          hasUpvoted && "bg-primary text-primary-foreground border-primary dark:bg-indigo-600 dark:text-white dark:border-indigo-500",
           loading && "opacity-70"
         )}
         onClick={handleUpvote}

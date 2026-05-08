@@ -46,6 +46,9 @@ screenshots/
 # docker volumes
 postgres_data/
 
+# uploaded files
+/public/uploads/
+
 # IDE
 .vscode/
 .idea/

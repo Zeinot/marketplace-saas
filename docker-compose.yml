@@ -32,7 +32,6 @@ services:
       - BETTER_AUTH_SECRET=dev-secret-key-do-not-use-in-production
       - BETTER_AUTH_URL=http://localhost:3000
       - RESEND_API_KEY=dev-resend-key
-      - UPLOADTHING_TOKEN=dev-uploadthing-token
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=1
       - WATCHPACK_POLLING=true

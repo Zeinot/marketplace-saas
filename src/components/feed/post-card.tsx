@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowBigUp, MessageSquare, Trash2, Pencil, X, Check, Send } from "lucide-react";
+import { ArrowBigUp, MessageSquare, Trash2, Pencil, X, Check, Send, Rocket, ArrowUpRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
@@ -35,9 +35,18 @@ interface PostCardProps {
     updatedAt: Date | null;
   };
   user: { id: string; name: string | null; email: string; image: string | null } | null;
+  launch?: {
+    id: number;
+    slug: string;
+    title: string;
+    tagline: string;
+    logoUrl: string | null;
+    upvoteCount: number;
+    commentCount: number;
+  } | null;
 }
 
-export function PostCard({ post: postData, user: postUser }: PostCardProps) {
+export function PostCard({ post: postData, user: postUser, launch: launchData }: PostCardProps) {
   const { data: session } = useSession();
   const [deleted, setDeleted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -225,13 +234,49 @@ export function PostCard({ post: postData, user: postUser }: PostCardProps) {
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{postData.content}</p>
               )}
 
+              {/* Launch Preview Card */}
+              {launchData && (
+                <Link href={`/launch/${launchData.slug}`} className="block mt-3">
+                  <div className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/30 transition-colors group">
+                    {launchData.logoUrl ? (
+                      <img
+                        src={launchData.logoUrl}
+                        alt={launchData.title}
+                        className="h-10 w-10 rounded-lg object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Rocket className="h-5 w-5 text-primary" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-sm truncate">{launchData.title}</span>
+                        <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{launchData.tagline}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-muted-foreground flex items-center gap-0.5">
+                          <ArrowBigUp className="h-3 w-3" />
+                          {launchData.upvoteCount}
+                        </span>
+                        <span className="text-xs text-muted-foreground flex items-center gap-0.5">
+                          <MessageSquare className="h-3 w-3" />
+                          {launchData.commentCount}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              )}
+
               <div className="flex items-center gap-1 mt-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   className={cn(
                     "h-8 gap-1.5",
-                    hasUpvoted ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    hasUpvoted ? "text-primary dark:bg-indigo-600/20 dark:text-indigo-400" : "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={handleUpvote}
                 >

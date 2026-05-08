@@ -17,6 +17,7 @@ interface LaunchDetailProps {
     upvoteCount: number;
     commentCount: number;
     createdAt: Date | null;
+    logoUrl: string | null;
   };
   maker: { id: string; name: string | null; email: string } | null;
   categories: Array<{ id: number; name: string; slug: string; color: string }>;
@@ -46,8 +47,26 @@ export function LaunchDetail({ launch, categories, images }: LaunchDetailProps) 
             </Badge>
           )}
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{launch.title}</h1>
-        <p className="text-lg text-muted-foreground mt-3 leading-relaxed">{launch.tagline}</p>
+        <div className="flex items-center gap-4">
+          {launch.logoUrl ? (
+            <Image
+              src={launch.logoUrl}
+              alt={`${launch.title} logo`}
+              width={64}
+              height={64}
+              className="rounded-xl object-cover"
+              unoptimized
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-xl bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground">
+              {launch.title.slice(0, 2).toUpperCase()}
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{launch.title}</h1>
+            <p className="text-lg text-muted-foreground mt-1 leading-relaxed">{launch.tagline}</p>
+          </div>
+        </div>
       </header>
 
       {/* Images */}

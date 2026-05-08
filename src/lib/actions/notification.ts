@@ -71,6 +71,11 @@ export async function createNotification({
   commentId?: number;
   messageId?: number;
 }) {
+  // Don't create self-notifications
+  if (actorId && actorId === userId) {
+    return;
+  }
+
   await db.insert(notification).values({
     userId,
     type,

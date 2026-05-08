@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowBigUp, MessageSquare, DollarSign } from "lucide-react";
+import { ArrowBigUp, MessageSquare, DollarSign, ExternalLink } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleUpvote } from "@/lib/actions/launch";
 import { useSession } from "@/lib/auth-client";
@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { MessageButton } from "@/components/message-button";
+import { getInitialsLogo, resolveFavicon } from "@/lib/favicon";
+import Image from "next/image";
 
 interface LaunchCardProps {
   launch: {
@@ -25,6 +27,7 @@ interface LaunchCardProps {
     isForSale: boolean;
     askingPrice: number | null;
     createdAt: Date | null;
+    logoUrl: string | null;
   };
   maker: { id: string; name: string | null; email: string } | null;
   categories: Array<{ id: number; name: string; slug: string; color: string }>;
@@ -74,13 +77,32 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
     <Card className="group flex flex-col h-full border-border/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <Link href={`/launch/${launch.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
-              <h3 className="font-semibold text-base leading-snug group-hover:text-primary transition-colors line-clamp-1">
-                {launch.title}
-              </h3>
-            </Link>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{launch.tagline}</p>
+          <div className="flex gap-3 flex-1 min-w-0">
+            {/* Logo */}
+            <div className="shrink-0">
+              {launch.logoUrl ? (
+                <Image
+                  src={launch.logoUrl}
+                  alt={`${launch.title} logo`}
+                  width={40}
+                  height={40}
+                  className="rounded-lg object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
+                  {getInitialsLogo(launch.title)}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <Link href={`/launch/${launch.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
+                <h3 className="font-semibold text-base leading-snug group-hover:text-primary transition-colors line-clamp-1">
+                  {launch.title}
+                </h3>
+              </Link>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{launch.tagline}</p>
+            </div>
           </div>
           <Button
             variant="outline"
@@ -88,7 +110,7 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
             className={cn(
               "shrink-0 flex flex-col items-center gap-0 h-auto py-1.5 px-2 rounded-xl border-border/60 transition-colors",
               hasUpvoted
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 dark:bg-indigo-600 dark:text-white dark:border-indigo-500 dark:hover:bg-indigo-500"
                 : "hover:bg-primary hover:text-primary-foreground hover:border-primary",
               upvoteMutation.isPending && "opacity-70"
             )}
@@ -127,17 +149,22 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
               {maker?.name || "Anonymous"}
             </span>
           </Link>
-          {maker && session?.user?.id !== maker.id && <MessageButton userId={maker.id} variant="compact" />}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <MessageSquare className="h-3.5 w-3.5" />
-              {launch.commentCount}
-            </span>
-            {launch.isForSale && launch.askingPrice && (
-              <span className="font-semibold text-emerald-600 tabular-nums">
-                ${launch.askingPrice.toLocaleString()}
-              </span>
+          
+          <div className="flex items-center gap-2">
+            {maker && session?.user?.id !== maker.id && (
+              <MessageButton userId={maker.id} variant="outline" />
             )}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <MessageSquare className="h-3.5 w-3.5" />
+                {launch.commentCount}
+              </span>
+              {launch.isForSale && launch.askingPrice && (
+                <span className="font-semibold text-emerald-600 tabular-nums">
+                  ${launch.askingPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

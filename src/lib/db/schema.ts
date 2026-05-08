@@ -142,6 +142,7 @@ export const launch = pgTable(
     isForSale: boolean("is_for_sale").notNull().default(false),
     askingPrice: integer("asking_price"),
     monthlyRecurringRevenue: integer("monthly_recurring_revenue"),
+    logoUrl: text("logo_url"),
     isFeatured: boolean("is_featured").notNull().default(false),
     upvoteCount: integer("upvote_count").notNull().default(0),
     commentCount: integer("comment_count").notNull().default(0),
