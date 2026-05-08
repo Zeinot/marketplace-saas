@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/utils";
 import userEvent from "@testing-library/user-event";
-import SignupPage from "./page";
+import { SignupForm } from "@/components/auth/signup-form";
 
 vi.mock("@/lib/auth-client", async () => {
   const actual = await vi.importActual("@/lib/auth-client");
@@ -11,9 +11,9 @@ vi.mock("@/lib/auth-client", async () => {
   };
 });
 
-describe("Signup Page", () => {
+describe("Signup Form", () => {
   it("renders signup form", () => {
-    render(<SignupPage />);
+    render(<SignupForm />);
     expect(screen.getByText(/get started/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe("Signup Page", () => {
   });
 
   it("has link to login page", () => {
-    render(<SignupPage />);
+    render(<SignupForm />);
     const link = screen.getByRole("link", { name: /log in/i });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/login");
@@ -30,7 +30,7 @@ describe("Signup Page", () => {
 
   it("allows typing in form fields", async () => {
     const user = userEvent.setup();
-    render(<SignupPage />);
+    render(<SignupForm />);
 
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email/i);
