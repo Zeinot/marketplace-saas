@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { conversation, conversationParticipant, message, user } from "@/lib/db/schema";
-import { eq, and, desc, sql, lt } from "drizzle-orm";
+import { eq, and, desc, sql, lt, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "./notification";
 
 function safeRevalidate(path: string) {
   try {
@@ -149,6 +150,26 @@ export async function sendMessage(conversationId: number, senderId: string, cont
     .update(conversation)
     .set({ updatedAt: new Date() })
     .where(eq(conversation.id, conversationId));
+
+  // Create notifications for other participants
+  const otherParticipants = await db
+    .select({ userId: conversationParticipant.userId })
+    .from(conversationParticipant)
+    .where(
+      and(
+        eq(conversationParticipant.conversationId, conversationId),
+        ne(conversationParticipant.userId, senderId)
+      )
+    );
+
+  for (const participant of otherParticipants) {
+    await createNotification({
+      userId: participant.userId,
+      type: "message",
+      actorId: senderId,
+      messageId: newMessage.id,
+    });
+  }
 
   safeRevalidate(`/messages`);
   safeRevalidate(`/messages/${conversationId}`);

@@ -9,18 +9,42 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { DollarSign, ArrowRight, Loader2 } from "lucide-react";
+import { DollarSign, ArrowRight, Loader2, Upload, X } from "lucide-react";
 
 export function NewLaunchForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isForSale, setIsForSale] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeLogo() {
+    setLogoFile(null);
+    setLogoPreview(null);
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    
+    // Append logo file if selected
+    if (logoFile) {
+      formData.append("logo", logoFile);
+    }
 
     try {
       const res = await fetch("/api/launches", {
@@ -61,6 +85,45 @@ export function NewLaunchForm() {
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
             <Textarea id="description" name="description" placeholder="Tell us about your product, what problem it solves, and who it's for..." rows={5} required className="rounded-xl resize-none" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="logo">Product Logo</Label>
+            <div className="flex items-center gap-4">
+              {logoPreview ? (
+                <div className="relative group">
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="h-16 w-16 rounded-xl object-cover border"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeLogo}
+                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="h-16 w-16 rounded-xl bg-muted flex items-center justify-center">
+                  <Upload className="h-6 w-6 text-muted-foreground" />
+                </div>
+              )}
+              <div className="flex-1">
+                <Input
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleLogoChange}
+                  className="h-11 rounded-lg cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Recommended: 128x128px or larger. PNG, JPG, or WebP.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">

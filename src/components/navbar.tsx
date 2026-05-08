@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Rocket, MessageSquare, Bell, Menu, User, Settings, LogOut, TrendingUp, DollarSign, Zap } from "lucide-react";
+import { Rocket, MessageSquare, Bell, Menu, User, Settings, LogOut, TrendingUp, DollarSign, Zap, Package } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -139,6 +139,12 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link href="/my-launches" className="cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      My Launches
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link href="/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
@@ -254,6 +260,19 @@ export function Navbar() {
                         >
                           <User className="h-4 w-4 shrink-0" />
                           Profile
+                        </Link>
+                        <Link
+                          href="/my-launches"
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                            pathname === "/my-launches"
+                              ? "text-foreground bg-muted"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <Package className="h-4 w-4 shrink-0" />
+                          My Launches
                         </Link>
                         <Link
                           href="/messages"
