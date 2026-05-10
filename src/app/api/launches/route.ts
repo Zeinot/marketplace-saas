@@ -6,6 +6,7 @@ import { canCreateLaunch, checkFeatureAccess } from "@/lib/subscription";
 import { eq } from "drizzle-orm";
 import { saveFile } from "@/lib/upload";
 import { resolveFavicon } from "@/lib/favicon";
+import { cacheInvalidatePattern } from "@/lib/cache";
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
@@ -98,6 +99,10 @@ export async function POST(req: NextRequest) {
     content: `🚀 Just launched ${title} — ${tagline}`,
     launchId: newLaunch.id,
   });
+
+  // Invalidate caches after creating a new launch
+  await cacheInvalidatePattern("launches:*");
+  await cacheInvalidatePattern("posts:*");
 
   return NextResponse.json({ success: true, slug: finalSlug, launch: newLaunch });
 }

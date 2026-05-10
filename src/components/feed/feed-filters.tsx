@@ -57,7 +57,9 @@ export function FeedFilters({
         <Select
           value={activeSort}
           onValueChange={(value) => {
-            window.location.href = buildUrl({ sort: value });
+            if (value) {
+              window.location.href = buildUrl({ sort: value });
+            }
           }}
         >
           <SelectTrigger className="w-[160px] h-9 rounded-lg text-sm">

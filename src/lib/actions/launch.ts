@@ -1,10 +1,21 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { launch, upvote, comment, launchCategory, category, launchImage, user, profile } from "@/lib/db/schema";
+import { launch, upvote, comment, launchCategory, category, launchImage, user } from "@/lib/db/schema";
 import { eq, desc, asc, and, sql, ilike, or, gte, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notification";
+import {
+  cacheGet,
+  cacheSet,
+  cacheDel,
+  cacheInvalidatePattern,
+  CACHE_TTL,
+  buildLaunchesKey,
+  buildLaunchKey,
+  buildCategoriesKey,
+  buildLaunchCommentsKey,
+} from "@/lib/cache";
 
 export async function getLaunches({
   filter = "latest",
@@ -25,7 +36,28 @@ export async function getLaunches({
   priceMin?: number;
   priceMax?: number;
 } = {}) {
-  let conditions = [];
+  const cacheKey = buildLaunchesKey(
+    filter,
+    sort || "newest",
+    categorySlug,
+    search,
+    mrrMin !== undefined && mrrMax !== undefined ? `${mrrMin}-${mrrMax}` : undefined,
+    priceMin !== undefined && priceMax !== undefined ? `${priceMin}-${priceMax}` : undefined
+  );
+
+  const cached = await cacheGet<
+    Array<{
+      launch: typeof launch.$inferSelect;
+      maker: { id: string; name: string; email: string };
+      categories: string;
+    }>
+  >(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const conditions = [];
 
   if (filter === "marketplace") {
     conditions.push(eq(launch.isForSale, true));
@@ -90,23 +122,41 @@ export async function getLaunches({
     const cat = await db.select().from(category).where(eq(category.slug, categorySlug)).limit(1);
     if (cat.length > 0) {
       const allResults = await query.orderBy(orderBy);
-      return allResults.filter((r) => {
+      const filtered = allResults.filter((r) => {
         let cats = [];
         try {
           cats = JSON.parse(r.categories || "[]");
         } catch {
           cats = [];
         }
-        return cats.some((c: any) => c.slug === categorySlug);
+        return cats.some((c: { slug?: string }) => c.slug === categorySlug);
       });
+      await cacheSet(cacheKey, filtered, CACHE_TTL.LAUNCHES_LIST);
+      return filtered;
     }
   }
 
   const results = await query.orderBy(orderBy);
+  await cacheSet(cacheKey, results, CACHE_TTL.LAUNCHES_LIST);
   return results;
 }
 
 export async function getLaunchBySlug(slug: string) {
+  const cacheKey = buildLaunchKey(slug);
+
+  const cached = await cacheGet<
+    {
+      launch: typeof launch.$inferSelect;
+      maker: { id: string; name: string; email: string };
+      categories: string;
+      images: (typeof launchImage.$inferSelect)[];
+    } | null
+  >(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
   const result = await db
     .select({
       launch,
@@ -129,11 +179,26 @@ export async function getLaunchBySlug(slug: string) {
     .where(eq(launchImage.launchId, result[0].launch.id))
     .orderBy(launchImage.sortOrder);
 
-  return { ...result[0], images };
+  const data = { ...result[0], images };
+  await cacheSet(cacheKey, data, CACHE_TTL.LAUNCH_DETAIL);
+  return data;
 }
 
 export async function getLaunchComments(launchId: number) {
-  return db
+  const cacheKey = buildLaunchCommentsKey(launchId);
+
+  const cached = await cacheGet<
+    Array<{
+      comment: typeof comment.$inferSelect;
+      user: { id: string; name: string; image: string | null };
+    }>
+  >(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const results = await db
     .select({
       comment,
       user: { id: user.id, name: user.name, image: user.image },
@@ -142,6 +207,9 @@ export async function getLaunchComments(launchId: number) {
     .leftJoin(user, eq(comment.userId, user.id))
     .where(eq(comment.launchId, launchId))
     .orderBy(desc(comment.createdAt));
+
+  await cacheSet(cacheKey, results, CACHE_TTL.COMMENTS);
+  return results;
 }
 
 export async function toggleUpvote(launchId: number, userId: string) {
@@ -157,6 +225,14 @@ export async function toggleUpvote(launchId: number, userId: string) {
       .update(launch)
       .set({ upvoteCount: sql`${launch.upvoteCount} - 1` })
       .where(eq(launch.id, launchId));
+
+    // Invalidate cache
+    const launchData = await db.select({ slug: launch.slug }).from(launch).where(eq(launch.id, launchId)).limit(1);
+    if (launchData[0]?.slug) {
+      await cacheDel(buildLaunchKey(launchData[0].slug));
+    }
+    await cacheInvalidatePattern("launches:*");
+
     return { upvoted: false };
   } else {
     await db.insert(upvote).values({ launchId, userId });
@@ -166,7 +242,7 @@ export async function toggleUpvote(launchId: number, userId: string) {
       .where(eq(launch.id, launchId));
 
     // Create notification for launch maker
-    const launchData = await db.select({ makerId: launch.makerId }).from(launch).where(eq(launch.id, launchId)).limit(1);
+    const launchData = await db.select({ makerId: launch.makerId, slug: launch.slug }).from(launch).where(eq(launch.id, launchId)).limit(1);
     if (launchData[0]?.makerId && launchData[0].makerId !== userId) {
       await createNotification({
         userId: launchData[0].makerId,
@@ -175,6 +251,12 @@ export async function toggleUpvote(launchId: number, userId: string) {
         launchId,
       });
     }
+
+    // Invalidate cache
+    if (launchData[0]?.slug) {
+      await cacheDel(buildLaunchKey(launchData[0].slug));
+    }
+    await cacheInvalidatePattern("launches:*");
 
     return { upvoted: true };
   }
@@ -188,7 +270,7 @@ export async function addComment(launchId: number, userId: string, content: stri
     .where(eq(launch.id, launchId));
 
   // Create notification for launch maker
-  const launchData = await db.select({ makerId: launch.makerId }).from(launch).where(eq(launch.id, launchId)).limit(1);
+  const launchData = await db.select({ makerId: launch.makerId, slug: launch.slug }).from(launch).where(eq(launch.id, launchId)).limit(1);
   if (launchData[0]?.makerId && launchData[0].makerId !== userId) {
     await createNotification({
       userId: launchData[0].makerId,
@@ -198,6 +280,13 @@ export async function addComment(launchId: number, userId: string, content: stri
       commentId: newComment.id,
     });
   }
+
+  // Invalidate cache
+  await cacheDel(buildLaunchCommentsKey(launchId));
+  if (launchData[0]?.slug) {
+    await cacheDel(buildLaunchKey(launchData[0].slug));
+  }
+  await cacheInvalidatePattern("launches:*");
 
   revalidatePath(`/launch/${launchId}`);
 }
@@ -216,6 +305,13 @@ export async function editComment(commentId: number, userId: string, content: st
     .update(comment)
     .set({ content, updatedAt: new Date() })
     .where(eq(comment.id, commentId));
+
+  // Invalidate cache
+  await cacheDel(buildLaunchCommentsKey(existing[0].launchId));
+  const launchData = await db.select({ slug: launch.slug }).from(launch).where(eq(launch.id, existing[0].launchId)).limit(1);
+  if (launchData[0]?.slug) {
+    await cacheDel(buildLaunchKey(launchData[0].slug));
+  }
 
   revalidatePath(`/launch/${existing[0].launchId}`);
 }
@@ -236,9 +332,27 @@ export async function deleteComment(commentId: number, userId: string) {
     .set({ commentCount: sql`${launch.commentCount} - 1` })
     .where(eq(launch.id, existing[0].launchId));
 
+  // Invalidate cache
+  await cacheDel(buildLaunchCommentsKey(existing[0].launchId));
+  const launchData = await db.select({ slug: launch.slug }).from(launch).where(eq(launch.id, existing[0].launchId)).limit(1);
+  if (launchData[0]?.slug) {
+    await cacheDel(buildLaunchKey(launchData[0].slug));
+  }
+  await cacheInvalidatePattern("launches:*");
+
   revalidatePath(`/launch/${existing[0].launchId}`);
 }
 
 export async function getCategories() {
-  return db.select().from(category).orderBy(category.name);
+  const cacheKey = buildCategoriesKey();
+
+  const cached = await cacheGet<(typeof category.$inferSelect)[]>(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const results = await db.select().from(category).orderBy(category.name);
+  await cacheSet(cacheKey, results, CACHE_TTL.CATEGORIES);
+  return results;
 }

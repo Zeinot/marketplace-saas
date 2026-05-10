@@ -4,6 +4,15 @@ import { db } from "@/lib/db";
 import { post, user, postUpvote, postComment, launch } from "@/lib/db/schema";
 import { desc, eq, and, sql, ilike, isNull, isNotNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import {
+  cacheGet,
+  cacheSet,
+  cacheDel,
+  cacheInvalidatePattern,
+  CACHE_TTL,
+  buildPostsKey,
+  buildPostCommentsKey,
+} from "@/lib/cache";
 
 function safeRevalidate(path: string) {
   try {
@@ -22,7 +31,29 @@ export async function getPosts({
   sort?: "newest" | "most_upvoted" | "most_discussed";
   type?: "all" | "launches" | "posts";
 } = {}) {
-  let conditions = [];
+  const cacheKey = buildPostsKey(sort || "newest", type || "all", search);
+
+  const cached = await cacheGet<
+    Array<{
+      post: typeof post.$inferSelect;
+      user: { id: string; name: string; email: string; image: string | null };
+      launch: {
+        id: number;
+        slug: string;
+        title: string;
+        tagline: string;
+        logoUrl: string | null;
+        upvoteCount: number;
+        commentCount: number;
+      } | null;
+    }>
+  >(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const conditions = [];
 
   if (search) {
     conditions.push(ilike(post.content, `%${search}%`));
@@ -70,6 +101,7 @@ export async function getPosts({
   }
 
   const results = await query.orderBy(orderBy);
+  await cacheSet(cacheKey, results, CACHE_TTL.POSTS);
   return results;
 }
 
@@ -91,6 +123,9 @@ export async function createPost({
     })
     .returning();
 
+  // Invalidate posts cache
+  await cacheInvalidatePattern("posts:*");
+
   safeRevalidate("/feed");
   return newPost;
 }
@@ -106,6 +141,9 @@ export async function updatePost(postId: number, userId: string, content: string
     .where(eq(post.id, postId))
     .returning();
 
+  // Invalidate posts cache
+  await cacheInvalidatePattern("posts:*");
+
   safeRevalidate("/feed");
   return updated;
 }
@@ -116,6 +154,10 @@ export async function deletePost(postId: number, userId: string) {
   if (existing[0].userId !== userId) throw new Error("Unauthorized");
 
   await db.delete(post).where(eq(post.id, postId));
+
+  // Invalidate posts cache
+  await cacheInvalidatePattern("posts:*");
+
   safeRevalidate("/feed");
 }
 
@@ -133,6 +175,10 @@ export async function togglePostUpvote(postId: number, userId: string) {
       .update(post)
       .set({ upvoteCount: sql`${post.upvoteCount} - 1` })
       .where(eq(post.id, postId));
+
+    // Invalidate posts cache
+    await cacheInvalidatePattern("posts:*");
+
     return { upvoted: false };
   } else {
     await db.insert(postUpvote).values({ postId, userId });
@@ -140,6 +186,10 @@ export async function togglePostUpvote(postId: number, userId: string) {
       .update(post)
       .set({ upvoteCount: sql`${post.upvoteCount} + 1` })
       .where(eq(post.id, postId));
+
+    // Invalidate posts cache
+    await cacheInvalidatePattern("posts:*");
+
     return { upvoted: true };
   }
 }
@@ -155,6 +205,19 @@ export async function hasUpvotedPost(postId: number, userId: string) {
 
 // Post comments
 export async function getPostComments(postId: number) {
+  const cacheKey = buildPostCommentsKey(postId);
+
+  const cached = await cacheGet<
+    Array<{
+      comment: typeof postComment.$inferSelect;
+      user: { id: string; name: string; image: string | null };
+    }>
+  >(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
   const results = await db
     .select({
       comment: postComment,
@@ -165,11 +228,12 @@ export async function getPostComments(postId: number) {
     .where(eq(postComment.postId, postId))
     .orderBy(desc(postComment.createdAt));
 
+  await cacheSet(cacheKey, results, CACHE_TTL.POST_COMMENTS);
   return results;
 }
 
 export async function createPostComment(postId: number, userId: string, content: string) {
-  const [comment] = await db
+  const [newComment] = await db
     .insert(postComment)
     .values({ postId, userId, content })
     .returning();
@@ -179,8 +243,12 @@ export async function createPostComment(postId: number, userId: string, content:
     .set({ commentCount: sql`${post.commentCount} + 1` })
     .where(eq(post.id, postId));
 
+  // Invalidate cache
+  await cacheDel(buildPostCommentsKey(postId));
+  await cacheInvalidatePattern("posts:*");
+
   safeRevalidate("/feed");
-  return comment;
+  return newComment;
 }
 
 export async function deletePostComment(commentId: number, userId: string) {
@@ -189,11 +257,15 @@ export async function deletePostComment(commentId: number, userId: string) {
   if (existing[0].userId !== userId) throw new Error("Unauthorized");
 
   await db.delete(postComment).where(eq(postComment.id, commentId));
-  
+
   await db
     .update(post)
     .set({ commentCount: sql`${post.commentCount} - 1` })
     .where(eq(post.id, existing[0].postId));
+
+  // Invalidate cache
+  await cacheDel(buildPostCommentsKey(existing[0].postId));
+  await cacheInvalidatePattern("posts:*");
 
   safeRevalidate("/feed");
 }
@@ -208,6 +280,10 @@ export async function updatePostComment(commentId: number, userId: string, conte
     .set({ content, updatedAt: new Date() })
     .where(eq(postComment.id, commentId))
     .returning();
+
+  // Invalidate cache
+  await cacheDel(buildPostCommentsKey(existing[0].postId));
+  await cacheInvalidatePattern("posts:*");
 
   safeRevalidate("/feed");
   return updated;

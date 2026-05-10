@@ -163,7 +163,7 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut({ redirectTo: "/" })} className="text-destructive cursor-pointer">
+                  <DropdownMenuItem onClick={() => signOut().then(() => window.location.href = "/")} className="text-destructive cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
                   </DropdownMenuItem>
@@ -336,7 +336,7 @@ export function Navbar() {
                 <div className="px-5 py-4 border-t">
                   {session?.user ? (
                     <Button
-                      onClick={() => { signOut({ redirectTo: "/" }); setOpen(false); }}
+                      onClick={() => { signOut().then(() => window.location.href = "/"); setOpen(false); }}
                       variant="outline"
                       className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/5"
                     >

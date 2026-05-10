@@ -16,6 +16,19 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: saas-directory-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build:
       context: .
@@ -29,6 +42,7 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@db:5432/saas_directory
+      - REDIS_URL=redis://redis:6379
       - BETTER_AUTH_SECRET=dev-secret-key-do-not-use-in-production
       - BETTER_AUTH_URL=http://localhost:3000
       - RESEND_API_KEY=dev-resend-key
@@ -38,9 +52,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     command: ["npx", "next", "dev", "--webpack"]
     stdin_open: true
     tty: true
 
 volumes:
   postgres_data:
+  redis_data:

@@ -83,7 +83,9 @@ export function MarketplaceFilters({
           <Select
             value={activeSort}
             onValueChange={(value) => {
-              window.location.href = buildUrl({ sort: value });
+              if (value) {
+                window.location.href = buildUrl({ sort: value });
+              }
             }}
           >
             <SelectTrigger className="w-[180px] h-9 rounded-lg text-sm">

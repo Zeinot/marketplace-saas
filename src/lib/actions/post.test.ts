@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { db } from "@/lib/db";
-import { user, post, postUpvote, postComment } from "@/lib/db/schema";
+import { user, post, postUpvote, postComment, launch } from "@/lib/db/schema";
 import { getPosts, createPost, updatePost, deletePost, togglePostUpvote, hasUpvotedPost, getPostComments, createPostComment, deletePostComment } from "@/lib/actions/post";
 import { eq } from "drizzle-orm";
 import { isDatabaseAvailable } from "@/test/db-helper";
+import { cacheInvalidatePattern } from "@/lib/cache";
 
 let testUserId: string;
 let testUserId2: string;
@@ -13,6 +14,10 @@ describe("Post Actions", () => {
   beforeAll(async () => {
     dbAvailable = await isDatabaseAvailable();
     if (!dbAvailable) return;
+
+    // Clear cache before tests
+    await cacheInvalidatePattern("posts:*");
+    await cacheInvalidatePattern("launches:*");
 
     // Create test user 1
     const existing1 = await db.query.user.findFirst({
@@ -69,6 +74,9 @@ describe("Post Actions", () => {
         content: "Test post content",
       }).returning();
 
+      // Clear cache since we inserted directly
+      await cacheInvalidatePattern("posts:*");
+
       const posts = await getPosts();
       const userPosts = posts.filter((p) => p.post.userId === testUserId);
       
@@ -98,15 +106,25 @@ describe("Post Actions", () => {
     it("creates a post with optional launchId", async () => {
       if (!dbAvailable) return;
       
+      // Create a test launch first
+      const [testLaunch] = await db.insert(launch).values({
+        slug: `test-launch-${Date.now()}`,
+        title: "Test Launch",
+        tagline: "Test tagline",
+        description: "Test description",
+        makerId: testUserId,
+      }).returning();
+      
       const newPost = await createPost({
         userId: testUserId,
         content: "Post with launch",
-        launchId: 1,
+        launchId: testLaunch.id,
       });
 
-      expect(newPost.launchId).toBe(1);
+      expect(newPost.launchId).toBe(testLaunch.id);
 
       await db.delete(post).where(eq(post.id, newPost.id));
+      await db.delete(launch).where(eq(launch.id, testLaunch.id));
     });
   });
 
