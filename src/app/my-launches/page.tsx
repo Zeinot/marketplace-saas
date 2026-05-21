@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getLaunches } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { Button } from "@/components/ui/button";
@@ -5,10 +7,11 @@ import Link from "next/link";
 import { Plus, Package } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 export default async function MyLaunchesPage() {
   const session = await auth.api.getSession({
-    headers: new Headers(),
+    headers: await headers(),
   });
 
   if (!session?.user) {

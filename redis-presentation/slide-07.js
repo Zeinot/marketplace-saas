@@ -16,7 +16,6 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  // Flow boxes
   const boxY = 1.4;
   const boxH = 0.6;
 
@@ -126,7 +125,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("L'int\u00e9gration du cache dans les actions de l'application suit le pattern Cache-Aside que nous avons vu pr\u00e9c\u00e9demment. Concr\u00e8tement, quand une action est appel\u00e9e comme getLaunches ou getPosts, elle g\u00e9n\u00e8re d'abord une cl\u00e9 de cache unique bas\u00e9e sur les param\u00e8tres de la requ\u00eate. Ensuite, elle v\u00e9rifie si des donn\u00e9es sont d\u00e9j\u00e0 pr\u00e9sentes dans Redis avec cette cl\u00e9. Si c'est le cas, elles sont retourn\u00e9es imm\u00e9diatement. Sinon, l'action interroge la base de donn\u00e9es PostgreSQL, stocke les r\u00e9sultats dans Redis avec un TTL appropri\u00e9, puis les retourne. Cette logique est appliqu\u00e9e de mani\u00e8re coh\u00e9rente sur toutes les op\u00e9rations de lecture fr\u00e9quentes.");
+  slide.addNotes("L'int\u00e9gration suit le pattern Cache-Aside. Chaque action g\u00e9n\u00e8re une cl\u00e9 unique et v\u00e9rifie Redis. Si les donn\u00e9es existent, elles sont retourn\u00e9es. Sinon, PostgreSQL est interrog\u00e9e, les r\u00e9sultats sont stock\u00e9s dans Redis avec un TTL, puis retourn\u00e9s. Cette logique est appliqu\u00e9e sur toutes les lectures fr\u00e9quentes.");
 }
 
 module.exports = { createSlide };

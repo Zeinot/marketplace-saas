@@ -16,7 +16,6 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  // Code block
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
     x: 0.5, y: 1.0, w: 9, h: 2.2,
     fill: { color: "1a202c" },
@@ -53,25 +52,35 @@ function createSlide(pres, theme) {
     yPos += 0.25;
   });
 
-  // Full explanatory paragraph - max 7 lines
-  slide.addText("De la m\u00eame mani\u00e8re, getPosts utilise une cl\u00e9 g\u00e9n\u00e9r\u00e9e \u00e0 partir de sort, type et search. Le TTL est de 180 secondes car les posts changent plus fr\u00e9quemment. getLaunchBySlug utilise 10 minutes, getCategories utilise 30 minutes car elles changent rarement, et getLaunchComments utilise 2 minutes pour les commentaires fr\u00e9quents.", {
-    x: 0.5, y: 3.4, w: 9, h: 1.6,
-    fontSize: 16, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
+  const items = [
+    "Cl\u00e9 g\u00e9n\u00e9r\u00e9e \u00e0 partir de sort, type et search",
+    "TTL de 180s car les posts changent fr\u00e9quemment",
+    "getLaunchBySlug : 10 minutes",
+    "getCategories : 30 minutes",
+    "getLaunchComments : 2 minutes"
+  ];
+
+  items.forEach((text, i) => {
+    slide.addText(text, {
+      x: 0.7, y: 3.4 + i * 0.35, w: 8.6, h: 0.3,
+      fontSize: 16, fontFace: "Arial",
+      color: theme.secondary,
+      align: "left", valign: "middle"
+    });
   });
 
-  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
     fill: { color: theme.accent }
   });
   slide.addText("9", {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    fontSize: 11, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
+
+  slide.addNotes("De la m\u00eame mani\u00e8re, getPosts utilise une cl\u00e9 g\u00e9n\u00e9r\u00e9e \u00e0 partir de sort, type et search. Le TTL est de 180 secondes car les posts changent plus fr\u00e9quemment. getLaunchBySlug utilise 10 minutes, getCategories utilise 30 minutes car elles changent rarement, et getLaunchComments utilise 2 minutes pour les commentaires fr\u00e9quents.");
 }
 
 module.exports = { createSlide };

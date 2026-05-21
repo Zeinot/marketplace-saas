@@ -62,7 +62,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("L'infrastructure de notre projet est enti\u00e8rement containeris\u00e9e avec Docker Compose. Nous utilisons PostgreSQL version 16 sur Alpine comme base de donn\u00e9es principale, Redis version 7 sur Alpine comme serveur de cache distribu\u00e9 en m\u00e9moire, et notre application Next.js est construite \u00e0 partir d'un Dockerfile personnalis\u00e9. La configuration Redis inclut un volume persistant pour les donn\u00e9es nomm\u00e9 redis_data, un healthcheck int\u00e9gr\u00e9 pour surveiller l'\u00e9tat du service, et une connexion via la variable d'environnement REDIS_URL. Le d\u00e9marrage automatique est g\u00e9r\u00e9 par Docker Compose, ce qui facilite grandement le d\u00e9ploiement et la maintenance de l'infrastructure.");
+  slide.addNotes("Notre infrastructure utilise Docker Compose avec trois services. PostgreSQL 16 sur Alpine sert de base de donn\u00e9es sur le port 5434. Redis 7 sur Alpine fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. Next.js est construit depuis un Dockerfile personnalis\u00e9 sur le port 3000. Cette containerisation facilite le d\u00e9ploiement.");
 }
 
 module.exports = { createSlide };

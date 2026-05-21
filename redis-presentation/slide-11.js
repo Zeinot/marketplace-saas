@@ -16,7 +16,6 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  // Code block
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
     x: 0.5, y: 1.0, w: 9, h: 2.4,
     fill: { color: "1a202c" },
@@ -59,25 +58,34 @@ function createSlide(pres, theme) {
     yPos += 0.22;
   });
 
-  // Full explanatory paragraph - max 8 lines
-  slide.addText("Nous avons mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache. Le premier test v\u00e9rifie que les donn\u00e9es stock\u00e9es sont correctement r\u00e9cup\u00e9rables. Le second test v\u00e9rifie que l'invalidation supprime la cl\u00e9. Les tests s'ex\u00e9cutent avec une instance Redis locale dans Docker.", {
-    x: 0.5, y: 3.4, w: 9, h: 1.7,
-    fontSize: 16, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
+  const items = [
+    "Tests Jest couvrant cacheSet, cacheGet, invalidateCache",
+    "V\u00e9rification des donn\u00e9es stock\u00e9es et r\u00e9cup\u00e9r\u00e9es",
+    "V\u00e9rification de la suppression par invalidation",
+    "Ex\u00e9cution avec instance Redis locale dans Docker"
+  ];
+
+  items.forEach((text, i) => {
+    slide.addText(text, {
+      x: 0.7, y: 3.5 + i * 0.35, w: 8.6, h: 0.3,
+      fontSize: 16, fontFace: "Arial",
+      color: theme.secondary,
+      align: "left", valign: "middle"
+    });
   });
 
-  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
     fill: { color: theme.accent }
   });
   slide.addText("11", {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    fontSize: 11, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
+
+  slide.addNotes("Transition : Iliass Hariz prend la suite. Nous avons mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache. Le premier test v\u00e9rifie que les donn\u00e9es stock\u00e9es sont correctement r\u00e9cup\u00e9rables. Le second test v\u00e9rifie que l'invalidation supprime la cl\u00e9. Les tests s'ex\u00e9cutent avec une instance Redis locale dans Docker.");
 }
 
 module.exports = { createSlide };

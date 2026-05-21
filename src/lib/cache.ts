@@ -1,13 +1,16 @@
-import Redis from "ioredis";
-
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
-let redisClient: Redis | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let redisClient: any | null = null;
 
-export function getRedisClient(): Redis {
-  if (!redisClient) {
+async function getRedisClientInternal(): Promise<any | null> {
+  if (redisClient) return redisClient;
+  
+  try {
+    // Use require to avoid build-time resolution
+    const Redis = require("ioredis");
     redisClient = new Redis(redisUrl, {
-      retryStrategy: (times) => {
+      retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
@@ -15,21 +18,25 @@ export function getRedisClient(): Redis {
       enableReadyCheck: true,
     });
 
-    redisClient.on("error", (err) => {
+    redisClient.on("error", (err: Error) => {
       console.error("Redis connection error:", err.message);
     });
 
     redisClient.on("connect", () => {
       console.log("Redis connected successfully");
     });
-  }
 
-  return redisClient;
+    return redisClient;
+  } catch {
+    console.warn("Redis not available, cache operations will be no-ops");
+    return null;
+  }
 }
 
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
-    const client = getRedisClient();
+    const client = await getRedisClientInternal();
+    if (!client) return null;
     const data = await client.get(key);
     if (!data) return null;
     return JSON.parse(data) as T;
@@ -45,7 +52,8 @@ export async function cacheSet(
   ttlSeconds: number = 300
 ): Promise<void> {
   try {
-    const client = getRedisClient();
+    const client = await getRedisClientInternal();
+    if (!client) return;
     await client.setex(key, ttlSeconds, JSON.stringify(value));
   } catch (error) {
     console.error("Cache set error:", error);
@@ -54,7 +62,8 @@ export async function cacheSet(
 
 export async function cacheDel(key: string): Promise<void> {
   try {
-    const client = getRedisClient();
+    const client = await getRedisClientInternal();
+    if (!client) return;
     await client.del(key);
   } catch (error) {
     console.error("Cache del error:", error);
@@ -63,7 +72,8 @@ export async function cacheDel(key: string): Promise<void> {
 
 export async function cacheInvalidatePattern(pattern: string): Promise<void> {
   try {
-    const client = getRedisClient();
+    const client = await getRedisClientInternal();
+    if (!client) return;
     const keys = await client.keys(pattern);
     if (keys.length > 0) {
       await client.del(...keys);

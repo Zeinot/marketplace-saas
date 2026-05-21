@@ -4,17 +4,10 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Universit\u00e9 Mohammed V de Rabat", {
+  slide.addText("HEEC Marrakech", {
     x: 0.5, y: 0.3, w: 9, h: 0.35,
     fontSize: 14, fontFace: "Arial",
     color: theme.secondary,
-    align: "center", valign: "middle"
-  });
-
-  slide.addText("Facult\u00e9 des Sciences - D\u00e9partement Informatique", {
-    x: 0.5, y: 0.65, w: 9, h: 0.3,
-    fontSize: 12, fontFace: "Arial",
-    color: theme.light,
     align: "center", valign: "middle"
   });
 
@@ -86,8 +79,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  // Speaker notes
-  slide.addNotes("Bonjour \u00e0 tous. Je vais pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 utilisant Redis dans une application web de type marketplace SaaS. Ce projet a \u00e9t\u00e9 r\u00e9alis\u00e9 dans le cadre de notre formation en informatique. Nous allons d'abord d\u00e9crire le contexte et la probl\u00e9matique, puis pr\u00e9senter l'architecture du cache distribu\u00e9, l'impl\u00e9mentation technique avec le code source, les tests et validations effectu\u00e9s, et enfin les r\u00e9sultats obtenus avec les mesures de performance. Je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz pour cette pr\u00e9sentation.");
+  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Ce projet a \u00e9t\u00e9 r\u00e9alis\u00e9 dans le cadre de notre formation \u00e0 HEEC Marrakech. Nous allons d'abord d\u00e9crire le contexte et la probl\u00e9matique, puis pr\u00e9senter l'architecture du cache distribu\u00e9, l'impl\u00e9mentation technique avec le code source, les tests et validations effectu\u00e9s, et enfin les r\u00e9sultats obtenus avec les mesures de performance.");
 }
 
 module.exports = { createSlide };
