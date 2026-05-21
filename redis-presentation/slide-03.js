@@ -34,7 +34,7 @@ function createSlide(pres, theme) {
   });
 
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 4.0, w: 9, h: 1.0,
+    x: 0.5, y: 4.0, w: 9, h: 1.2,
     fill: { color: "FFFFFF" },
     line: { color: theme.light, width: 2 },
     rectRadius: 0.1
@@ -48,7 +48,7 @@ function createSlide(pres, theme) {
   });
 
   slide.addText("D\u00e9ployer Redis avec Docker Compose, int\u00e9grer le cache dans les op\u00e9rations de lecture/\u00e9criture, mesurer l'am\u00e9lioration des performances", {
-    x: 0.7, y: 4.45, w: 8.6, h: 0.5,
+    x: 0.7, y: 4.45, w: 8.6, h: 0.7,
     fontSize: 16, fontFace: "Arial",
     color: theme.secondary,
     align: "left", valign: "top"

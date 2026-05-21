@@ -16,7 +16,6 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  // Summary boxes
   const results = [
     { label: "Temps de r\u00e9ponse", value: "-99%", desc: "en moyenne" },
     { label: "Charge DB", value: "-85%", desc: "requ\u00eates r\u00e9duites" },
@@ -54,25 +53,34 @@ function createSlide(pres, theme) {
     });
   });
 
-  // Full explanatory paragraph - max 10 lines
-  slide.addText("En conclusion, tous les objectifs ont \u00e9t\u00e9 atteints. Le temps de r\u00e9ponse moyen a \u00e9t\u00e9 r\u00e9duit de quatre-vingt-dix-neuf pour cent. La charge sur PostgreSQL a diminu\u00e9 de quatre-vingt-cinq pour cent gr\u00e2ce \u00e0 la redirection des requ\u00eates vers Redis. Les huit tests unitaires passent tous. L'int\u00e9gration du cache distribu\u00e9 avec Redis et Docker Compose a am\u00e9lior\u00e9 significativement les performances tout en maintenant la coh\u00e9rence des donn\u00e9es.", {
-    x: 0.5, y: 2.4, w: 9, h: 2.3,
-    fontSize: 16, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
+  const items = [
+    "Objectifs atteints avec succ\u00e8s",
+    "Cache distribu\u00e9 Redis + Docker Compose",
+    "Coh\u00e9rence des donn\u00e9es maintenue",
+    "Application marketplace SaaS optimis\u00e9e"
+  ];
+
+  items.forEach((text, i) => {
+    slide.addText(text, {
+      x: 0.7, y: 2.6 + i * 0.45, w: 8.6, h: 0.4,
+      fontSize: 18, fontFace: "Arial",
+      color: theme.secondary,
+      align: "left", valign: "middle"
+    });
   });
 
-  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
     fill: { color: theme.accent }
   });
   slide.addText("17", {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    fontSize: 11, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
+
+  slide.addNotes("En conclusion, tous les objectifs ont \u00e9t\u00e9 atteints. Le temps de r\u00e9ponse moyen a \u00e9t\u00e9 r\u00e9duit de quatre-vingt-dix-neuf pour cent. La charge sur PostgreSQL a diminu\u00e9 de quatre-vingt-cinq pour cent gr\u00e2ce \u00e0 la redirection des requ\u00eates vers Redis. Les huit tests unitaires passent tous. L'int\u00e9gration du cache distribu\u00e9 avec Redis et Docker Compose a am\u00e9lior\u00e9 significativement les performances tout en maintenant la coh\u00e9rence des donn\u00e9es.");
 }
 
 module.exports = { createSlide };
