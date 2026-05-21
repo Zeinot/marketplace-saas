@@ -12,14 +12,20 @@ function createSlide(pres, theme) {
   });
 
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 0.8, w: 1.5, h: 0.05,
+    x: 0.5, y: 0.8, w: 2, h: 0.05,
     fill: { color: theme.accent }
   });
 
-  // Code block
+  slide.addText("La couche d'abstraction dans src/lib/cache.ts fournit une interface simple pour interagir avec Redis. La fonction cacheGet permet de recuperer des donnees avec typage TypeScript. La fonction cacheSet permet de stocker les donnees avec un temps de vie configurable de 300 secondes par defaut.", {
+    x: 0.5, y: 1.0, w: 9, h: 1.5,
+    fontSize: 18, fontFace: "Arial",
+    color: theme.secondary,
+    align: "left", valign: "top"
+  });
+
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 1.0, w: 9, h: 2.8,
-    fill: { color: "1a202c" },
+    x: 0.5, y: 2.4, w: 9, h: 2.8,
+    fill: { color: "0f172a" },
     rectRadius: 0.05
   });
 
@@ -38,7 +44,7 @@ function createSlide(pres, theme) {
     "}"
   ];
 
-  let yPos = 1.1;
+  let yPos = 2.5;
   codeLines.forEach((line) => {
     let color = "e2e8f0";
     if (line.startsWith("//")) color = "718096";
@@ -55,34 +61,7 @@ function createSlide(pres, theme) {
     yPos += 0.24;
   });
 
-  const items = [
-    "Interface simple et r\u00e9utilisable",
-    "Typage TypeScript avec g\u00e9n\u00e9riques",
-    "S\u00e9rialisation JSON automatique",
-    "TTL configurable par d\u00e9faut 300s"
-  ];
-
-  items.forEach((text, i) => {
-    slide.addText(text, {
-      x: 0.7, y: 3.9 + i * 0.35, w: 8.6, h: 0.3,
-      fontSize: 16, fontFace: "Arial",
-      color: theme.secondary,
-      align: "left", valign: "middle"
-    });
-  });
-
-  slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
-    fill: { color: theme.accent }
-  });
-  slide.addText("6", {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
-    fontSize: 11, fontFace: "Arial",
-    color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
-  });
-
-  slide.addNotes("La couche d'abstraction dans src/lib/cache.ts simplifie l'interaction avec Redis. La fonction cacheGet r\u00e9cup\u00e8re et parse les donn\u00e9es typ\u00e9es en TypeScript. La fonction cacheSet stocke les valeurs s\u00e9rialis\u00e9es en JSON avec un TTL configurable, fix\u00e9 \u00e0 trois cents secondes par d\u00e9faut. Cette interface r\u00e9utilisable cache toute la complexit\u00e9 Redis.");
+  slide.addNotes("La couche d'abstraction dans src/lib/cache.ts fournit une interface simple pour Redis. cacheGet r\u00e9cup\u00e8re et parse les donn\u00e9es JSON avec typage TypeScript. cacheSet stocke les donn\u00e9es avec un TTL configurable de 300 secondes par d\u00e9faut. Cette abstraction simplifie l'int\u00e9gration.");
 }
 
 module.exports = { createSlide };

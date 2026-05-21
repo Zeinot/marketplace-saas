@@ -4,7 +4,7 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Tests Unitaires du Cache", {
+  slide.addText("Tests et Validation", {
     x: 0.5, y: 0.3, w: 9, h: 0.5,
     fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
@@ -12,14 +12,20 @@ function createSlide(pres, theme) {
   });
 
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 0.8, w: 1.5, h: 0.05,
+    x: 0.5, y: 0.8, w: 2, h: 0.05,
     fill: { color: theme.accent }
   });
 
-  // Code block
+  slide.addText("Pour garantir la fiabilite de notre couche de cache, nous avons mis en place des tests unitaires avec Jest. Ces tests couvrent les trois operations principales : la mise en cache des donnees avec cacheSet, la recuperation avec cacheGet, et l'invalidation avec invalidateCache.", {
+    x: 0.5, y: 1.0, w: 9, h: 1.5,
+    fontSize: 18, fontFace: "Arial",
+    color: theme.secondary,
+    align: "left", valign: "top"
+  });
+
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 1.0, w: 9, h: 2.4,
-    fill: { color: "1a202c" },
+    x: 0.5, y: 2.4, w: 9, h: 2.6,
+    fill: { color: "0f172a" },
     rectRadius: 0.05
   });
 
@@ -41,7 +47,7 @@ function createSlide(pres, theme) {
     "});"
   ];
 
-  let yPos = 1.1;
+  let yPos = 2.5;
   codeLines.forEach((line) => {
     let color = "e2e8f0";
     if (line.includes("test(") || line.includes("describe(")) color = "fbbf24";
@@ -59,27 +65,7 @@ function createSlide(pres, theme) {
     yPos += 0.22;
   });
 
-  // Full explanatory paragraph - max 8 lines
-  slide.addText("Nous avons mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache. Le premier test v\u00e9rifie que les donn\u00e9es stock\u00e9es sont correctement r\u00e9cup\u00e9rables. Le second test v\u00e9rifie que l'invalidation supprime la cl\u00e9. Les tests s'ex\u00e9cutent avec une instance Redis locale dans Docker.", {
-    x: 0.5, y: 3.4, w: 9, h: 1.7,
-    fontSize: 16, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
-  });
-
-  // Page badge
-  slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
-    fill: { color: theme.accent }
-  });
-  slide.addText("11", {
-    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
-    color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
-  });
-
-  slide.addNotes("Transition : Iliass Hariz prend la suite. Merci Omar. Je vais maintenant pr\u00e9senter les tests unitaires que nous avons mis en place pour valider notre impl\u00e9mentation de cache. Ces tests couvrent les fonctions cacheSet, cacheGet et invalidateCache avec Jest et une instance Redis locale. V\u00e9rifions ensemble que notre solution est robuste et fiable.");
+  slide.addNotes("Transition : Iliass Hariz prend la suite. Nous avons mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache. Le premier test v\u00e9rifie que les donn\u00e9es stock\u00e9es sont correctement r\u00e9cup\u00e9rables. Le second test v\u00e9rifie que l'invalidation supprime la cl\u00e9.");
 }
 
 module.exports = { createSlide };
