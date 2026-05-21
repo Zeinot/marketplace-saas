@@ -3,11 +3,11 @@ export const dynamic = "force-dynamic";
 import { getLaunches, getCategories } from "@/lib/actions/launch";
 import { LaunchCard } from "@/components/launch/launch-card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plus, Store, Search, SlidersHorizontal, X } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { Suspense } from "react";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
+import { ClientSearchForm } from "@/components/client-search-form";
 import { cn } from "@/lib/utils";
 
 interface MarketplacePageProps {
@@ -91,30 +91,10 @@ export default async function MarketplacePage({ searchParams }: MarketplacePageP
       {/* Search & Filters */}
       <div className="space-y-4 mb-8">
         <div className="flex gap-3">
-          <form className="flex-1 flex gap-3" action="/marketplace" method="GET">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                name="search"
-                placeholder="Search products..."
-                defaultValue={search}
-                className="pl-9 h-11 rounded-lg"
-              />
-              {search && (
-                <Link
-                  href="/marketplace"
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                </Link>
-              )}
-            </div>
-            {/* Preserve other params */}
-            {sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
-            {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
-            {params.mrr && <input type="hidden" name="mrr" value={params.mrr} />}
-            {params.price && <input type="hidden" name="price" value={params.price} />}
-          </form>
+          <ClientSearchForm
+            defaultValue={search}
+            placeholder="Search products..."
+          />
         </div>
 
         <MarketplaceFilters

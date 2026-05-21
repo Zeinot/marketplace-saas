@@ -90,11 +90,6 @@ export function PostCard({ post: postData, user: postUser, launch: launchData }:
       return;
     }
 
-    if (session.user.id === postUser?.id) {
-      toast.error("You can't upvote your own post");
-      return;
-    }
-
     // Optimistic update
     const newUpvoted = !hasUpvoted;
     setHasUpvoted(newUpvoted);

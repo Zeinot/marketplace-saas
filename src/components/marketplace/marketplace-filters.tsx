@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -61,6 +61,7 @@ export function MarketplaceFilters({
   activeFiltersCount,
 }: MarketplaceFiltersProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   function buildUrl(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -84,7 +85,7 @@ export function MarketplaceFilters({
             value={activeSort}
             onValueChange={(value) => {
               if (value) {
-                window.location.href = buildUrl({ sort: value });
+                router.push(buildUrl({ sort: value }));
               }
             }}
           >
@@ -107,7 +108,7 @@ export function MarketplaceFilters({
         <Select
           value={activeMrrRange || ""}
           onValueChange={(value) => {
-            window.location.href = buildUrl({ mrr: value || undefined });
+            router.push(buildUrl({ mrr: value || undefined }));
           }}
         >
           <SelectTrigger className="w-[140px] h-9 rounded-lg text-sm">
@@ -126,7 +127,7 @@ export function MarketplaceFilters({
         <Select
           value={activePriceRange || ""}
           onValueChange={(value) => {
-            window.location.href = buildUrl({ price: value || undefined });
+            router.push(buildUrl({ price: value || undefined }));
           }}
         >
           <SelectTrigger className="w-[140px] h-9 rounded-lg text-sm">

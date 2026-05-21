@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 
@@ -10,17 +11,30 @@ interface SearchBarProps {
 
 export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   const [value, setValue] = useState(defaultValue);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const updateSearch = useCallback(
+    (query: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (query) params.set("search", query);
+      else params.delete("search");
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams]
+  );
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     updateSearch(value);
   }
 
-  function updateSearch(query: string) {
-    const url = new URL(window.location.href);
-    if (query) url.searchParams.set("search", query);
-    else url.searchParams.delete("search");
-    window.location.href = url.toString();
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function handleChange(query: string) {
+    setValue(query);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => updateSearch(query), 300);
   }
 
   return (
@@ -31,10 +45,7 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
         placeholder="Search products..."
         className="pl-10 pr-10 h-11 rounded-lg border-border/60 focus-visible:ring-primary/20"
         value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          updateSearch(e.target.value);
-        }}
+        onChange={(e) => handleChange(e.target.value)}
       />
       {value && (
         <button

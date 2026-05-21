@@ -49,10 +49,7 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
         toast.error("Please sign in to upvote");
         throw new Error("Not authenticated");
       }
-      if (session.user.id === maker?.id) {
-        toast.error("You can't upvote your own launch");
-        throw new Error("Can't upvote own launch");
-      }
+
       return toggleUpvote(launch.id, session.user.id);
     },
     onMutate: async () => {

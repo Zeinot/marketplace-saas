@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -37,6 +37,7 @@ export function FeedFilters({
   activeFiltersCount,
 }: FeedFiltersProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   function buildUrl(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -58,7 +59,7 @@ export function FeedFilters({
           value={activeSort}
           onValueChange={(value) => {
             if (value) {
-              window.location.href = buildUrl({ sort: value });
+              router.push(buildUrl({ sort: value }));
             }
           }}
         >

@@ -4,12 +4,12 @@ import { getPosts } from "@/lib/actions/post";
 import { PostCard } from "@/components/feed/post-card";
 import { PostForm } from "@/components/feed/post-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plus, MessageSquare, Search, X } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { FeedFilters } from "@/components/feed/feed-filters";
+import { ClientSearchForm } from "@/components/client-search-form";
 
 interface FeedPageProps {
   searchParams: Promise<{
@@ -55,28 +55,10 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       {/* Search & Filters */}
       <div className="space-y-4 mb-6">
         <div className="flex gap-3">
-          <form className="flex-1 flex gap-3" action="/feed" method="GET">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                name="search"
-                placeholder="Search posts..."
-                defaultValue={search}
-                className="pl-9 h-11 rounded-lg"
-              />
-              {search && (
-                <Link
-                  href="/feed"
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                </Link>
-              )}
-            </div>
-            {/* Preserve other params */}
-            {sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
-            {type !== "all" && <input type="hidden" name="type" value={type} />}
-          </form>
+          <ClientSearchForm
+            defaultValue={search}
+            placeholder="Search posts..."
+          />
         </div>
 
         <FeedFilters
