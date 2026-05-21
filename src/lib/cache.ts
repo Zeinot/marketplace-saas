@@ -33,13 +33,41 @@ async function getRedisClientInternal(): Promise<any | null> {
   }
 }
 
+// Helper to revive ISO date strings back to Date objects after JSON.parse
+function reviveDates<T>(value: T): T {
+  if (value === null || value === undefined) return value;
+  if (typeof value === "string") {
+    // ISO 8601 pattern: YYYY-MM-DDTHH:mm:ss.sssZ or similar
+    const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
+    if (isoPattern.test(value)) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date as unknown as T;
+      }
+    }
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map(reviveDates) as unknown as T;
+  }
+  if (typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      result[k] = reviveDates(v);
+    }
+    return result as unknown as T;
+  }
+  return value;
+}
+
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
     const client = await getRedisClientInternal();
     if (!client) return null;
     const data = await client.get(key);
     if (!data) return null;
-    return JSON.parse(data) as T;
+    const parsed = JSON.parse(data) as T;
+    return reviveDates(parsed);
   } catch (error) {
     console.error("Cache get error:", error);
     return null;

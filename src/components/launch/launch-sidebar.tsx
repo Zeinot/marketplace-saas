@@ -130,7 +130,7 @@ export function LaunchSidebar({ launch, maker }: LaunchSidebarProps) {
             <span className="text-sm text-muted-foreground">Launched</span>
             <span className="text-sm font-medium flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-              {launch.createdAt?.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+              {launch.createdAt ? new Date(launch.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
             </span>
           </div>
           {launch.isForSale && launch.askingPrice && (

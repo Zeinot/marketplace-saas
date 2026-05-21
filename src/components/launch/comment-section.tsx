@@ -156,7 +156,7 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground shrink-0">
-                      {item.comment.createdAt?.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {item.comment.createdAt ? new Date(item.comment.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
                     </span>
                     {isAuthor && !isEditing && (
                       <DropdownMenu>

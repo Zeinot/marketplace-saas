@@ -209,7 +209,7 @@ export function PostCard({ post: postData, user: postUser, launch: launchData }:
                 <span className="text-xs text-muted-foreground">
                   {postData.createdAt && formatDistanceToNow(new Date(postData.createdAt), { addSuffix: true })}
                 </span>
-                {postData.updatedAt && postData.createdAt && postData.updatedAt.getTime() !== postData.createdAt.getTime() && (
+                {postData.updatedAt && postData.createdAt && new Date(postData.updatedAt).getTime() !== new Date(postData.createdAt).getTime() && (
                   <span className="text-xs text-muted-foreground">(edited)</span>
                 )}
               </div>
