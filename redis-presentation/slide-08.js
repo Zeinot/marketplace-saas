@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Code block
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
     x: 0.5, y: 1.0, w: 9, h: 2.8,
     fill: { color: "1a202c" },
@@ -57,34 +58,27 @@ function createSlide(pres, theme) {
     yPos += 0.22;
   });
 
-  const items = [
-    "Cl\u00e9 unique g\u00e9n\u00e9r\u00e9e avec filter, sort, search",
-    "TTL de 300 secondes pour les lancements",
-    "Invalidation d\u00e9clench\u00e9e lors des \u00e9critures",
-    "Op\u00e9rations similaires pour getPosts, getCategories"
-  ];
-
-  items.forEach((text, i) => {
-    slide.addText(text, {
-      x: 0.7, y: 3.9 + i * 0.32, w: 8.6, h: 0.28,
-      fontSize: 16, fontFace: "Arial",
-      color: theme.secondary,
-      align: "left", valign: "middle"
-    });
+  // Full explanatory paragraph - max 7 lines
+  slide.addText("Voici getLaunches en action. Elle g\u00e9n\u00e8re une cl\u00e9 unique avec filter, sort et search. Elle v\u00e9rifie le cache et retourne les r\u00e9sultats s'ils existent. Sinon, elle interroge PostgreSQL, stocke avec un TTL de 300 secondes, puis retourne. L'invalidation est d\u00e9clench\u00e9e lors des op\u00e9rations d'\u00e9criture.", {
+    x: 0.5, y: 3.7, w: 9, h: 1.5,
+    fontSize: 16, fontFace: "Arial",
+    color: theme.secondary,
+    align: "left", valign: "top"
   });
 
+  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
     fill: { color: theme.accent }
   });
   slide.addText("8", {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
-    fontSize: 11, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Voici getLaunches en action. Elle g\u00e9n\u00e8re une cl\u00e9 unique avec filter, sort et search. Elle v\u00e9rifie le cache et retourne les r\u00e9sultats s'ils existent. Sinon, elle interroge PostgreSQL, stocke avec un TTL de 300 secondes, puis retourne. L'invalidation est d\u00e9clench\u00e9e lors des op\u00e9rations d'\u00e9criture.");
+  slide.addNotes("Voici l'exemple concret de getLaunches. Cette action g\u00e9n\u00e8re une cl\u00e9 de cache \u00e0 partir des filtres, du tri et de la recherche. Elle v\u00e9rifie d'abord Redis, retourne les donn\u00e9es si elles sont pr\u00e9sentes, sinon interroge la base PostgreSQL. Les r\u00e9sultats sont ensuite stock\u00e9s avec un TTL de trois cents secondes. L'invalidation est d\u00e9clench\u00e9e lors des op\u00e9rations d'\u00e9criture.");
 }
 
 module.exports = { createSlide };

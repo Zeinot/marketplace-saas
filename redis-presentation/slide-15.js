@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Operations table
   const rows = [
     ["Op\u00e9ration", "Sans Cache", "Avec Cache", "Am\u00e9lioration"],
     ["getLaunches", "856 ms", "12 ms", "99.2%"],
@@ -36,34 +37,27 @@ function createSlide(pres, theme) {
     valign: "middle"
   });
 
-  const items = [
-    "getLaunches : op\u00e9ration la plus utilis\u00e9e sur la page d'accueil",
-    "getPosts : feed avec changements fr\u00e9quents",
-    "getLaunchBySlug : page d\u00e9taill\u00e9e d'un produit",
-    "getCategories : donn\u00e9es stables avec TTL long"
-  ];
-
-  items.forEach((text, i) => {
-    slide.addText(text, {
-      x: 0.7, y: 3.0 + i * 0.4, w: 8.6, h: 0.35,
-      fontSize: 16, fontFace: "Arial",
-      color: theme.secondary,
-      align: "left", valign: "middle"
-    });
+  // Full explanatory paragraph - max 9 lines
+  slide.addText("Voici le tableau d\u00e9taill\u00e9 par op\u00e9ration. getLaunches, la plus utilis\u00e9e sur la page d'accueil, passe de huit cent cinquante-six \u00e0 douze millisecondes, soit quatre-vingt-dix-neuf virgule deux pour cent d'am\u00e9lioration. getPosts pour le feed passe de six cent quarante-trois \u00e0 quinze millisecondes. getLaunchBySlug passe de deux cent trente-quatre \u00e0 huit millisecondes. getCategories passe de cent quatre-vingt-neuf \u00e0 cinq millisecondes.", {
+    x: 0.5, y: 2.8, w: 9, h: 2.2,
+    fontSize: 16, fontFace: "Arial",
+    color: theme.secondary,
+    align: "left", valign: "top"
   });
 
+  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
     fill: { color: theme.accent }
   });
   slide.addText("15", {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
-    fontSize: 11, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Voici le tableau d\u00e9taill\u00e9 par op\u00e9ration. getLaunches, la plus utilis\u00e9e sur la page d'accueil, passe de huit cent cinquante-six \u00e0 douze millisecondes, soit quatre-vingt-dix-neuf virgule deux pour cent d'am\u00e9lioration. getPosts pour le feed passe de six cent quarante-trois \u00e0 quinze millisecondes.");
+  slide.addNotes("Voici le tableau d\u00e9taill\u00e9 par op\u00e9ration. getLaunches passe de huit cent cinquante-six \u00e0 douze millisecondes, soit quatre-vingt-dix-neuf virgule deux pour cent d'am\u00e9lioration. getPosts passe de six cent quarante-trois \u00e0 quinze millisecondes. getLaunchBySlug passe de deux cent trente-quatre \u00e0 huit millisecondes. getCategories passe de cent quatre-vingt-neuf \u00e0 cinq millisecondes.");
 }
 
 module.exports = { createSlide };

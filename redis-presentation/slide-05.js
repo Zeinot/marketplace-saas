@@ -62,7 +62,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Notre infrastructure utilise Docker Compose avec trois services. PostgreSQL 16 sur Alpine sert de base de donn\u00e9es sur le port 5434. Redis 7 sur Alpine fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. Next.js est construit depuis un Dockerfile personnalis\u00e9 sur le port 3000. Cette containerisation facilite le d\u00e9ploiement.");
+  slide.addNotes("Notre infrastructure repose sur Docker Compose avec trois services. PostgreSQL stocke les donn\u00e9es persistantes. Redis fournit le cache en m\u00e9moire. L'application Next.js sert les requ\u00eates utilisateurs. Nous utilisons des volumes persistants pour Redis, des healthchecks int\u00e9gr\u00e9s et une variable REDIS_URL pour configurer la connexion de mani\u00e8re flexible.");
 }
 
 module.exports = { createSlide };

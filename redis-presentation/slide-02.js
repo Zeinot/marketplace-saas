@@ -48,7 +48,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Dans cette pr\u00e9sentation, nous allons d'abord d\u00e9crire le contexte du projet et expliquer pourquoi un cache distribu\u00e9 \u00e9tait n\u00e9cessaire. Ensuite, nous pr\u00e9senterons l'architecture du syst\u00e8me avec le pattern Cache-Aside, suivi de l'infrastructure Docker mise en place. Nous d\u00e9taillerons ensuite la couche d'abstraction du cache et son int\u00e9gration dans les actions de l'application, ainsi que la strat\u00e9gie d'invalidation pour maintenir la coh\u00e9rence des donn\u00e9es.");
+  slide.addNotes("Voici le plan de notre pr\u00e9sentation. Nous commencerons par le contexte et l'architecture, puis d\u00e9taillerons l'infrastructure Docker et la couche d'abstraction. Ensuite, nous verrons l'int\u00e9gration dans les actions, la strat\u00e9gie d'invalidation, les tests unitaires, les mesures de performance, et nous terminerons par la conclusion et les perspectives d'am\u00e9lioration.");
 }
 
 module.exports = { createSlide };

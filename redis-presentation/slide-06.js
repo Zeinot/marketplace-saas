@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Code block
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
     x: 0.5, y: 1.0, w: 9, h: 2.8,
     fill: { color: "1a202c" },
@@ -81,7 +82,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("La couche d'abstraction dans src/lib/cache.ts fournit une interface simple pour Redis. cacheGet r\u00e9cup\u00e8re et parse les donn\u00e9es JSON avec typage TypeScript. cacheSet stocke les donn\u00e9es avec un TTL configurable de 300 secondes par d\u00e9faut. Cette abstraction simplifie l'int\u00e9gration dans le reste de l'application.");
+  slide.addNotes("La couche d'abstraction dans src/lib/cache.ts simplifie l'interaction avec Redis. La fonction cacheGet r\u00e9cup\u00e8re et parse les donn\u00e9es typ\u00e9es en TypeScript. La fonction cacheSet stocke les valeurs s\u00e9rialis\u00e9es en JSON avec un TTL configurable, fix\u00e9 \u00e0 trois cents secondes par d\u00e9faut. Cette interface r\u00e9utilisable cache toute la complexit\u00e9 Redis.");
 }
 
 module.exports = { createSlide };

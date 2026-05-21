@@ -4,10 +4,17 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("HEEC Marrakech", {
+  slide.addText("Universit\u00e9 Mohammed V de Rabat", {
     x: 0.5, y: 0.3, w: 9, h: 0.35,
     fontSize: 14, fontFace: "Arial",
     color: theme.secondary,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText("Facult\u00e9 des Sciences - D\u00e9partement Informatique", {
+    x: 0.5, y: 0.65, w: 9, h: 0.3,
+    fontSize: 12, fontFace: "Arial",
+    color: theme.light,
     align: "center", valign: "middle"
   });
 
@@ -79,7 +86,8 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Ce projet a \u00e9t\u00e9 r\u00e9alis\u00e9 dans le cadre de notre formation \u00e0 HEEC Marrakech. Nous allons d'abord d\u00e9crire le contexte et la probl\u00e9matique, puis pr\u00e9senter l'architecture du cache distribu\u00e9, l'impl\u00e9mentation technique avec le code source, les tests et validations effectu\u00e9s, et enfin les r\u00e9sultats obtenus avec les mesures de performance.");
+  // Speaker notes
+  slide.addNotes("Bonjour, je suis Omar Sarsar. Avec Iliass Hariz, nous pr\u00e9sentons notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une marketplace SaaS. Nous allons couvrir le contexte, l'architecture Cache-Aside, l'impl\u00e9mentation technique, les tests et les r\u00e9sultats. Cette solution vise \u00e0 r\u00e9soudre les probl\u00e8mes de performance de notre application web.");
 }
 
 module.exports = { createSlide };

@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Flow boxes
   const boxY = 1.4;
   const boxH = 0.6;
 
@@ -125,7 +126,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("L'int\u00e9gration suit le pattern Cache-Aside. Chaque action g\u00e9n\u00e8re une cl\u00e9 unique et v\u00e9rifie Redis. Si les donn\u00e9es existent, elles sont retourn\u00e9es. Sinon, PostgreSQL est interrog\u00e9e, les r\u00e9sultats sont stock\u00e9s dans Redis avec un TTL, puis retourn\u00e9s. Cette logique est appliqu\u00e9e sur toutes les lectures fr\u00e9quentes.");
+  slide.addNotes("L'int\u00e9gration suit le pattern Cache-Aside. Chaque action g\u00e9n\u00e8re une cl\u00e9 unique selon ses param\u00e8tres, v\u00e9rifie Redis, et retourne les donn\u00e9es si elles existent. En cas de cache miss, l'action interroge PostgreSQL, stocke les r\u00e9sultats dans Redis avec un TTL adapt\u00e9, puis les retourne. Cette logique est appliqu\u00e9e uniform\u00e9ment sur toutes les lectures.");
 }
 
 module.exports = { createSlide };

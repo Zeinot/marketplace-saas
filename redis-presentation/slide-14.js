@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Metrics boxes
   const metrics = [
     { label: "Avec Cache", value: "12ms", sub: "moyenne" },
     { label: "Sans Cache", value: "856ms", sub: "moyenne" },
@@ -53,34 +54,27 @@ function createSlide(pres, theme) {
     });
   });
 
-  const items = [
-    "Temps de r\u00e9ponse moyen r\u00e9duit de 856ms \u00e0 12ms",
-    "Am\u00e9lioration de quatre-vingt-dix-neuf pour cent",
-    "getLaunches : de plusieurs centaines \u00e0 moins de 15ms",
-    "Chargement presque instantan\u00e9 apr\u00e8s premi\u00e8re visite"
-  ];
-
-  items.forEach((text, i) => {
-    slide.addText(text, {
-      x: 0.7, y: 2.6 + i * 0.45, w: 8.6, h: 0.4,
-      fontSize: 18, fontFace: "Arial",
-      color: theme.secondary,
-      align: "left", valign: "middle"
-    });
+  // Full explanatory paragraph - max 9 lines
+  slide.addText("Les mesures montrent des r\u00e9sultats impressionnants. Avec le cache Redis, le temps de r\u00e9ponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'am\u00e9lioration. Les requ\u00eates getLaunches passent de plusieurs centaines de millisecondes \u00e0 moins de quinze millisecondes. Les pages se chargent presque instantan\u00e9ment apr\u00e8s la premi\u00e8re visite.", {
+    x: 0.5, y: 2.5, w: 9, h: 2.2,
+    fontSize: 16, fontFace: "Arial",
+    color: theme.secondary,
+    align: "left", valign: "top"
   });
 
+  // Page badge
   slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
     fill: { color: theme.accent }
   });
   slide.addText("14", {
-    x: 9.3, y: 5.2, w: 0.35, h: 0.35,
-    fontSize: 11, fontFace: "Arial",
+    x: 9.3, y: 5.2, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
     color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Les mesures montrent des r\u00e9sultats impressionnants. Avec le cache Redis, le temps de r\u00e9ponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'am\u00e9lioration. Les requ\u00eates getLaunches passent de plusieurs centaines de millisecondes \u00e0 moins de quinze millisecondes.");
+  slide.addNotes("Passons aux mesures de performance. Avec Redis, le temps de r\u00e9ponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache. Cela repr\u00e9sente une am\u00e9lioration de quatre-vingt-dix-neuf pour cent. Les requ\u00eates getLaunches passent de plusieurs centaines de millisecondes \u00e0 moins de quinze millisecondes. Les pages se chargent presque instantan\u00e9ment.");
 }
 
 module.exports = { createSlide };

@@ -34,7 +34,7 @@ function createSlide(pres, theme) {
   });
 
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 4.0, w: 9, h: 1.2,
+    x: 0.5, y: 4.0, w: 9, h: 1.0,
     fill: { color: "FFFFFF" },
     line: { color: theme.light, width: 2 },
     rectRadius: 0.1
@@ -48,7 +48,7 @@ function createSlide(pres, theme) {
   });
 
   slide.addText("D\u00e9ployer Redis avec Docker Compose, int\u00e9grer le cache dans les op\u00e9rations de lecture/\u00e9criture, mesurer l'am\u00e9lioration des performances", {
-    x: 0.7, y: 4.45, w: 8.6, h: 0.7,
+    x: 0.7, y: 4.45, w: 8.6, h: 0.5,
     fontSize: 16, fontFace: "Arial",
     color: theme.secondary,
     align: "left", valign: "top"
@@ -65,7 +65,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Ce projet int\u00e8gre un cache distribu\u00e9 Redis dans une application marketplace SaaS. Cette application permet aux utilisateurs de lancer et vendre des produits logiciels avec un syst\u00e8me de messagerie. L'augmentation du nombre d'utilisateurs a caus\u00e9 des ralentissements sur les pages affichant les listes de produits. L'objectif est d'am\u00e9liorer les performances en v\u00e9rifiant le cache avant PostgreSQL, ce qui r\u00e9duit le temps de r\u00e9ponse et la charge sur la base de donn\u00e9es tout en maintenant la coh\u00e9rence.");
+  slide.addNotes("Notre projet consiste \u00e0 int\u00e9grer Redis dans une application marketplace SaaS existante. Cette application g\u00e8re des lancements de produits logiciels avec un syst\u00e8me de messagerie. Face aux ralentissements croissants sur les pages de listes, nous avons choisi d'impl\u00e9menter un cache distribu\u00e9 pour am\u00e9liorer drastiquement les temps de r\u00e9ponse sans modifier l'architecture existante.");
 }
 
 module.exports = { createSlide };

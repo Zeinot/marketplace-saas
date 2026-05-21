@@ -16,6 +16,7 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
+  // Architecture boxes
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
     x: 3.5, y: 1.3, w: 3, h: 0.8,
     fill: { color: theme.accent },
@@ -23,7 +24,8 @@ function createSlide(pres, theme) {
   });
   slide.addText("Next.js App", {
     x: 3.5, y: 1.3, w: 3, h: 0.8,
-    fontSize: 18, fontFace: "Arial", color: "FFFFFF", bold: true,
+    fontSize: 18, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
@@ -34,7 +36,8 @@ function createSlide(pres, theme) {
   });
   slide.addText("Redis Cache", {
     x: 0.5, y: 2.8, w: 3, h: 0.8,
-    fontSize: 18, fontFace: "Arial", color: "FFFFFF", bold: true,
+    fontSize: 18, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
@@ -45,18 +48,22 @@ function createSlide(pres, theme) {
   });
   slide.addText("PostgreSQL", {
     x: 6.5, y: 2.8, w: 3, h: 0.8,
-    fontSize: 18, fontFace: "Arial", color: "FFFFFF", bold: true,
+    fontSize: 18, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
     align: "center", valign: "middle"
   });
 
+  // Arrows
   slide.addText("\u2193", {
     x: 2.0, y: 2.1, w: 1.5, h: 0.7,
-    fontSize: 40, fontFace: "Arial", color: theme.light,
+    fontSize: 40, fontFace: "Arial",
+    color: theme.light,
     align: "center", valign: "middle"
   });
   slide.addText("\u2193", {
     x: 6.5, y: 2.1, w: 1.5, h: 0.7,
-    fontSize: 40, fontFace: "Arial", color: theme.light,
+    fontSize: 40, fontFace: "Arial",
+    color: theme.light,
     align: "center", valign: "middle"
   });
 
@@ -87,7 +94,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Notre architecture utilise le pattern Cache-Aside. L'application v\u00e9rifie d'abord Redis. Si les donn\u00e9es y sont, elles sont retourn\u00e9es imm\u00e9diatement. Sinon, PostgreSQL est interrog\u00e9e, les r\u00e9sultats sont stock\u00e9s dans Redis avec un TTL, puis retourn\u00e9s. Cette approche sert les requ\u00eates fr\u00e9quentes depuis la m\u00e9moire, beaucoup plus rapide que la base de donn\u00e9es.");
+  slide.addNotes("Nous utilisons le pattern Cache-Aside. L'application Next.js v\u00e9rifie d'abord Redis avant d'interroger PostgreSQL. Si les donn\u00e9es sont en cache, elles sont retourn\u00e9es imm\u00e9diatement. Sinon, la base est interrog\u00e9e, les r\u00e9sultats sont stock\u00e9s dans Redis avec un TTL, puis servis au client. Cette approche r\u00e9duit consid\u00e9rablement la latence des requ\u00eates fr\u00e9quentes.");
 }
 
 module.exports = { createSlide };
