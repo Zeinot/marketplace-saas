@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, json, serial, uuid, pgEnum, index, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, json, serial, uuid, pgEnum, index, primaryKey, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Enums
@@ -82,6 +82,17 @@ export const profile = pgTable("profile", {
   twitter: text("twitter"),
   github: text("github"),
   avatarUrl: text("avatar_url"),
+  notificationPreferences: jsonb("notification_preferences").$type<{
+    comments: boolean;
+    upvotes: boolean;
+    messages: boolean;
+    productUpdates: boolean;
+  }>().default({
+    comments: true,
+    upvotes: true,
+    messages: true,
+    productUpdates: true,
+  }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

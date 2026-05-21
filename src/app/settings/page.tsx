@@ -1,21 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import Link from "next/link";
-import { User, Lock, Globe, Bell, Palette } from "lucide-react";
+import { User, Lock, Globe, Bell } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  getNotificationPreferences,
+  updateNotificationPreferences,
+} from "@/lib/actions/notification";
+
+interface NotificationPrefs {
+  comments: boolean;
+  upvotes: boolean;
+  messages: boolean;
+  productUpdates: boolean;
+}
 
 export default function SettingsPage() {
   const { data: session, isPending: sessionLoading } = useSession();
   const [loading, setLoading] = useState(false);
+  const [prefs, setPrefs] = useState<NotificationPrefs>({
+    comments: true,
+    upvotes: true,
+    messages: true,
+    productUpdates: true,
+  });
+  const [prefsLoading, setPrefsLoading] = useState(true);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      getNotificationPreferences(session.user.id)
+        .then(setPrefs)
+        .finally(() => setPrefsLoading(false));
+    }
+  }, [session?.user?.id]);
 
   if (sessionLoading) {
     return (
@@ -50,12 +77,31 @@ export default function SettingsPage() {
     );
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleProfileSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     toast.success("Profile updated (demo)");
     setLoading(false);
   }
+
+  async function handleToggle(key: keyof NotificationPrefs, value: boolean) {
+    const newPrefs = { ...prefs, [key]: value };
+    setPrefs(newPrefs);
+    try {
+      await updateNotificationPreferences(session.user.id, newPrefs);
+      toast.success("Preferences saved");
+    } catch {
+      toast.error("Failed to save preferences");
+      setPrefs(prefs); // rollback
+    }
+  }
+
+  const notificationItems = [
+    { key: "comments" as const, label: "New comments on my launches", desc: "Get notified when someone comments" },
+    { key: "upvotes" as const, label: "Upvotes", desc: "Get notified when someone upvotes your product" },
+    { key: "messages" as const, label: "Direct messages", desc: "Get notified for new messages" },
+    { key: "productUpdates" as const, label: "Product updates", desc: "News about features and improvements" },
+  ];
 
   return (
     <div className="container py-8 md:py-10 max-w-3xl">
@@ -87,7 +133,7 @@ export default function SettingsPage() {
               <CardDescription>Update your public profile information</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleProfileSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="displayName">Display Name</Label>
                   <Input id="displayName" defaultValue={session.user.name || ""} className="h-11 rounded-lg" />
@@ -111,7 +157,7 @@ export default function SettingsPage() {
               <CardDescription>Connect your online presence</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleProfileSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="website">Website</Label>
                   <Input id="website" type="url" placeholder="https://example.com" className="h-11 rounded-lg" />
@@ -141,24 +187,34 @@ export default function SettingsPage() {
               <CardDescription>Choose what you want to be notified about</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  { label: "New comments on my launches", desc: "Get notified when someone comments" },
-                  { label: "Upvotes", desc: "Get notified when someone upvotes your product" },
-                  { label: "Direct messages", desc: "Get notified for new messages" },
-                  { label: "Product updates", desc: "News about features and improvements" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-start justify-between gap-4 py-3 border-b border-border/40 last:border-0">
-                    <div>
-                      <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+              {prefsLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between py-3 border-b border-border/40 last:border-0">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-5 w-9 rounded-full" />
                     </div>
-                    <div className="h-5 w-9 rounded-full bg-primary shrink-0 relative mt-0.5">
-                      <div className="absolute right-0.5 top-0.5 h-4 w-4 rounded-full bg-primary-foreground shadow-sm" />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {notificationItems.map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between gap-4 py-4 border-b border-border/40 last:border-0"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{item.label}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+                      </div>
+                      <Switch
+                        checked={prefs[item.key]}
+                        onCheckedChange={(checked: boolean) => handleToggle(item.key, checked)}
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

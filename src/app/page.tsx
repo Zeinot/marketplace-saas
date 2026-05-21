@@ -195,49 +195,33 @@ export default function HomePage() {
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How it works</h2>
               <p className="text-muted-foreground mt-3 text-lg">From idea to acquisition in three steps</p>
             </motion.div>
-            {/* Step numbers with connecting lines */}
-            <div className="hidden md:flex items-center justify-center max-w-2xl mx-auto mb-5">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
-                01
-              </div>
-              <div className="flex-1 h-px bg-border mx-4" />
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
-                02
-              </div>
-              <div className="flex-1 h-px bg-border mx-4" />
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold shrink-0">
-                03
-              </div>
-            </div>
-            {/* Mobile step numbers */}
-            <div className="md:hidden flex flex-col items-center gap-8">
+            {/* Steps — self-contained columns so zoom never breaks alignment */}
+            <div className="grid gap-10 md:gap-6 md:grid-cols-3">
               {[
                 { step: "01", title: "Create", desc: "Sign up and launch your product in minutes" },
                 { step: "02", title: "Engage", desc: "Get upvotes, comments, and feedback" },
                 { step: "03", title: "Scale", desc: "Upgrade to Pro for marketplace and DMs" },
               ].map((item, index, arr) => (
-                <motion.div key={item.step} variants={fadeInUp} className="text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold mx-auto mb-5">
+                <motion.div
+                  key={item.step}
+                  variants={fadeInUp}
+                  className="relative flex flex-col items-center text-center"
+                >
+                  {/* Number badge */}
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg font-bold shrink-0 mb-5">
                     {item.step}
                   </div>
+                  {/* Title + desc stay with the number */}
                   <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[240px] mx-auto">{item.desc}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[240px]">{item.desc}</p>
+                  {/* Mobile vertical connector */}
                   {index < arr.length - 1 && (
-                    <div className="w-px h-8 bg-border mx-auto mt-5" />
+                    <div className="md:hidden w-px h-8 bg-border mt-6" />
                   )}
-                </motion.div>
-              ))}
-            </div>
-            {/* Desktop titles */}
-            <div className="hidden md:grid gap-8 md:grid-cols-3">
-              {[
-                { step: "01", title: "Create", desc: "Sign up and launch your product in minutes" },
-                { step: "02", title: "Engage", desc: "Get upvotes, comments, and feedback" },
-                { step: "03", title: "Scale", desc: "Upgrade to Pro for marketplace and DMs" },
-              ].map((item) => (
-                <motion.div key={item.step} variants={fadeInUp} className="text-center">
-                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[240px] mx-auto">{item.desc}</p>
+                  {/* Desktop horizontal connector */}
+                  {index < arr.length - 1 && (
+                    <div className="hidden md:block absolute top-7 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-px bg-border" />
+                  )}
                 </motion.div>
               ))}
             </div>

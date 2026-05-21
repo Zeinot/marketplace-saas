@@ -49,19 +49,27 @@ export function Navbar() {
 
   const unreadMessages = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
-  const { playNotificationSound } = useNotificationSound();
+  const { playNotificationSound, playMessageSound } = useNotificationSound();
   const prevUnreadRef = useRef({ notifications: 0, messages: 0 });
+  const initializedRef = useRef(false);
 
-  // Play sound on new notifications/messages
+  // Play sound on new notifications/messages (skip on first mount / page load)
   useEffect(() => {
+    if (!initializedRef.current) {
+      // First mount: silently record current counts as baseline, do NOT play sound
+      prevUnreadRef.current = { notifications: unreadNotifications, messages: unreadMessages };
+      initializedRef.current = true;
+      return;
+    }
+
     if (unreadNotifications > prevUnreadRef.current.notifications) {
       playNotificationSound();
     }
     if (unreadMessages > prevUnreadRef.current.messages) {
-      playNotificationSound();
+      playMessageSound();
     }
     prevUnreadRef.current = { notifications: unreadNotifications, messages: unreadMessages };
-  }, [unreadNotifications, unreadMessages, playNotificationSound]);
+  }, [unreadNotifications, unreadMessages, playNotificationSound, playMessageSound]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
