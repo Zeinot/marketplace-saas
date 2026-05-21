@@ -4,64 +4,91 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("R\u00e9sultats de Performance", {
-    x: 0.5, y: 0.3, w: 9, h: 0.5,
-    fontSize: 28, fontFace: "Arial",
+  // Top accent bar
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.06,
+    fill: { color: theme.accent }
+  });
+
+  // Title
+  slide.addText("Performance", {
+    x: 0.5, y: 0.4, w: 9, h: 0.6,
+    fontSize: 32, fontFace: "Inter",
     color: theme.primary, bold: true,
     align: "left", valign: "middle"
   });
 
+  // Accent underline
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 0.8, w: 2, h: 0.05,
+    x: 0.5, y: 1.0, w: 2, h: 0.04,
     fill: { color: theme.accent }
   });
 
+  // Metric cards
   const metrics = [
     { label: "Avec Cache", value: "12ms" },
     { label: "Sans Cache", value: "856ms" },
-    { label: "Am\u00e9lioration", value: "99%" }
+    { label: "Amelioration", value: "99%" }
   ];
 
   metrics.forEach((metric, i) => {
     const x = 0.5 + i * 3.1;
     slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-      x: x, y: 1.2, w: 2.8, h: 1.0,
-      fill: { color: "2c5282" },
+      x: x, y: 1.3, w: 2.8, h: 1.0,
+      fill: { color: theme.card },
+      line: { color: theme.border, width: 1 },
       rectRadius: 0.1
     });
 
     slide.addText(metric.value, {
-      x: x, y: 1.25, w: 2.8, h: 0.5,
-      fontSize: 36, fontFace: "Arial",
-      color: "63b3ed", bold: true,
+      x: x, y: 1.35, w: 2.8, h: 0.5,
+      fontSize: 36, fontFace: "Inter",
+      color: theme.accent, bold: true,
       align: "center", valign: "middle"
     });
 
     slide.addText(metric.label, {
-      x: x, y: 1.8, w: 2.8, h: 0.3,
-      fontSize: 16, fontFace: "Arial",
+      x: x, y: 1.9, w: 2.8, h: 0.3,
+      fontSize: 16, fontFace: "Inter",
       color: theme.primary,
       align: "center", valign: "middle"
     });
   });
 
   const items = [
-    "getLaunches : 856ms \u2192 12ms (99.2%)",
-    "getPosts : 643ms \u2192 15ms (97.7%)",
-    "getLaunchBySlug : 234ms \u2192 8ms (96.6%)",
-    "getCategories : 189ms \u2192 5ms (97.4%)"
+    "getLaunches : 856ms -> 12ms (99.2%)",
+    "getPosts : 643ms -> 15ms (97.7%)",
+    "getLaunchBySlug : 234ms -> 8ms (96.6%)",
+    "getCategories : 189ms -> 5ms (97.4%)"
   ];
 
   items.forEach((text, i) => {
     slide.addText(text, {
-      x: 0.7, y: 2.5 + i * 0.55, w: 8.6, h: 0.5,
-      fontSize: 20, fontFace: "Arial",
+      x: 0.7, y: 2.6 + i * 0.55, w: 8.6, h: 0.5,
+      fontSize: 20, fontFace: "Inter",
       color: theme.secondary,
       align: "left", valign: "middle"
     });
   });
 
-  slide.addNotes("Les mesures de performance montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration. Les requetes getLaunches, les plus frequentes sur la page d'accueil, passent de plusieurs centaines de millisecondes a moins de quinze millisecondes. L'operation getPosts pour le feed passe de six cent quarante-trois a quinze millisecondes. getLaunchBySlug pour la page detaillee d'un produit passe de deux cent trente-quatre a huit millisecondes. Enfin, getCategories, qui change rarement, passe de cent quatre-vingt-neuf a cinq millisecondes. Ces resultats demontrent l'efficacite du cache Redis sur tous les types de requetes.");
+  // Slide badge
+  addBadge(slide, theme, 9);
+
+  slide.addNotes("Les mesures montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration.");
+
+  function addBadge(slide, theme, num) {
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+      x: 9.1, y: 5.05, w: 0.5, h: 0.35,
+      fill: { color: theme.accent },
+      rectRadius: 0.1
+    });
+    slide.addText(String(num), {
+      x: 9.1, y: 5.05, w: 0.5, h: 0.35,
+      fontSize: 12, fontFace: "Inter",
+      color: "0d1b2a", bold: true,
+      align: "center", valign: "middle"
+    });
+  }
 }
 
 module.exports = { createSlide };

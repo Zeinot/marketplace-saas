@@ -3,11 +3,15 @@ const pres = new pptxgen();
 pres.layout = 'LAYOUT_16x9';
 
 const theme = {
+  bg: "0d1b2a",
+  card: "1b2838",
   primary: "ffffff",
-  secondary: "e2e8f0",
-  accent: "63b3ed",
-  light: "4a5568",
-  bg: "1a365d"
+  secondary: "94a3b8",
+  accent: "38bdf8",
+  success: "22c55e",
+  codeBg: "0f172a",
+  border: "1e293b",
+  redis: "dc2626"
 };
 
 for (let i = 1; i <= 10; i++) {

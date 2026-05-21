@@ -4,69 +4,95 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Architecture du Syst\u00e8me", {
-    x: 0.5, y: 0.3, w: 9, h: 0.5,
-    fontSize: 28, fontFace: "Arial",
+  // Top accent bar
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.06,
+    fill: { color: theme.accent }
+  });
+
+  // Title
+  slide.addText("Architecture du Systeme", {
+    x: 0.5, y: 0.4, w: 9, h: 0.6,
+    fontSize: 32, fontFace: "Inter",
     color: theme.primary, bold: true,
     align: "left", valign: "middle"
   });
 
+  // Accent underline
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 0.8, w: 2, h: 0.05,
+    x: 0.5, y: 1.0, w: 2, h: 0.04,
     fill: { color: theme.accent }
   });
 
   const items = [
-    "Pattern Cache-Aside (Lazy Loading)",
-    "V\u00e9rification du cache avant la base de donn\u00e9es",
-    "Stockage des r\u00e9sultats avec TTL configurable",
-    "R\u00e9duction drastique du temps de r\u00e9ponse"
+    "Pattern Cache-Aside",
+    "Verification Redis avant DB",
+    "Stockage avec TTL configurable",
+    "Reduction du temps de reponse"
   ];
 
   items.forEach((text, i) => {
     slide.addText(text, {
-      x: 0.7, y: 1.1 + i * 0.6, w: 8.6, h: 0.5,
-      fontSize: 22, fontFace: "Arial",
+      x: 0.7, y: 1.3 + i * 0.55, w: 8.6, h: 0.5,
+      fontSize: 22, fontFace: "Inter",
       color: theme.secondary,
       align: "left", valign: "middle"
     });
   });
 
-  // Architecture boxes
+  // Architecture cards
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 3.5, y: 3.8, w: 3, h: 0.7,
+    x: 3.5, y: 3.6, w: 3, h: 0.65,
     fill: { color: theme.accent },
     rectRadius: 0.1
   });
   slide.addText("Next.js App", {
-    x: 3.5, y: 3.8, w: 3, h: 0.7,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
+    x: 3.5, y: 3.6, w: 3, h: 0.65,
+    fontSize: 16, fontFace: "Inter", color: theme.primary, bold: true,
     align: "center", valign: "middle"
   });
 
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 4.6, w: 3, h: 0.7,
-    fill: { color: "DC382D" },
+    x: 0.5, y: 4.5, w: 3, h: 0.65,
+    fill: { color: theme.redis },
     rectRadius: 0.1
   });
   slide.addText("Redis Cache", {
-    x: 0.5, y: 4.6, w: 3, h: 0.7,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
+    x: 0.5, y: 4.5, w: 3, h: 0.65,
+    fontSize: 16, fontFace: "Inter", color: theme.primary, bold: true,
     align: "center", valign: "middle"
   });
 
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 6.5, y: 4.6, w: 3, h: 0.7,
-    fill: { color: "2c5282" },
+    x: 6.5, y: 4.5, w: 3, h: 0.65,
+    fill: { color: theme.card },
+    line: { color: theme.border, width: 1 },
     rectRadius: 0.1
   });
   slide.addText("PostgreSQL", {
-    x: 6.5, y: 4.6, w: 3, h: 0.7,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
+    x: 6.5, y: 4.5, w: 3, h: 0.65,
+    fontSize: 16, fontFace: "Inter", color: theme.primary, bold: true,
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Notre architecture utilise le pattern Cache-Aside, aussi appele Lazy Loading. Quand l'application Next.js recoit une requete, elle verifie d'abord si les donnees sont disponibles dans le cache Redis. Si elles y sont, l'application les retourne immediatement sans interroger la base de donnees. Si les donnees ne sont pas dans le cache, l'application les recupere depuis PostgreSQL, les stocke dans Redis avec un temps de vie defini, puis les retourne au client. Cette approche permet de servir les requetes frequentes directement depuis la memoire, ce qui est beaucoup plus rapide que d'interroger la base de donnees a chaque fois.");
+  // Slide badge
+  addBadge(slide, theme, 3);
+
+  slide.addNotes("Notre architecture utilise le pattern Cache-Aside. L'application verifie d'abord Redis. Si les donnees y sont, elles sont retournees immediatement. Sinon, PostgreSQL est interrogee, les resultats sont stockes dans Redis avec un TTL, puis retournes.");
+
+  function addBadge(slide, theme, num) {
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+      x: 9.1, y: 5.05, w: 0.5, h: 0.35,
+      fill: { color: theme.accent },
+      rectRadius: 0.1
+    });
+    slide.addText(String(num), {
+      x: 9.1, y: 5.05, w: 0.5, h: 0.35,
+      fontSize: 12, fontFace: "Inter",
+      color: "0d1b2a", bold: true,
+      align: "center", valign: "middle"
+    });
+  }
 }
 
 module.exports = { createSlide };
