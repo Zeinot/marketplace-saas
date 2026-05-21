@@ -4,7 +4,7 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Couche d'Abstraction du Cache", {
+  slide.addText("Invalidation et Tests", {
     x: 0.5, y: 0.3, w: 9, h: 0.5,
     fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
@@ -16,39 +16,43 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  slide.addText("La couche d'abstraction dans src/lib/cache.ts fournit une interface simple pour interagir avec Redis. La fonction cacheGet permet de recuperer des donnees avec typage TypeScript. La fonction cacheSet permet de stocker les donnees avec un temps de vie configurable de 300 secondes par defaut.", {
-    x: 0.5, y: 1.0, w: 9, h: 1.5,
+  slide.addText("L'invalidation est essentielle pour la coherence. Chaque operation d'ecriture invalide immediatement le cache. La fonction invalidateCache supprime les cles correspondantes de Redis. Nous avons egalement mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache pour garantir la fiabilite de la couche de cache.", {
+    x: 0.5, y: 1.0, w: 9, h: 2.0,
     fontSize: 18, fontFace: "Arial",
     color: theme.secondary,
     align: "left", valign: "top"
   });
 
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 2.4, w: 9, h: 2.8,
+    x: 0.5, y: 2.8, w: 9, h: 2.4,
     fill: { color: "0f172a" },
     rectRadius: 0.05
   });
 
   const codeLines = [
-    "// src/lib/cache.ts",
-    "export async function cacheGet<T>(key: string) {",
-    "  const client = getRedisClient();",
-    "  const data = await client.get(key);",
-    "  if (!data) return null;",
-    "  return JSON.parse(data) as T;",
-    "}",
+    "describe('Cache', () => {",
+    "  test('set & get', async () => {",
+    "    const data = { foo: 'bar' };",
+    "    await cacheSet('test', data);",
+    "    const result = await cacheGet('test');",
+    "    expect(result).toEqual(data);",
+    "  });",
     "",
-    "export async function cacheSet(key, value, ttl = 300) {",
-    "  const client = getRedisClient();",
-    "  await client.setex(key, ttl, JSON.stringify(value));",
-    "}"
+    "  test('invalidation', async () => {",
+    "    await cacheSet('temp', 'value');",
+    "    await invalidateCache('temp');",
+    "    const result = await cacheGet('temp');",
+    "    expect(result).toBeNull();",
+    "  });",
+    "});"
   ];
 
-  let yPos = 2.5;
+  let yPos = 2.9;
   codeLines.forEach((line) => {
     let color = "e2e8f0";
-    if (line.startsWith("//")) color = "718096";
-    else if (["export", "async", "function", "const", "return", "await", "if"].some(k => line.includes(k))) {
+    if (line.includes("test(") || line.includes("describe(")) color = "fbbf24";
+    else if (line.includes("expect")) color = "a78bfa";
+    else if (["const", "await", "async", "function", "return", "if"].some(k => line.includes(k))) {
       color = "63b3ed";
     }
 
@@ -58,10 +62,10 @@ function createSlide(pres, theme) {
       color: color,
       align: "left", valign: "middle"
     });
-    yPos += 0.24;
+    yPos += 0.22;
   });
 
-  slide.addNotes("La couche d'abstraction dans src/lib/cache.ts fournit une interface simple pour Redis. cacheGet r\u00e9cup\u00e8re et parse les donn\u00e9es JSON avec typage TypeScript. cacheSet stocke les donn\u00e9es avec un TTL configurable de 300 secondes par d\u00e9faut. Cette abstraction simplifie l'int\u00e9gration.");
+  slide.addNotes("Transition : Iliass Hariz prend la suite. L'invalidation est essentielle pour la coh\u00e9rence. Chaque op\u00e9ration d'\u00e9criture invalide imm\u00e9diatement le cache. Nous avons mis en place des tests unitaires avec Jest couvrant cacheSet, cacheGet et invalidateCache.");
 }
 
 module.exports = { createSlide };

@@ -4,7 +4,7 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Cache dans Launch Actions", {
+  slide.addText("Mesures de Performance", {
     x: 0.5, y: 0.3, w: 9, h: 0.5,
     fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
@@ -16,48 +16,50 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  slide.addText("Voici un exemple concret de l'integration du cache dans les Launch Actions. La fonction getLaunches genere d'abord une cle de cache unique en combinant les parametres filter, sort et search. Elle verifie ensuite si des resultats sont deja en cache. Si c'est le cas, ils sont retournes immediatement. Sinon, la fonction interroge PostgreSQL et stocke les resultats dans Redis avec un TTL de 300 secondes.", {
-    x: 0.5, y: 1.0, w: 9, h: 2.0,
+  slide.addText("Les mesures montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration. Les requetes getLaunches passent de plusieurs centaines de millisecondes a moins de quinze millisecondes.", {
+    x: 0.5, y: 1.0, w: 9, h: 1.8,
     fontSize: 18, fontFace: "Arial",
     color: theme.secondary,
     align: "left", valign: "top"
   });
 
-  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 2.6, w: 9, h: 2.6,
-    fill: { color: "0f172a" },
-    rectRadius: 0.05
-  });
-
-  const codeLines = [
-    "export async function getLaunches({ filter, sort, search }) {",
-    "  const cacheKey = buildLaunchesKey(filter, sort, search);",
-    "  const cached = await cacheGet(cacheKey);",
-    "  if (cached) return cached;",
-    "  const results = await db.query(...);",
-    "  await cacheSet(cacheKey, results, 300);",
-    "  return results;",
-    "}"
+  const metrics = [
+    { label: "Avec Cache", value: "12ms", sub: "moyenne" },
+    { label: "Sans Cache", value: "856ms", sub: "moyenne" },
+    { label: "Am\u00e9lioration", value: "99%", sub: "plus rapide" }
   ];
 
-  let yPos = 2.7;
-  codeLines.forEach((line) => {
-    let color = "e2e8f0";
-    if (line.includes("cacheGet") || line.includes("cacheSet")) color = "fbbf24";
-    else if (["export", "async", "function", "const", "return", "await", "if"].some(k => line.includes(k))) {
-      color = "63b3ed";
-    }
-
-    slide.addText(line, {
-      x: 0.7, y: yPos, w: 8.6, h: 0.24,
-      fontSize: 14, fontFace: "Consolas",
-      color: color,
-      align: "left", valign: "middle"
+  metrics.forEach((metric, i) => {
+    const x = 0.5 + i * 3.1;
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+      x: x, y: 2.6, w: 2.8, h: 1.0,
+      fill: { color: "2c5282" },
+      rectRadius: 0.1
     });
-    yPos += 0.25;
+
+    slide.addText(metric.value, {
+      x: x, y: 2.65, w: 2.8, h: 0.5,
+      fontSize: 32, fontFace: "Arial",
+      color: "63b3ed", bold: true,
+      align: "center", valign: "middle"
+    });
+
+    slide.addText(metric.label, {
+      x: x, y: 3.2, w: 2.8, h: 0.2,
+      fontSize: 14, fontFace: "Arial",
+      color: theme.primary,
+      align: "center", valign: "middle"
+    });
+
+    slide.addText(metric.sub, {
+      x: x, y: 3.4, w: 2.8, h: 0.2,
+      fontSize: 12, fontFace: "Arial",
+      color: theme.secondary,
+      align: "center", valign: "middle"
+    });
   });
 
-  slide.addNotes("Voici getLaunches en action. Elle g\u00e9n\u00e8re une cl\u00e9 unique avec filter, sort et search. Elle v\u00e9rifie le cache et retourne les r\u00e9sultats s'ils existent. Sinon, elle interroge PostgreSQL, stocke avec un TTL de 300 secondes, puis retourne. L'invalidation est d\u00e9clench\u00e9e lors des op\u00e9rations d'\u00e9criture.");
+  slide.addNotes("Les mesures montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration. Les requetes getLaunches passent de plusieurs centaines de millisecondes a moins de quinze millisecondes.");
 }
 
 module.exports = { createSlide };

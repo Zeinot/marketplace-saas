@@ -4,42 +4,61 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Invalidation du Cache", {
-    x: 0.5, y: 0.3, w: 9, h: 0.5,
-    fontSize: 28, fontFace: "Arial",
+  slide.addText("Merci de votre attention", {
+    x: 0.5, y: 0.8, w: 9, h: 0.8,
+    fontSize: 36, fontFace: "Arial",
     color: theme.primary, bold: true,
-    align: "left", valign: "middle"
+    align: "center", valign: "middle"
   });
 
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 0.8, w: 2, h: 0.05,
+    x: 4, y: 1.6, w: 2, h: 0.05,
     fill: { color: theme.accent }
   });
 
-  slide.addText("La strategie d'invalidation du cache est essentielle pour maintenir la coherence des donnees. Chaque fois qu'une operation d'ecriture est effectuee comme la creation, la mise a jour, la suppression ou l'upvote d'un lancement, le cache est invalide immediatement. La fonction invalidateCache supprime les cles correspondantes de Redis.", {
-    x: 0.5, y: 1.0, w: 9, h: 1.8,
+  slide.addText("Questions et Discussion", {
+    x: 0.5, y: 1.8, w: 9, h: 0.5,
+    fontSize: 24, fontFace: "Arial",
+    color: theme.secondary,
+    align: "center", valign: "middle"
+  });
+
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 2.5, y: 2.5, w: 5, h: 1.2,
+    fill: { color: "2c5282" },
+    line: { color: theme.accent, width: 2 },
+    rectRadius: 0.1
+  });
+
+  slide.addText("Presente par", {
+    x: 2.5, y: 2.55, w: 5, h: 0.3,
+    fontSize: 14, fontFace: "Arial",
+    color: theme.secondary,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText("Omar Sarsar & Iliass Hariz", {
+    x: 2.5, y: 2.85, w: 5, h: 0.35,
+    fontSize: 20, fontFace: "Arial",
+    color: theme.primary, bold: true,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText("2026", {
+    x: 2.5, y: 3.2, w: 5, h: 0.3,
+    fontSize: 16, fontFace: "Arial",
+    color: theme.secondary,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText("Nous vous remercions pour votre attention. Ce projet a demontre que Redis reduit drastiquement les temps de reponse et la charge sur la base de donnees, tout en maintenant la coherence. N'hesitez pas a poser vos questions.", {
+    x: 0.5, y: 3.9, w: 9, h: 1.2,
     fontSize: 18, fontFace: "Arial",
     color: theme.secondary,
-    align: "left", valign: "top"
+    align: "center", valign: "top"
   });
 
-  const items = [
-    "Create, Update, Delete, Upvote d\u00e9clenchent l'invalidation",
-    "invalidateCache(cacheKey) supprime les cl\u00e9s de Redis",
-    "TTL comme m\u00e9canisme d'expiration automatique",
-    "Pr\u00e9fixe saas: pour \u00e9viter les collisions entre applications"
-  ];
-
-  items.forEach((text, i) => {
-    slide.addText(text, {
-      x: 0.7, y: 2.6 + i * 0.45, w: 8.6, h: 0.4,
-      fontSize: 18, fontFace: "Arial",
-      color: theme.secondary,
-      align: "left", valign: "middle"
-    });
-  });
-
-  slide.addNotes("L'invalidation est essentielle pour la coh\u00e9rence. Chaque op\u00e9ration d'\u00e9criture comme create, update, delete ou upvote invalide imm\u00e9diatement le cache. La fonction invalidateCache supprime les cl\u00e9s correspondantes de Redis. Le TTL sert de m\u00e9canisme d'expiration automatique.");
+  slide.addNotes("Nous vous remercions pour votre attention. Ce projet a demontre que Redis reduit drastiquement les temps de reponse et la charge sur la base de donnees, tout en maintenant la coherence. Nous esperons que cette presentation vous a donne une vision claire du caching distribue.");
 }
 
 module.exports = { createSlide };

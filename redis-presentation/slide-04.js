@@ -4,60 +4,45 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Architecture du Syst\u00e8me", {
-    x: 0.5, y: 0.4, w: 9, h: 0.6,
-    fontSize: 32, fontFace: "Arial",
+  slide.addText("Infrastructure Docker et Cache", {
+    x: 0.5, y: 0.3, w: 9, h: 0.5,
+    fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
     align: "left", valign: "middle"
   });
 
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.0, w: 2, h: 0.05,
+    x: 0.5, y: 0.8, w: 2, h: 0.05,
     fill: { color: theme.accent }
   });
 
-  slide.addText("Notre architecture repose sur le pattern Cache-Aside, aussi appele Lazy Loading. Quand l'application Next.js recoit une requete, elle verifie d'abord si les donnees sont disponibles dans le cache Redis. Si elles y sont, l'application les retourne immediatement. Sinon, elle les recupere depuis PostgreSQL, les stocke dans Redis avec un temps de vie defini, puis les retourne au client.", {
+  slide.addText("L'infrastructure est containerisee avec Docker Compose. PostgreSQL 16 sert de base de donnees sur le port 5434. Redis 7 fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. La couche d'abstraction fournit une interface simple : cacheGet recupere les donnees avec typage TypeScript, et cacheSet stocke avec un TTL configurable de 300 secondes.", {
     x: 0.5, y: 1.0, w: 9, h: 2.0,
     fontSize: 18, fontFace: "Arial",
     color: theme.secondary,
     align: "left", valign: "top"
   });
 
-  // Architecture boxes
-  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 3.5, y: 3.2, w: 3, h: 0.8,
-    fill: { color: theme.accent },
-    rectRadius: 0.1
-  });
-  slide.addText("Next.js App", {
-    x: 3.5, y: 3.2, w: 3, h: 0.8,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
-  });
+  const rows = [
+    ["Service", "Image", "Port", "Description"],
+    ["PostgreSQL", "postgres:16-alpine", "5434:5432", "Base de donn\u00e9es"],
+    ["Redis", "redis:7-alpine", "6379:6379", "Cache distribu\u00e9"],
+    ["Next.js", "Dockerfile.dev", "3000:3000", "Application web"]
+  ];
 
-  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 0.5, y: 4.3, w: 3, h: 0.8,
-    fill: { color: "DC382D" },
-    rectRadius: 0.1
-  });
-  slide.addText("Redis Cache", {
-    x: 0.5, y: 4.3, w: 3, h: 0.8,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
-  });
-
-  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-    x: 6.5, y: 4.3, w: 3, h: 0.8,
+  slide.addTable(rows, {
+    x: 0.5, y: 3.0, w: 9,
+    colW: [2, 3, 2, 2],
+    fontSize: 16,
+    fontFace: "Arial",
+    color: theme.secondary,
+    border: { pt: 1, color: theme.light },
     fill: { color: "2c5282" },
-    rectRadius: 0.1
-  });
-  slide.addText("PostgreSQL", {
-    x: 6.5, y: 4.3, w: 3, h: 0.8,
-    fontSize: 16, fontFace: "Arial", color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
+    align: "center",
+    valign: "middle"
   });
 
-  slide.addNotes("Notre architecture utilise le pattern Cache-Aside. L'application v\u00e9rifie d'abord Redis. Si les donn\u00e9es y sont, elles sont retourn\u00e9es imm\u00e9diatement. Sinon, PostgreSQL est interrog\u00e9e, les r\u00e9sultats sont stock\u00e9s dans Redis avec un TTL, puis retourn\u00e9s.");
+  slide.addNotes("L'infrastructure utilise Docker Compose avec trois services. PostgreSQL 16 sur Alpine sert de base de donn\u00e9es sur le port 5434. Redis 7 sur Alpine fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. La couche d'abstraction simplifie l'int\u00e9gration.");
 }
 
 module.exports = { createSlide };

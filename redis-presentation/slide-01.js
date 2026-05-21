@@ -39,7 +39,7 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Ce projet a \u00e9t\u00e9 r\u00e9alis\u00e9 dans le cadre de notre formation. Nous allons d\u00e9crire le contexte, l'architecture, l'impl\u00e9mentation, les tests et les r\u00e9sultats.");
+  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Nous allons d\u00e9crire le contexte, l'architecture, l'impl\u00e9mentation, les tests et les r\u00e9sultats.");
 }
 
 module.exports = { createSlide };
