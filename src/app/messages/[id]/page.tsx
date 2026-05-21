@@ -523,7 +523,7 @@ export default function ConversationPage({
                                 placeholder="Edit your message..."
                               />
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-muted-foreground">
+                                <span className="text-[10px] text-primary-foreground/70">
                                   Press Enter to save, Escape to cancel
                                 </span>
                                 <div className="flex gap-2">

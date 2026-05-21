@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +42,9 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -110,7 +113,17 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
         <span className="text-sm text-muted-foreground">({comments.length})</span>
       </div>
 
-      {session?.user ? (
+      {!mounted || !session?.user ? (
+        <div className="rounded-xl border border-border/50 p-6 text-center bg-muted/30">
+          <p className="text-sm text-muted-foreground">
+            {mounted ? (
+              <Link href="/login" className="text-primary font-medium hover:underline">Sign in</Link>
+            ) : (
+              <span className="text-primary font-medium">Sign in</span>
+            )} to join the discussion
+          </p>
+        </div>
+      ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
           <Textarea
             placeholder="What do you think about this product?"
@@ -126,12 +139,6 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
             </Button>
           </div>
         </form>
-      ) : (
-        <div className="rounded-xl border border-border/50 p-6 text-center bg-muted/30">
-          <p className="text-sm text-muted-foreground">
-            <Link href="/login" className="text-primary font-medium hover:underline">Sign in</Link> to join the discussion
-          </p>
-        </div>
       )}
 
       <div className="space-y-4">
