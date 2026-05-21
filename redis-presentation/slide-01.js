@@ -18,28 +18,21 @@ function createSlide(pres, theme) {
     align: "center", valign: "middle"
   });
 
-  slide.addText("Int\u00e9gration d'un cache distribu\u00e9 (Redis) \u00e0 une application web existante", {
-    x: 0.5, y: 2.5, w: 9, h: 0.5,
-    fontSize: 18, fontFace: "Arial",
-    color: theme.secondary,
-    align: "center", valign: "middle"
-  });
-
   slide.addText("Omar Sarsar & Iliass Hariz", {
-    x: 0.5, y: 3.2, w: 9, h: 0.4,
+    x: 0.5, y: 2.8, w: 9, h: 0.4,
     fontSize: 20, fontFace: "Arial",
     color: theme.primary, bold: true,
     align: "center", valign: "middle"
   });
 
   slide.addText("2026", {
-    x: 0.5, y: 3.7, w: 9, h: 0.3,
+    x: 0.5, y: 3.3, w: 9, h: 0.3,
     fontSize: 16, fontFace: "Arial",
     color: theme.secondary,
     align: "center", valign: "middle"
   });
 
-  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Nous allons d\u00e9crire le contexte, l'architecture, l'impl\u00e9mentation, les tests et les r\u00e9sultats.");
+  slide.addNotes("Bonjour, je suis Omar Sarsar et je suis accompagn\u00e9 d'Iliass Hariz. Nous allons pr\u00e9senter notre projet d'int\u00e9gration d'un cache distribu\u00e9 Redis dans une application marketplace SaaS. Ce projet a \u00e9t\u00e9 r\u00e9alis\u00e9 dans le cadre de notre formation. Nous allons d\u00e9crire le contexte, l'architecture, l'impl\u00e9mentation, les tests et les r\u00e9sultats.");
 }
 
 module.exports = { createSlide };

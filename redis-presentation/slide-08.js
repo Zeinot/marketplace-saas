@@ -4,7 +4,7 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Mesures de Performance", {
+  slide.addText("Tests et Validation", {
     x: 0.5, y: 0.3, w: 9, h: 0.5,
     fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
@@ -16,50 +16,41 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  slide.addText("Les mesures montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration. Les requetes getLaunches passent de plusieurs centaines de millisecondes a moins de quinze millisecondes.", {
-    x: 0.5, y: 1.0, w: 9, h: 1.8,
-    fontSize: 18, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 0.5, y: 1.2, w: 9, h: 1.0,
+    fill: { color: "059669" },
+    rectRadius: 0.1
   });
 
-  const metrics = [
-    { label: "Avec Cache", value: "12ms", sub: "moyenne" },
-    { label: "Sans Cache", value: "856ms", sub: "moyenne" },
-    { label: "Am\u00e9lioration", value: "99%", sub: "plus rapide" }
+  slide.addText("\u2705 8 tests / 8 pass\u00e9s", {
+    x: 0.5, y: 1.3, w: 9, h: 0.5,
+    fontSize: 32, fontFace: "Arial", color: "FFFFFF", bold: true,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText("Couverture : cacheGet, cacheSet, invalidate, TTL, edge cases", {
+    x: 0.5, y: 1.8, w: 9, h: 0.3,
+    fontSize: 16, fontFace: "Arial", color: "FFFFFF",
+    align: "center", valign: "middle"
+  });
+
+  const items = [
+    "Tests Jest avec instance Redis locale",
+    "Validation du set, get et invalidation",
+    "Gestion des cas limites (null, undefined)",
+    "Tests executes dans la pipeline CI"
   ];
 
-  metrics.forEach((metric, i) => {
-    const x = 0.5 + i * 3.1;
-    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-      x: x, y: 2.6, w: 2.8, h: 1.0,
-      fill: { color: "2c5282" },
-      rectRadius: 0.1
-    });
-
-    slide.addText(metric.value, {
-      x: x, y: 2.65, w: 2.8, h: 0.5,
-      fontSize: 32, fontFace: "Arial",
-      color: "63b3ed", bold: true,
-      align: "center", valign: "middle"
-    });
-
-    slide.addText(metric.label, {
-      x: x, y: 3.2, w: 2.8, h: 0.2,
-      fontSize: 14, fontFace: "Arial",
-      color: theme.primary,
-      align: "center", valign: "middle"
-    });
-
-    slide.addText(metric.sub, {
-      x: x, y: 3.4, w: 2.8, h: 0.2,
-      fontSize: 12, fontFace: "Arial",
+  items.forEach((text, i) => {
+    slide.addText(text, {
+      x: 0.7, y: 2.5 + i * 0.55, w: 8.6, h: 0.5,
+      fontSize: 20, fontFace: "Arial",
       color: theme.secondary,
-      align: "center", valign: "middle"
+      align: "left", valign: "middle"
     });
   });
 
-  slide.addNotes("Les mesures montrent des resultats impressionnants. Avec le cache Redis, le temps de reponse moyen est de douze millisecondes contre huit cent cinquante-six millisecondes sans cache, soit quatre-vingt-dix-neuf pour cent d'amelioration. Les requetes getLaunches passent de plusieurs centaines de millisecondes a moins de quinze millisecondes.");
+  slide.addNotes("Les resultats des tests unitaires sont tres satisfaisants. Les huit tests ecrits passent tous avec succes, soit cent pour cent de reussite. Ces tests couvrent les operations de base comme cacheGet et cacheSet, l'invalidation avec invalidateCache, le comportement du TTL avec les expirations automatiques, et des cas limites comme la gestion des donnees null ou undefined. La couverture est complete pour les fonctions principales de la couche d'abstraction. Ces resultats nous donnent confiance dans la fiabilite du cache et nous permettent d'evoluer en toute securite. Les tests sont executes automatiquement dans la pipeline d'integration continue.");
 }
 
 module.exports = { createSlide };

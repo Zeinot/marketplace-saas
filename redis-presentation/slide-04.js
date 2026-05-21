@@ -4,7 +4,7 @@ function createSlide(pres, theme) {
   const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  slide.addText("Infrastructure Docker et Cache", {
+  slide.addText("Infrastructure Docker", {
     x: 0.5, y: 0.3, w: 9, h: 0.5,
     fontSize: 28, fontFace: "Arial",
     color: theme.primary, bold: true,
@@ -16,24 +16,17 @@ function createSlide(pres, theme) {
     fill: { color: theme.accent }
   });
 
-  slide.addText("L'infrastructure est containerisee avec Docker Compose. PostgreSQL 16 sert de base de donnees sur le port 5434. Redis 7 fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. La couche d'abstraction fournit une interface simple : cacheGet recupere les donnees avec typage TypeScript, et cacheSet stocke avec un TTL configurable de 300 secondes.", {
-    x: 0.5, y: 1.0, w: 9, h: 2.0,
-    fontSize: 18, fontFace: "Arial",
-    color: theme.secondary,
-    align: "left", valign: "top"
-  });
-
   const rows = [
-    ["Service", "Image", "Port", "Description"],
-    ["PostgreSQL", "postgres:16-alpine", "5434:5432", "Base de donn\u00e9es"],
-    ["Redis", "redis:7-alpine", "6379:6379", "Cache distribu\u00e9"],
-    ["Next.js", "Dockerfile.dev", "3000:3000", "Application web"]
+    ["Service", "Image", "Port"],
+    ["PostgreSQL", "postgres:16-alpine", "5434:5432"],
+    ["Redis", "redis:7-alpine", "6379:6379"],
+    ["Next.js", "Dockerfile.dev", "3000:3000"]
   ];
 
   slide.addTable(rows, {
-    x: 0.5, y: 3.0, w: 9,
-    colW: [2, 3, 2, 2],
-    fontSize: 16,
+    x: 0.5, y: 1.1, w: 9,
+    colW: [2.5, 3, 2.5],
+    fontSize: 18,
     fontFace: "Arial",
     color: theme.secondary,
     border: { pt: 1, color: theme.light },
@@ -42,7 +35,23 @@ function createSlide(pres, theme) {
     valign: "middle"
   });
 
-  slide.addNotes("L'infrastructure utilise Docker Compose avec trois services. PostgreSQL 16 sur Alpine sert de base de donn\u00e9es sur le port 5434. Redis 7 sur Alpine fonctionne comme cache sur le port 6379 avec un volume persistant et un healthcheck. La couche d'abstraction simplifie l'int\u00e9gration.");
+  const items = [
+    "Docker Compose pour l'orchestration",
+    "Volume persistant redis_data",
+    "Healthcheck int\u00e9gr\u00e9 pour Redis",
+    "Variable REDIS_URL pour la connexion"
+  ];
+
+  items.forEach((text, i) => {
+    slide.addText(text, {
+      x: 0.7, y: 3.4 + i * 0.5, w: 8.6, h: 0.45,
+      fontSize: 20, fontFace: "Arial",
+      color: theme.secondary,
+      align: "left", valign: "middle"
+    });
+  });
+
+  slide.addNotes("L'infrastructure de notre projet est entierement containerisee avec Docker Compose. Nous utilisons PostgreSQL version 16 sur Alpine comme base de donnees principale, Redis version 7 sur Alpine comme serveur de cache distribue en memoire, et notre application Next.js est construite a partir d'un Dockerfile personnalise. La configuration Redis inclut un volume persistant pour les donnees nomme redis_data, un healthcheck integre pour surveiller l'etat du service, et une connexion via la variable d'environnement REDIS_URL. Le demarrage automatique est gere par Docker Compose, ce qui facilite grandement le deploiement et la maintenance de l'infrastructure.");
 }
 
 module.exports = { createSlide };
