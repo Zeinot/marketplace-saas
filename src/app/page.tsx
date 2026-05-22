@@ -220,7 +220,7 @@ export default function HomePage() {
                   )}
                   {/* Desktop horizontal connector */}
                   {index < arr.length - 1 && (
-                    <div className="hidden md:block absolute top-7 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-px bg-border" />
+                    <div className="hidden md:block absolute top-7 left-[calc(50%+1.75rem)] w-[calc(100%-2rem)] h-px bg-border" />
                   )}
                 </motion.div>
               ))}
