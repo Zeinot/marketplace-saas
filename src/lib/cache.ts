@@ -3,12 +3,12 @@ const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let redisClient: any | null = null;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getRedisClientInternal(): Promise<any | null> {
   if (redisClient) return redisClient;
-  
+
   try {
-    // Use require to avoid build-time resolution
-    const Redis = require("ioredis");
+    const { default: Redis } = await import("ioredis");
     redisClient = new Redis(redisUrl, {
       retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);

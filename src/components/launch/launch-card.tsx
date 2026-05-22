@@ -40,7 +40,8 @@ export function LaunchCard({ launch, maker, categories }: LaunchCardProps) {
   const [hasUpvoted, setHasUpvoted] = useState(false);
 
   useEffect(() => {
-    setUpvotes(launch.upvoteCount);
+    const timeout = setTimeout(() => setUpvotes(launch.upvoteCount), 0);
+    return () => clearTimeout(timeout);
   }, [launch.upvoteCount]);
 
   const upvoteMutation = useMutation({

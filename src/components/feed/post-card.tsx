@@ -139,7 +139,7 @@ export function PostCard({ post: postData, user: postUser, launch: launchData }:
       const comment = await createPostComment(postData.id, session.user.id, newComment.trim());
       setNewComment("");
       setComments((prev) => [
-        { comment: comment as any, user: { id: session.user.id, name: session.user.name || null, image: session.user.image || null } },
+        { comment, user: { id: session.user.id, name: session.user.name || null, image: session.user.image || null } },
         ...prev,
       ]);
       toast.success("Comment added");

@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN "notification_preferences" jsonb DEFAULT '{"comments":true,"upvotes":true,"messages":true,"productUpdates":true}'::jsonb;

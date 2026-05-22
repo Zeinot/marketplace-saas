@@ -25,7 +25,7 @@ export default async function MarketplacePage({ searchParams }: MarketplacePageP
   
   // Parse filters
   const search = params.search;
-  const sort = (params.sort as any) || "newest";
+  const sort = (params.sort as "newest" | "most_upvoted" | "price_asc" | "price_desc" | "mrr_desc" | undefined) || "newest";
   const categorySlug = params.category;
   
   // Parse MRR range

@@ -23,8 +23,8 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const params = await searchParams;
   
   const search = params.search;
-  const sort = (params.sort as any) || "newest";
-  const type = (params.type as any) || "all";
+  const sort = (params.sort as "newest" | "most_upvoted" | "most_discussed" | undefined) || "newest";
+  const type = (params.type as "all" | "launches" | "posts" | undefined) || "all";
 
   const posts = await getPosts({ search, sort, type });
   const session = await auth.api.getSession({ headers: await headers() });

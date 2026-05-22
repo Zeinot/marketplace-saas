@@ -19,11 +19,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("theme") as Theme | null;
-    if (saved) {
-      setThemeState(saved);
-    }
+    const timeout = setTimeout(() => {
+      setMounted(true);
+      const saved = localStorage.getItem("theme") as Theme | null;
+      if (saved) {
+        setThemeState(saved);
+      }
+    }, 0);
+    return () => clearTimeout(timeout);
   }, []);
 
   const setTheme = useCallback((newTheme: Theme) => {

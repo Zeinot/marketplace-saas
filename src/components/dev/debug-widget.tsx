@@ -45,7 +45,8 @@ export function DevDebugWidget() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setSeededUsers(JSON.parse(stored));
+        const timeout = setTimeout(() => setSeededUsers(JSON.parse(stored)), 0);
+        return () => clearTimeout(timeout);
       }
     } catch {
       // ignore
@@ -56,6 +57,17 @@ export function DevDebugWidget() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(seededUsers));
   }, [seededUsers]);
+
+  async function performLogin(email: string, password: string) {
+    await signOut();
+    const result = await signIn.email({ email, password });
+    if (result.error) {
+      toast.error(result.error.message || "Login failed");
+    } else {
+      toast.success(`Logged in as ${email}`);
+      window.location.reload();
+    }
+  }
 
   async function seedUser() {
     setLoading("seed");
@@ -81,20 +93,35 @@ export function DevDebugWidget() {
     }
   }
 
+  async function seedAndLogin() {
+    setLoading("seed-and-login");
+    try {
+      const res = await fetch("/api/dev/seed-user", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        const newUser: SeededUser = {
+          email: data.email,
+          password: data.password,
+          userId: data.userId,
+          createdAt: new Date().toISOString(),
+        };
+        setSeededUsers((prev) => [...prev, newUser]);
+        toast.success(`Dev user ${data.email} created! Logging in...`);
+        await performLogin(data.email, data.password);
+      } else {
+        toast.error(data.error || "Failed to seed user");
+      }
+    } catch {
+      toast.error("Error seeding user");
+    } finally {
+      setLoading(null);
+    }
+  }
+
   async function autoLogin(email: string, password: string) {
     setLoading(`login-${email}`);
     try {
-      await signOut();
-      const result = await signIn.email({
-        email,
-        password,
-      });
-      if (result.error) {
-        toast.error(result.error.message || "Login failed");
-      } else {
-        toast.success(`Logged in as ${email}`);
-        window.location.reload();
-      }
+      await performLogin(email, password);
     } catch {
       toast.error("Auto-login failed");
     } finally {
@@ -250,20 +277,36 @@ export function DevDebugWidget() {
                 </Button>
               )}
             </div>
-            <Button
-              onClick={seedUser}
-              disabled={!!loading}
-              className="w-full rounded-lg"
-              variant="outline"
-              size="sm"
-            >
-              {loading === "seed" ? (
-                <RefreshCcw className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <UserPlus className="h-4 w-4 mr-2" />
-              )}
-              Create Dev Account
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={seedUser}
+                disabled={!!loading}
+                className="flex-1 rounded-lg"
+                variant="outline"
+                size="sm"
+              >
+                {loading === "seed" ? (
+                  <RefreshCcw className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <UserPlus className="h-4 w-4 mr-2" />
+                )}
+                Create
+              </Button>
+              <Button
+                onClick={seedAndLogin}
+                disabled={!!loading}
+                className="flex-1 rounded-lg"
+                variant="default"
+                size="sm"
+              >
+                {loading === "seed-and-login" ? (
+                  <RefreshCcw className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <LogIn className="h-4 w-4 mr-2" />
+                )}
+                Create &amp; Login
+              </Button>
+            </div>
 
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
               {seededUsers.map((user, index) => (

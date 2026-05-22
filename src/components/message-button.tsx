@@ -35,8 +35,9 @@ export function MessageButton({ userId, variant = "compact", label = "Message", 
     try {
       const conversationId = await getOrCreateConversation(session.user.id, userId);
       router.push(`/messages/${conversationId}`);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start conversation");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Failed to start conversation";
+      toast.error(msg);
       setLoading(false);
     }
   }

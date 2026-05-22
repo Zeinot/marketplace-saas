@@ -46,11 +46,13 @@ interface ButtonProps extends ButtonPrimitive.Props, VariantProps<typeof buttonV
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", asChild = false, children, ...props }, ref) => {
     if (asChild && React.isValidElement(children)) {
-      return React.cloneElement(children, {
+      const child = children as React.ReactElement<{ className?: string }>;
+      return React.cloneElement(child, {
         ...props,
-        className: cn(buttonVariants({ variant, size, className }), (children.props as any).className),
+        className: cn(buttonVariants({ variant, size, className }), child.props.className),
+        // @ts-expect-error ref is a valid cloneElement prop, React 19 types are strict here
         ref,
-      } as any)
+      });
     }
 
     return (

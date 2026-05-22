@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-sm mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Forgot password</h1>
-          <p className="text-muted-foreground mt-1 text-sm">No worries, we've got you covered</p>
+          <p className="text-muted-foreground mt-1 text-sm">No worries, we&apos;ve got you covered</p>
         </div>
 
         {sent ? (

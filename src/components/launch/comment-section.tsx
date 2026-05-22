@@ -44,7 +44,10 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
   const [editLoading, setEditLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timeout = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timeout);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

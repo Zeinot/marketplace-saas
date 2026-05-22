@@ -85,10 +85,12 @@ export default function SettingsPage() {
   }
 
   async function handleToggle(key: keyof NotificationPrefs, value: boolean) {
+    const userId = session?.user?.id;
+    if (!userId) return;
     const newPrefs = { ...prefs, [key]: value };
     setPrefs(newPrefs);
     try {
-      await updateNotificationPreferences(session.user.id, newPrefs);
+      await updateNotificationPreferences(userId, newPrefs);
       toast.success("Preferences saved");
     } catch {
       toast.error("Failed to save preferences");
