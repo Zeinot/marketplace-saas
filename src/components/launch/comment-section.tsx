@@ -14,6 +14,7 @@ import {
 import { addComment, editComment, deleteComment } from "@/lib/actions/launch";
 import { toast } from "sonner";
 import Link from "next/link";
+import { format } from "date-fns";
 import { MessageSquare, Send, MoreVertical, Pencil, Trash2 } from "lucide-react";
 
 interface Comment {
@@ -166,7 +167,7 @@ export function CommentSection({ launchId, comments }: CommentSectionProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground shrink-0">
-                      {item.comment.createdAt ? new Date(item.comment.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
+                      {item.comment.createdAt ? format(new Date(item.comment.createdAt), "MMM d, yyyy") : "-"}
                     </span>
                     {isAuthor && !isEditing && (
                       <DropdownMenu>

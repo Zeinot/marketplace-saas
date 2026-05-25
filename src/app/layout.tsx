@@ -35,24 +35,6 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", inter.variable, geistMono.variable, "font-sans")}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme') || 'system';
-                  var resolved = theme === 'system'
-                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-                    : theme;
-                  document.documentElement.classList.add(resolved);
-                  document.documentElement.style.colorScheme = resolved;
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <QueryProvider>
