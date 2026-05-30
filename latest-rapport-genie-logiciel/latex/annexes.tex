@@ -5,94 +5,16 @@
 \subsection*{Annexe A : Schema de la Base de Donnees Drizzle ORM}
 \addcontentsline{toc}{subsection}{Annexe A : Schema de la Base de Donnees}
 
-Cette annexe presente un extrait du schema Drizzle ORM (\texttt{src/lib/db/schema.ts}) illustrant la structure des tables principales.
+Cette annexe presente le diagramme entite-association du schema Drizzle ORM illustrant la structure des 20 tables principales et leurs relations.
 
-\begin{codebox}
-\begin{lstlisting}
-// Tables Better Auth (authentification)
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name"),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/er_diagram.png}
+\caption{Diagramme Entite-Association --- Schema Drizzle ORM (20 tables)}
+\label{fig:er}
+\end{figure}
 
-export const session = pgTable("session", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => user.id),
-  token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-});
-
-export const account = pgTable("account", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => user.id),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-});
-
-export const verification = pgTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-});
-
-// Table profile (1:1 avec user)
-export const profile = pgTable("profile", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => user.id).unique(),
-  displayName: text("display_name"),
-  bio: text("bio"),
-  website: text("website"),
-  twitter: text("twitter"),
-  github: text("github"),
-  avatarUrl: text("avatar_url"),
-});
-
-// Table launch (produit SaaS)
-export const launch = pgTable("launch", {
-  id: serial("id").primaryKey(),
-  makerId: text("maker_id").notNull().references(() => user.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  logoUrl: text("logo_url"),
-  upvoteCount: integer("upvote_count").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Table category
-export const category = pgTable("category", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
-});
-
-// Table plan (Free / Pro)
-export const plan = pgTable("plan", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  priceMonthly: integer("price_monthly"),
-  priceYearly: integer("price_yearly"),
-  stripeProductId: text("stripe_product_id"),
-  stripeMonthlyPriceId: text("stripe_monthly_price_id"),
-  stripeYearlyPriceId: text("stripe_yearly_price_id"),
-});
-
-// Table subscription
-export const subscription = pgTable("subscription", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => user.id).unique(),
-  planId: integer("plan_id").notNull().references(() => plan.id),
-  status: text("status").notNull().default("active"),
-  stripeCustomerId: text("stripe_customer_id"),
-  stripeSubscriptionId: text("stripe_subscription_id"),
-});
-\end{lstlisting}
-\end{codebox}
+Le diagramme represente les trois domaines fonctionnels du systeme. Le domaine \textbf{authentification} (en bleu) regroupe les tables de gestion des utilisateurs et des sessions. Le domaine \textbf{metier principal} (en vert) contient les tables des produits, categories, profils et abonnements. Le domaine \textbf{interaction sociale} (en orange) modelise les votes, commentaires, conversations et notifications. Les cardinalites sur les relations indiquent la nature des associations entre les entites.
 
 \newpage
 

@@ -43,11 +43,18 @@ Le \textbf{G\'enie Logiciel (GL)} vise \`a utiliser l'informatique dans les entr
 
 \subsubsection{Rigueur}
 
-La rigueur se traduit par l'utilisation de TypeScript (typage statique strict), les conventions de nommage syst\'ematiques (PascalCase pour les composants, camelCase pour les fonctions), et la revue de code via les pull requests Git. Le fichier \texttt{AGENTS.md} (327 octets) documente les conventions sp\'ecifiques du projet.
+La rigueur se traduit par l'utilisation de TypeScript (typage statique strict), les conventions de nommage syst\'ematiques (PascalCase pour les composants, camelCase pour les fonctions), et la revue de code via les pull requests Git. La documentation interne du projet documente les conventions sp\'ecifiques de d\'eveloppement.
 
 \subsubsection{S\'eparation des Probl\`emes}
 
-Trois niveaux de s\'eparation sont appliqu\'es : s\'eparation dans le temps (d\'eveloppement par phases avec tests \`a chaque niveau), s\'eparation dans l'espace (architecture en couches : Client Components, Server Actions, Drizzle ORM, PostgreSQL), et s\'eparation en sous-syst\`emes (modules \texttt{src/app/}, \texttt{src/components/}, \texttt{src/lib/}).
+Trois niveaux de s\'eparation sont appliqu\'es : s\'eparation dans le temps (d\'eveloppement par phases avec tests \`a chaque niveau), s\'eparation dans l'espace (architecture en couches, voir figure~\ref{fig:layers}), et s\'eparation en sous-syst\`emes (modules application, composants et utilitaires serveur).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{assets/architecture_layers.png}
+\caption{Architecture en Couches --- SaaS Directory}
+\label{fig:layers}
+\end{figure}
 
 \subsubsection{Modularit\'e}
 
@@ -59,7 +66,14 @@ Plusieurs niveaux d'abstraction sont utilis\'es : les Server Actions abstraient 
 
 \subsubsection{G\'en\'ericity}
 
-Les composants UI sont con\,cus comme des composants r\'eutilisables param\'etrables via les \texttt{props} React. Le syst\`eme d'authentification Better Auth est g\'en\'erique et supporte OAuth (Google, GitHub) et l'authentification par email/mot de passe.
+Les composants UI sont con\,cus comme des composants r\'eutilisables param\'etrables via les propri\'et\'es React. Le syst\`eme d'authentification Better Auth est g\'en\'erique et supporte OAuth (Google, GitHub) et l'authentification par email/mot de passe. Le diagramme d'activit\'e de la figure~\ref{fig:auth-activity} illustre le flux complet d'authentification.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.90\textwidth]{assets/auth_activity.png}
+\caption{Diagramme d'Activit\'e --- Flux d'Authentification}
+\label{fig:auth-activity}
+\end{figure}
 
 \subsubsection{Construction Incr\'ementale}
 
@@ -67,7 +81,14 @@ Le d\'eveloppement a suivi une approche incrémentale document\'ee dans l'histor
 
 \subsubsection{Anticipation du Changement}
 
-L'architecture anticipe plusieurs \'evolutions : le sch\'ema Drizzle inclut d\'ej\`a les champs \texttt{stripeCustomerId} et \texttt{stripeSubscriptionId} pour une future int\'egration Stripe ; le syst\`eme de plans (Free/Pro) permet d'ajouter de nouveaux niveaux d'abonnement.
+L'architecture anticipe plusieurs \'evolutions : le sch\'ema Drizzle inclut d\'ej\`a les champs client et abonnement Stripe pour une future int\'egration du paiement ; le syst\`eme de plans (Free/Pro) permet d'ajouter de nouveaux niveaux d'abonnement. Le diagramme de la figure~\ref{fig:subscription-state} pr\'esente le cycle de vie des abonnements.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.90\textwidth]{assets/subscription_state.png}
+\caption{Diagramme d'\'Etat --- Cycle de Vie des Abonnements}
+\label{fig:subscription-state}
+\end{figure}
 
 \subsection{Les Attributs du Logiciel}
 
@@ -83,7 +104,7 @@ Avec 20 tables relationnelles et 12 166 lignes de code, le syst\`eme pr\'esente 
 
 \subsubsection{Extensibilit\'e}
 
-L'extensibilit\'e est d\'emontr\'ee par la facilit\'e d'ajouter de nouvelles tables au sch\'ema Drizzle (4 migrations versionn\'ees), l'ajout de nouveaux composants UI sans impacter les existants, et la configuration modulaire de Next.js (\texttt{next.config.ts}).
+L'extensibilit\'e est d\'emontr\'ee par la facilit\'e d'ajouter de nouvelles tables au sch\'ema Drizzle (4 migrations versionn\'ees), l'ajout de nouveaux composants UI sans impacter les existants, et la configuration modulaire du framework.
 
 \subsubsection{Lisibilit\'e et Visibilit\'e du Comportement}
 
@@ -113,9 +134,9 @@ Le d\'eveloppement de SaaS Directory s'est d\'eroul\'e en plusieurs phases docum
 
 \textbf{Phase 3 : Base de donn\'ees et sch\'ema.} D\'efinition du sch\'ema Drizzle ORM complet (20 tables), cr\'eation des 4 migrations versionn\'ees, et script de seed.
 
-\textbf{Phase 4 : Authentification et profils.} D\'eveloppement des pages login/signup avec TDD, gestion des profils utilisateurs (table \texttt{profile}), et syst\`eme de lancement de produits (tables \texttt{launch}, \texttt{category}, \texttt{launchCategory}).
+\textbf{Phase 4 : Authentification et profils.} D\'eveloppement des pages login/signup avec TDD, gestion des profils utilisateurs, et syst\`eme de lancement de produits.
 
-\textbf{Phase 5 : Fonctionnalit\'es core.} D\'eveloppement du marketplace (votes, commentaires), messagerie (tables \texttt{conversation}, \texttt{message}, \texttt{notification}), et syst\`eme d'abonnements Free/Pro (tables \texttt{plan}, \texttt{subscription}).
+\textbf{Phase 5 : Fonctionnalit\'es core.} D\'eveloppement du marketplace (votes, commentaires), messagerie, et syst\`eme d'abonnements Free/Pro.
 
 \textbf{Phase 6 : Polissage et optimisation.} Ajout de la recherche, reset de mot de passe, corrections responsive, et build fixes.
 
@@ -146,7 +167,7 @@ Le diagramme de cas d'utilisation mod\'elise les interactions entre les acteurs 
 
 \subsubsection{Diagramme de Classes}
 
-Le sch\'ema Drizzle ORM dans \texttt{src/lib/db/schema.ts} constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables.
+Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables.
 
 \begin{figure}[p]
 \centering
@@ -168,7 +189,7 @@ Le diagramme de s\'equence illustre l'interaction entre les acteurs et le syst\`
 \label{fig:sequence}
 \end{figure}
 
-L'utilisateur \'emetteur saisit le message via l'interface React. Le Client Component appelle la Server Action \texttt{sendMessage} qui ins\`ere le message dans la table \texttt{message} via Drizzle ORM. Cette architecture d\'emontre la s\'eparation des pr\'eoccupations entre pr\'esentation, m\'etier et persistance.
+L'utilisateur \'emetteur saisit le message via l'interface React. Le composant client appelle l'action serveur qui ins\`ere le message dans la base de donn\'ees via l'ORM. Cette architecture d\'emontre la s\'eparation des pr\'eoccupations entre pr\'esentation, m\'etier et persistance.
 
 \subsection{M\'ethodes Formelles et Langage Z}
 
@@ -184,7 +205,7 @@ Les normes sont des apports document\'es contenant des sp\'ecifications techniqu
 
 \subsection{La Norme ISO et la Certification ISO 9000}
 
-L'International Organization for Standardization (ISO), cr\'e\'ee en 1947, est une f\'ed\'eration mondiale d'organismes nationaux de normalisation. La norme ISO 9000 traduit la d\'emarche qualit\'e au niveau de l'entreprise. Dans le contexte de SaaS Directory, la gestion documentaire est assur\'ee par les fichiers README.md et AGENTS.md, et la tra\,cabilit\'e est garantie par l'historique Git et les migrations Drizzle num\'erot\'ees (0000 \`a 0003).
+L'International Organization for Standardization (ISO), cr\'e\'ee en 1947, est une f\'ed\'eration mondiale d'organismes nationaux de normalisation. La norme ISO 9000 traduit la d\'emarche qualit\'e au niveau de l'entreprise. Dans le contexte de SaaS Directory, la gestion documentaire est assur\'ee par la documentation du projet, et la tra\,cabilit\'e est garantie par l'historique Git et les migrations Drizzle num\'erot\'ees (0000 \`a 0003).
 
 \subsection{Les Normes IEEE}
 
@@ -206,15 +227,15 @@ Pour appliquer la validation et la v\'erification. Norme facilement adaptable \`
 
 \subsubsection{Normes de Codage}
 
-Le projet respecte des conventions strictes : PascalCase pour les composants React (\texttt{UserCard.tsx}), camelCase pour les fonctions (\texttt{sendMessage()}), et kebab-case pour les routes API. Les imports sont organis\'es par groupe : React/Next.js, biblioth\`eques tierces, composants internes, utilitaires.
+Le projet respecte des conventions strictes : PascalCase pour les composants React, camelCase pour les fonctions, et kebab-case pour les routes API. Les imports sont organis\'es par groupe : React/Next.js, biblioth\`eques tierces, composants internes, utilitaires.
 
 \subsubsection{Architecture Normalis\'ee}
 
-L'architecture suit le pattern MVC adapt\'e \`a Next.js 16.2.4. Le \textbf{Mod\`ele} est constitu\'e par le sch\'ema Drizzle ORM. La \textbf{Vue} est impl\'ement\'ee par les composants React. Le \textbf{Contr\^oleur} est assur\'e par les Server Actions dans \texttt{src/lib/actions/}.
+L'architecture suit le pattern MVC adapt\'e \`a Next.js 16.2.4. Le \textbf{Mod\`ele} est constitu\'e par le sch\'ema Drizzle ORM. La \textbf{Vue} est impl\'ement\'ee par les composants React. Le \textbf{Contr\^oleur} est assur\'e par les actions serveur du framework.
 
 \subsubsection{Gestion Documentaire et Tra\,cabilit\'e}
 
-La gestion documentaire est assur\'ee par plusieurs artefacts : README.md (pr\'esentation et installation), AGENTS.md (conventions pour les agents de d\'eveloppement), package.json (d\'ependances avec versions exactes), et commits Git suivant une convention descriptive (\texttt{feat:}, \texttt{fix:}, \texttt{chore:}).
+La gestion documentaire est assur\'ee par plusieurs artefacts : documentation de pr\'esentation et installation, conventions de d\'eveloppement, gestion des d\'ependances avec versions exactes, et messages de commit suivant une convention descriptive.
 
 
 % ======================== CHAPITRE 6 ========================
@@ -228,23 +249,34 @@ La strat\'egie de tests de SaaS Directory repose sur une pyramide de tests class
 
 \subsubsection{Tests Unitaires}
 
-Les tests unitaires sont impl\'ement\'es avec Vitest 4.1.5. Dix fichiers de test couvrent l'authentification (\texttt{auth-client.test.ts}), la souscription (\texttt{subscription.test.ts}), le sch\'ema Drizzle (\texttt{schema.test.ts}), les actions serveur (\texttt{post.test.ts}, \texttt{launch.test.ts}, \texttt{message.test.ts}), et les composants UI (\texttt{theme-toggle.test.tsx}, \texttt{infrastructure.test.tsx}, \texttt{page.test.tsx} pour login et signup).
+Les tests unitaires sont impl\'ement\'es avec Vitest 4.1.5. Dix fichiers de test couvrent l'authentification, la souscription, le sch\'ema de base de donn\'ees, les actions serveur, et les composants UI.
 
 \subsubsection{Tests d'Int\'egration et End-to-End}
 
-Les tests end-to-end sont r\'ealis\'es avec Playwright 1.59.1. La configuration (\texttt{playwright.config.ts}) d\'efinit un projet Chromium avec tracing activ\'e. Le fichier \texttt{e2e/homepage.spec.ts} teste le parcours utilisateur critique.
+Les tests end-to-end sont r\'ealis\'es avec Playwright 1.59.1. La configuration d\'efinit un projet Chromium avec tracing activ\'e. Les tests end-to-end de la page d'accueil valident le parcours utilisateur critique.
+
+\subsubsection{Pyramide des Tests}
+
+La figure~\ref{fig:test-pyramid} illustre la strat\'egie de tests de SaaS Directory selon le mod\`ele de la pyramide classique.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{assets/test_pyramid.png}
+\caption{Pyramide des Tests --- Strat\'egie de validation de SaaS Directory}
+\label{fig:test-pyramid}
+\end{figure}
 
 \subsubsection{Tests de Performance}
 
-La performance est \'evalu\'ee par l'optimisation des requ\^etes Drizzle ORM et la configuration des indexes PostgreSQL. Le projet inclut un script de benchmark pour le cache Redis (repertoire \texttt{scripts/}).
+La performance est \'evalu\'ee par l'optimisation des requ\^etes Drizzle ORM et la configuration des indexes PostgreSQL. Le projet inclut un script de benchmark pour le cache Redis.
 
 \subsection{Outils et Environnement de Test}
 
-L'environnement de test de SaaS Directory utilise le fichier \texttt{docker-compose.test.yml} qui d\'efinit une base PostgreSQL de test sur le port 5433. La s\'eparation des environnements (d\'eveloppement, test, production) est assur\'ee par les variables d'environnement : \texttt{DATABASE\_URL} pour le d\'eveloppement, \texttt{DATABASE\_URL\_TEST} pour les tests.
+L'environnement de test utilise une base PostgreSQL d\'edi\'ee sur le port 5433. La s\'eparation des environnements (d\'eveloppement, test, production) est assur\'ee par des variables d'environnement d\'edi\'ees.
 
 \subsection{Couverture et R\'esultats}
 
-La couverture de tests cible les fonctions critiques : authentification (cr\'eation de compte, connexion, 2FA), gestion des r\^oles, marketplace (cr\'eation de produit, vote, commentaire), messagerie (envoi, r\'eception), et abonnements (souscription, changement de plan). Les seuils de couverture sont configur\'es dans \texttt{vitest.config.ts} avec un minimum de 70\%.
+La couverture de tests cible les fonctions critiques : authentification (cr\'eation de compte, connexion, 2FA), gestion des r\^oles, marketplace (cr\'eation de produit, vote, commentaire), messagerie (envoi, r\'eception), et abonnements (souscription, changement de plan). Les seuils de couverture sont configur\'es avec un minimum de 70\%.
 
 
 % ======================== CHAPITRE 7 ========================
@@ -279,7 +311,7 @@ L'estimation des co\^uts d'un projet logiciel est un exercice d\'elicat. Pour co
 
 \subsubsection{Taille du Projet}
 
-Le codebase de SaaS Directory compte 12 166 lignes de code r\'eparties sur 108 fichiers TypeScript/TSX, soit approximativement 14 KLOC. R\'epartition principale : \texttt{src/app} (3 198 LOC), \texttt{src/components} (5 234 LOC), \texttt{src/lib} (2 957 LOC), tests (111 LOC), e2e (33 LOC).
+Le codebase de SaaS Directory compte 12 166 lignes de code r\'eparties sur 108 fichiers TypeScript/TSX, soit approximativement 14 KLOC. R\'epartition principale : application (3 198 LOC), composants (5 234 LOC), utilitaires serveur (2 957 LOC), tests (111 LOC), end-to-end (33 LOC).
 
 \subsubsection{Application du COCOMO de Base}
 
@@ -344,7 +376,7 @@ La performance est optimis\'ee par : les indexes PostgreSQL d\'efinis dans le sc
 
 \subsection{Plan de Continuit\'e}
 
-En cas d'incident majeur, plusieurs mesures sont pr\'e vues : restauration depuis les backups PostgreSQL, reconstruction du sch\'ema via les migrations Drizzle (0000 \`a 0003), retour \`a une version stable via Git (branche \texttt{master} + tags), et documentation technique (README.md, AGENTS.md) facilitant l'onboarding d'un nouveau d\'eveloppeur.
+En cas d'incident majeur, plusieurs mesures sont pr\'e vues : restauration depuis les backups PostgreSQL, reconstruction du sch\'ema via les migrations Drizzle (0000 \`a 0003), retour \`a une version stable via Git (branche principale et tags), et documentation technique facilitant l'onboarding d'un nouveau d\'eveloppeur.
 
 
 % ======================== CHAPITRE 9 ========================
@@ -358,12 +390,21 @@ Plusieurs types de changements ont affect\'e le projet. Les \textbf{changements 
 
 \subsection{Gestion des Versions}
 
-Le contr\^ole de versions est assur\'e par Git avec une strat\'egie de branches structur\'ee. La branche \texttt{master} constitue la version de production stable. Les branches de fonctionnalit\'es (\texttt{omar}, \texttt{redis}, et autres) isolent le d\'eveloppement. Les pull requests avec revue de code assurent la qualit\'e avant fusion.
+Le contr\^ole de versions est assur\'e par Git avec une strat\'egie de branches structur\'ee. La branche principale constitue la version de production stable. Les branches de fonctionnalit\'es isolent le d\'eveloppement. Les pull requests avec revue de code assurent la qualit\'e avant fusion.
 
-Les migrations Drizzle constituent un m\'ecanisme de gestion du changement au niveau de la persistance. Chaque migration est un fichier SQL versionn\'e (de 0000 \`a 0003) qui peut \^etre appliqu\'ee et revert\'ee. Cette approche garantit la coh\'erence du sch\'ema entre les environnements.
+Les migrations Drizzle constituent un m\'ecanisme de gestion du changement au niveau de la persistance. Chaque migration est un fichier SQL versionn\'e (de 0000 \`a 0003) qui peut \^etre appliqu\'ee et revert\'ee. La figure~\ref{fig:evolution} pr\'esente la chronologie de l'\'evolution du sch\'ema.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/schema_evolution.png}
+\caption{Chronologie de l'\'Evolution du Sch\'ema --- Migrations Drizzle}
+\label{fig:evolution}
+\end{figure}
+
+Cette approche garantit la coh\'erence du sch\'ema entre les environnements.
 
 \subsection{Adaptation et Communication}
 
-L'architecture modulaire du projet a facilit\'e l'adaptation aux changements. L'ajout du champ \texttt{logoUrl} dans la table \texttt{Launch} (migration 0002) n'a n\'ecessit\'e que la modification d'un seul fichier de sch\'ema et de quelques lignes dans le composant frontend.
+L'architecture modulaire du projet a facilit\'e l'adaptation aux changements. L'ajout du champ logo dans la table des produits (migration 0002) n'a n\'ecessit\'e que la modification du sch\'ema de base de donn\'ees et de l'interface associ\'ee.
 
-La communication autour des changements repose sur plusieurs canaux : la documentation technique (README.md, AGENTS.md) maintenue \`a jour, les messages de commit Git suivant une convention descriptive (\texttt{feat:}, \texttt{fix:}, \texttt{chore:}), et les discussions techniques document\'ees dans les pull requests.
+La communication autour des changements repose sur plusieurs canaux : la documentation technique maintenue \`a jour, les messages de commit suivant une convention descriptive, et les discussions techniques document\'ees dans les revues de code.
