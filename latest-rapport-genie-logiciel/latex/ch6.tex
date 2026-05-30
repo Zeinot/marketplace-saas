@@ -1,0 +1,36 @@
+% Chapitre 6 : Les Tests
+\section{Chapitre 6 : Les Tests}
+
+Les tests logiciels constituent une phase critique du cycle de vie du logiciel, visant à détecter les erreurs et à garantir que le système répond aux exigences fonctionnelles et non-fonctionnelles spécifiées.
+
+\subsection{Types de Tests et Stratégie}
+
+La stratégie de tests de SaaS Directory repose sur une pyramide de tests classique, adaptée à l'architecture moderne de Next.js 16.2.4.
+
+\subsubsection{Tests Unitaires}
+
+Les tests unitaires sont implémentés avec Vitest 4.1.5, un framework de test rapide compatible avec Vite et Next.js. Onze fichiers de test couvrent l'authentification (\texttt{auth-client.test.ts}), la souscription (\texttt{subscription.test.ts}), le schéma Drizzle (\texttt{schema.test.ts}), les actions serveur (\texttt{post.test.ts}, \texttt{launch.test.ts}, \texttt{message.test.ts}), et les composants UI (\texttt{theme-toggle.test.tsx}, \texttt{infrastructure.test.tsx}, \texttt{page.test.tsx} pour login et signup).
+
+Ces tests vérifient le comportement isolé des fonctions et composants, sans dépendances externes. Par exemple, \texttt{schema.test.ts} valide que toutes les colonnes attendues existent dans chaque table, et que les contraintes de clé étrangère sont correctement définies.
+
+\subsubsection{Tests d'Intégration et End-to-End}
+
+Les tests end-to-end sont réalisés avec Playwright 1.59.1, un outil moderne de test d'interface automatisé. La configuration (\texttt{playwright.config.ts}) définit un projet Chromium avec tracing activé. Le fichier \texttt{e2e/homepage.spec.ts} teste le parcours utilisateur critique : navigation, authentification, et affichage du marketplace.
+
+Ces tests vérifient l'intégration complète du système : le frontend React, les Server Actions, l'ORM Drizzle, et la base PostgreSQL. Ils s'exécutent contre une instance locale du serveur de développement Next.js.
+
+\subsubsection{Tests de Performance}
+
+La performance est évaluée par l'optimisation des requêtes Drizzle ORM et la configuration des indexes PostgreSQL. Le projet inclut un script de benchmark pour le cache Redis (\texttt{scripts/benchmark-cache.ts}) qui mesure les temps de réponse du cache par rapport aux requêtes directes en base de données.
+
+\subsection{Outils et Environnement de Test}
+
+L'environnement de test de SaaS Directory est entièrement dockerisé. Le fichier \texttt{docker-compose.test.yml} définit un environnement isolé comprenant une base PostgreSQL de test sur le port 5433, et l'application Next.js en mode test.
+
+La séparation des environnements (développement, test, production) est assurée par les variables d'environnement : \texttt{DATABASE\_URL} pour le développement, \texttt{DATABASE\_URL\_TEST} pour les tests. Cette isolation garantit que les tests ne perturbent jamais les données de développement.
+
+\subsection{Couverture et Résultats}
+
+La couverture de tests cible les fonctions critiques du système : l'authentification (création de compte, connexion, 2FA, gestion de session), la gestion des rôles (administrateur vs utilisateur standard), le marketplace (création de produit, vote, commentaire), la messagerie (envoi, réception, marquage comme lu), et les abonnements (souscription, changement de plan, annulation).
+
+Les seuils de couverture sont configurés dans \texttt{vitest.config.ts} avec un minimum de 70\% pour les branches et les fonctions. Ce seuil est réaliste pour un projet académique tout en garantissant un niveau de qualité professionnel.

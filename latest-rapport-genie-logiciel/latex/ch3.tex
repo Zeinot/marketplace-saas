@@ -1,0 +1,46 @@
+% Chapitre 3 : Représentations du Cycle de Vie du Logiciel
+\section{Chapitre 3 : Représentations du Cycle de Vie du Logiciel}
+
+Le développement d'un logiciel n'est pas simplement l'écriture d'un programme sur une durée variant de quelques heures à quelques années. La taille et la complexité des logiciels actuels exigent l'utilisation de processus de développement structurés, appelés \textbf{cycles de vie du logiciel}.
+
+\subsection{Les Modèles de Cycle de Vie}
+
+Plusieurs modèles de cycle de vie ont été définis dans la littérature du génie logiciel. Le modèle en cascade (waterfall) suit une séquence linéaire de phases : spécification, conception, codage, tests, et maintenance. Chaque phase doit être terminée avant de passer à la suivante. Ce modèle est rigide et peu adapté aux projets où les besoins évoluent.
+
+Le modèle en V associe à chaque phase de développement une phase de test correspondante : spécification $\rightarrow$ tests d'acceptation, conception architecturale $\rightarrow$ tests système, conception détaillée $\rightarrow$ tests d'intégration, codage $\rightarrow$ tests unitaires. Ce modèle met l'accent sur la validation précoce.
+
+Le modèle itératif et incrémental divise le projet en itérations courtes (sprints), chacune livrant une version fonctionnelle du logiciel. Chaque itération inclut analyse, conception, codage et tests. Ce modèle est particulièrement adapté aux projets web modernes où les besoins évoluent rapidement.
+
+\subsection{Choix et Justification du Modèle}
+
+Pour le projet SaaS Directory, nous avons adopté un \textbf{modèle hybride} combinant l'approche incrémentale itérative avec des éléments du modèle en V. Cette décision repose sur trois arguments.
+
+Premièrement, la nature du projet (marketplace web avec messagerie temps réel) implique des besoins fonctionnels complexes et évolutifs. L'approche itérative permet d'adapter le produit aux retours utilisateurs à chaque sprint.
+
+Deuxièmement, le projet académique se déroule sur une période fixe (un semestre). Les itérations de 3-4 semaines correspondent aux jalons naturels du calendrier universitaire.
+
+Troisièmement, l'influence du modèle en V se manifeste dans notre stratégie de tests : chaque fonctionnalité développée lors d'une itération est immédiatement couverte par des tests unitaires (Vitest) et des tests end-to-end (Playwright), garantissant la qualité avant de passer à l'itération suivante.
+
+\subsection{Application au Projet SaaS Directory}
+
+Le développement de SaaS Directory s'est déroulé en cinq itérations principales, chacune livrant une version fonctionnelle déployable.
+
+\subsubsection{Itération 1 : Fondations et Authentification}
+
+Cette itération a établi les fondations techniques du projet : initialisation du projet Next.js 16.2.4 avec TypeScript et Tailwind CSS v4, configuration de Drizzle ORM 0.45.2 avec PostgreSQL, mise en place de Better Auth 1.6.9 (authentification OAuth + 2FA), et création des tables de base (user, session, account, verification). Livrable : application fonctionnelle avec inscription, connexion, et déconnexion.
+
+\subsubsection{Itération 2 : Profil Utilisateur et Lancement de Produits}
+
+La deuxième itération a ajouté la gestion des profils utilisateurs (table \texttt{profile} avec \texttt{displayName}, \texttt{bio}, \texttt{website}, \texttt{twitter}, \texttt{github}, \texttt{avatarUrl}) et le système de lancement de produits SaaS. Les tables \texttt{launch}, \texttt{category}, et \texttt{launchCategory} ont été créées. Livrable : création de profil, ajout de produits avec images, et catégorisation.
+
+\subsubsection{Itération 3 : Marketplace}
+
+La troisième itération a développé le cÅ“ur métier de l'application : le marketplace. Cette phase a inclus la liste des produits avec pagination, la recherche full-text, les filtres par catégorie, et le système de votes (table \texttt{upvote}). Les tables \texttt{comment}, \texttt{post}, \texttt{postUpvote}, et \texttt{postComment} ont également été ajoutées. Livrable : marketplace consultable avec votes et commentaires.
+
+\subsubsection{Itération 4 : Messagerie et Notifications}
+
+La quatrième itération a introduit la communication temps réel entre utilisateurs. Les tables \texttt{conversation}, \texttt{conversationParticipant}, et \texttt{message} ont été créées pour la messagerie directe. Le système de notifications (table \texttt{notification}) a été implémenté avec support temps réel via Redis Pub/Sub. Livrable : messagerie instantanée et notifications push.
+
+\subsubsection{Itération 5 : Monétisation}
+
+La cinquième et dernière itération a intégré le système d'abonnements Free/Pro. Les tables \texttt{plan} et \texttt{subscription} ont été créées, avec gestion des intervalles de facturation (month/year) et des statuts (active, canceled, past\_due). Livrable : système d'abonnements avec limitations fonctionnelles selon le plan.

@@ -1,0 +1,68 @@
+% Chapitre 2 : Génie Logiciel â€” Généralités
+\section{Chapitre 2 : Génie Logiciel â€” Généralités}
+
+\subsection{Objectifs du Génie Logiciel}
+
+Le \textbf{Génie Logiciel (GL)} vise à utiliser l'informatique dans les entreprises comme outil quotidien, à réduire les coûts de développement et de maintenance, à améliorer la qualité des logiciels, et à augmenter la productivité des équipes. Ces objectifs s'inscrivent dans une démarche globale de maîtrise du cycle de vie du logiciel.
+
+Le GL touche l'ensemble du cycle de vie du logiciel, depuis l'étude et l'analyse du besoin jusqu'à la maintenance en passant par la conception, le codage, les tests et la documentation. Cette vision holistique garantit que chaque phase est cohérente avec les autres et contribue à l'objectif final : un logiciel de qualité, livré dans les délais et respectant le budget.
+
+\subsection{Les Principes du GL Appliqués}
+
+Le cours de Génie Logiciel énonce sept principes fondamentaux. Leur application au projet SaaS Directory se décline comme suit.
+
+\subsubsection{Rigueur}
+
+La rigueur se traduit par une grande exactitude dans l'application des règles. Dans le projet, cette exigence est matérialisée par l'utilisation de TypeScript (typage statique strict), les conventions de nommage strictes (PascalCase pour les composants, camelCase pour les fonctions), et la revue systématique du code via les pull requests Git. Le fichier \texttt{AGENTS.md} documente les conventions spécifiques du projet et sert de référentiel pour maintenir la cohérence.
+
+\subsubsection{Séparation des Problèmes}
+
+Ce principe s'applique à trois niveaux dans SaaS Directory. La \textbf{séparation dans le temps} est illustrée par le cycle de développement en cinq itérations (fondations, profil, marketplace, messagerie, monétisation). La \textbf{séparation dans l'espace} est assurée par l'architecture en couches (Client Components dans Next.js 16.2.4, Server Actions, Drizzle ORM, PostgreSQL). La \textbf{séparation en sous-systèmes} se matérialise par la structuration du code en modules cohérents (\texttt{src/app/}, \texttt{src/components/}, \texttt{src/lib/}).
+
+\subsubsection{Modularité}
+
+La modularité est sans doute l'un des principes les plus visiblement appliqués dans le projet. L'architecture est fondée sur des composants React indépendants, chacun responsable d'une fonctionnalité spécifique. Le schéma Drizzle ORM décompose le système en 20 tables distinctes, chacune encapsulant une entité métier. Cette modularité facilite la maintenance, les tests unitaires, et l'évolution du système.
+
+\subsubsection{Abstraction}
+
+L'abstraction consiste à ne considérer à un moment donné que les objets jugés importants du système. SaaS Directory utilise plusieurs niveaux d'abstraction : les Server Actions abstraient la logique métier du rendu UI ; Drizzle ORM abstrait les requêtes SQL complexes ; le système de cache Redis abstrait la gestion des sessions et des données temporaires.
+
+\subsubsection{Généricité}
+
+La généricité est le fait pour un objet de pouvoir être utilisé tel quel dans différents contextes. Les composants UI du projet (boutons, cartes, formulaires) sont conçus comme des composants réutilisables paramétrables via les \texttt{props} React. Le système d'authentification Better Auth est générique et supporte OAuth (Google, GitHub) et l'authentification par email/mot de passe.
+
+\subsubsection{Construction Incrémentale}
+
+Le développement a strictement suivi une approche incrémentale :
+
+\begin{enumerate}
+\item \textbf{Itération 1} : mise en place Next.js 16.2.4 + authentification Better Auth + schéma Drizzle ORM
+\item \textbf{Itération 2} : profil utilisateur + lancement de produits
+\item \textbf{Itération 3} : marketplace (votes, commentaires, catégories)
+\item \textbf{Itération 4} : messagerie temps réel + notifications
+\item \textbf{Itération 5} : abonnements Free/Pro + monétisation
+\end{enumerate}
+
+\subsubsection{Anticipation du Changement}
+
+Ce principe préconise de prévoir et faciliter les changements en favorisant la construction modulaire. L'architecture de SaaS Directory anticipe plusieurs évolutions : le schéma Drizzle inclut déjà les champs \texttt{stripeCustomerId} et \texttt{stripeSubscriptionId} pour une future intégration Stripe ; la messagerie est conçue pour supporter facilement l'ajout de groupes ; le système de plans (Free/Pro) permet d'ajouter de nouveaux niveaux d'abonnement sans modifier le code existant.
+
+\subsection{Les Attributs du Logiciel}
+
+Les attributs du logiciel mesurent sa qualité intrinsèque. L'analyse du codebase de 12 166 lignes réparties sur 108 fichiers permet d'évaluer ces attributs objectivement.
+
+\subsubsection{Couplage}
+
+Le couplage mesure l'indépendance entre modules. Plus le couplage est faible, plus les modules sont indépendants. Dans SaaS Directory, le couplage est faible grÃ¢ce à l'architecture par composants React et l'encapsulation des Server Actions. Chaque table Drizzle ORM est indépendante, avec des relations explicites via les clés étrangères. Le couplage entre le frontend (React) et le backend (Server Actions) est réduit au minimum par l'API interne de Next.js 16.2.4.
+
+\subsubsection{Complexité}
+
+Avec 20 tables relationnelles et 12 166 lignes de code, le système présente une complexité modérée. Cette complexité est maîtrisée par la modularité, le typage statique TypeScript, et la documentation inline (JSDoc). Le ratio moyen de 112 lignes par fichier indique une bonne granularité des modules.
+
+\subsubsection{Extensibilité}
+
+L'extensibilité est le degré d'accommodation aux changements produits par une nouvelle exigence. Elle est démontrée par la facilité d'ajouter de nouvelles tables au schéma Drizzle (4 migrations versionnées), l'ajout de nouveaux composants UI sans impacter les existants, et la configuration modulaire de Next.js (\texttt{next.config.ts}).
+
+\subsubsection{Lisibilité et Visibilité du Comportement}
+
+La lisibilité est assurée par TypeScript (typage explicite), les conventions de nommage strictes, et la documentation JSDoc. La visibilité du comportement est garantie par les tests unitaires (11 fichiers de test couvrant l'authentification, la souscription, le schéma, les actions) et les tests end-to-end (Playwright 1.59.1).

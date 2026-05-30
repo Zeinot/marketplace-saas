@@ -1,0 +1,24 @@
+% Chapitre 9 : Conduite du Changement
+\section{Chapitre 9 : Conduite du Changement}
+
+La conduite du changement est la discipline qui vise à accompagner les transformations au sein d'un projet ou d'une organisation, en minimisant les résistances et en maximisant l'adhésion des parties prenantes.
+
+\subsection{Nature des Changements}
+
+Plusieurs types de changements ont affecté le projet tout au long de son développement. Les \textbf{changements technologiques} incluent la mise à jour de Next.js 15 vers Next.js 16.2.4 (breaking changes sur le App Router), la migration de Tailwind CSS v3 vers v4 (nouvelle syntaxe de configuration), et l'ajout de Redis pour la messagerie temps réel (architecture initialement prévue sans cache dédié).
+
+Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalités non prévues initialement : le système de notifications temps réel, l'édition et la suppression des commentaires, et le système de pagination infinie pour la messagerie.
+
+Les \textbf{changements organisationnels} touchent la répartition des tÃ¢ches entre les deux développeurs, avec des ajustements selon les compétences et les disponibilités de chacun.
+
+\subsection{Gestion des Versions}
+
+Le contrôle de versions est assuré par Git avec une stratégie de branches structurée. La branche \texttt{master} constitue la version de production, stable et déployée. Les branches de fonctionnalités (\texttt{feature/auth-2fa}, \texttt{feature/messaging}, etc.) isolent le développement des nouvelles fonctionnalités. Les pull requests obligatoires avec revue de code assurent la qualité avant fusion.
+
+Les migrations Drizzle constituent un mécanisme de gestion du changement au niveau de la persistance. Chaque migration est un fichier SQL versionné (\texttt{0000\_remarkable\_carnage.sql}, \texttt{0001\_cuddly\_namora.sql}, \texttt{0002\_add\_logo\_url\_to\_launch.sql}, \texttt{0003\_groovy\_hannibal\_king.sql}) qui peut être appliquée et, si nécessaire, revertée. Cette approche garantit la cohérence du schéma de base de données entre les environnements de développement, test et production.
+
+\subsection{Adaptation et Communication}
+
+L'architecture modulaire du projet a facilité l'adaptation aux changements. L'ajout du champ \texttt{logoUrl} dans la table \texttt{Launch} (migration 0002) n'a nécessité que la modification d'un seul fichier de schéma et de quelques lignes dans le composant frontend. Le passage à Next.js 16.2.4 a été géré par la lecture attentive de la documentation de migration officielle et des tests end-to-end Playwright qui ont validé l'absence de régressions.
+
+La communication autour des changements repose sur plusieurs canaux. La documentation technique (README.md, AGENTS.md) est maintenue à jour après chaque changement majeur. Les messages de commit Git suivent une convention descriptive (\texttt{feat:}, \texttt{fix:}, \texttt{chore:}) qui facilite la génération de changelog. Les discussions techniques sont documentées dans les pull requests, créant une base de connaissances consultable pour les décisions architecturales passées.
