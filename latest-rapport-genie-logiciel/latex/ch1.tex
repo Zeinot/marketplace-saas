@@ -1,42 +1,0 @@
-% Chapitre 1 : Rappels
-\section{Chapitre 1 : Rappels}
-
-\subsection{Définitions Fondamentales}
-
-Avant d'aborder les concepts avancés du Génie Logiciel, il est essentiel de poser les bases terminologiques et conceptuelles sur lesquelles repose l'ensemble de la discipline.
-
-\subsubsection{Logiciel et Application}
-
-Un \textbf{logiciel} est défini comme un ensemble de programmes, procédures, règles et documentations relatifs au fonctionnement d'un ensemble de traitements d'informations. Cette définition englobe non seulement le code source, mais aussi la documentation technique, les manuels utilisateurs, et les spécifications fonctionnelles.
-
-Une \textbf{application} est un logiciel qui sert à implanter un système d'informations. On distingue traditionnellement trois grandes catégories d'applications :
-
-\begin{itemize}
-\item \textbf{Applications de gestion} : caractérisées par peu de traitement et beaucoup de données (ex. CRM, ERP).
-\item \textbf{Applications scientifiques} : nécessitant beaucoup de traitement et peu de données (ex. simulations physiques).
-\item \textbf{Applications industrielles} : avec peu de traitement et peu de données (ex. systèmes embarqués).
-\end{itemize}
-
-SaaS Directory s'inscrit dans la catégorie des applications de gestion/web, avec une forte composante de traitement (messagerie temps réel, recherche full-text) et une volumétrie de données significative (20 tables relationnelles, millions de potentielles lignes).
-
-\subsubsection{Système d'Information (SI)}
-
-Le \textbf{Système d'Information (SI)} constitue l'ensemble des flux d'opérations, d'informations et de moyens mis en Å“uvre par une organisation pour traiter ses données et produire de l'information. L'entreprise est un système ouvert sur son environnement, échangeant des flux physiques (produits, personnel, argent) et des flux d'information.
-
-Le \textbf{Système d'Information Automatisé (SIA)} est un système physique reposant sur la technologie informatique. C'est un ensemble de ressources matérielles et logicielles permettant de traiter automatiquement des informations. SaaS Directory est un SIA complet : il traite des données utilisateurs, des transactions de vote, des messages temps réel, et des abonnements, le tout via une infrastructure web moderne.
-
-\subsubsection{Méthode, Outil et Méthodologie}
-
-\begin{definitionbox}[title={Définition : Méthode (Grady Booch, 1994)}]
-Une méthode est un processus discipliné qui génère un ensemble de modèles décrivant les différents aspects d'un système logiciel, en utilisant une notation bien définie.
-\end{definitionbox}
-
-Un \textbf{outil} désigne un programme ou un ensemble de programmes aidant à la mise en Å“uvre des techniques. L'\textbf{Atelier de Génie Logiciel (AGL)} regroupe l'ensemble des outils utilisés pour le développement, la maintenance et la documentation des logiciels.
-
-La \textbf{méthodologie} est la démarche générale qui fait appel à des méthodes et des outils pour aboutir au logiciel final. Pour SaaS Directory, la méthodologie adoptée combine l'approche incrémentale itérative (développement par sprints fonctionnels de 3-4 semaines) avec les principes du cycle de vie en V (validation systématique à chaque phase).
-
-\subsection{Application à SaaS Directory}
-
-SaaS Directory s'inscrit parfaitement dans le cadre théorique des Systèmes d'Information Automatisés. En tant que marketplace web, il traite de grands volumes de données structurées (profils utilisateurs, produits, votes, messages, abonnements) et exige une architecture logicielle rigoureuse pour garantir performance, sécurité et scalabilité.
-
-La méthodologie adoptée pour ce projet combine l'approche incrémentale itérative (développement par sprints fonctionnels) avec les principes du cycle de vie en V (validation systématique à chaque phase). Cette hybridation se justifie par la nature du projet : une application web critique nécessitant à la fois flexibilité (itérations rapides) et fiabilité (tests exhaustifs à chaque niveau).
