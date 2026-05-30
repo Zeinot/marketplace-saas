@@ -96,58 +96,6 @@ export const subscription = pgTable("subscription", {
 
 \newpage
 
-\subsection*{Annexe B : Structure du Projet}
-\addcontentsline{toc}{subsection}{Annexe B : Structure du Projet}
-
-\begin{codebox}
-\begin{lstlisting}
-marketplace-saas/ (12 166 LOC, 108 fichiers)
-|-- e2e/                        (33 LOC)
-|   |-- homepage.spec.ts
-|-- public/
-|   |-- uploads/launches/
-|-- src/
-|   |-- app/                    (3 198 LOC)
-|   |   |-- layout.tsx
-|   |   |-- page.tsx
-|   |   |-- about/, api/, contact/, feed/
-|   |   |-- forgot-password/, launch/, login/
-|   |   |-- marketplace/, messages/, my-launches/
-|   |   |-- new/, notifications/, pricing/
-|   |   |-- privacy/, profile/, reset-password/
-|   |   |-- settings/, signup/, terms/
-|   |-- components/             (5 234 LOC)
-|   |   |-- auth/, dev/, feed/, launch/
-|   |   |-- marketplace/, providers/, ui/
-|   |-- hooks/
-|   |-- lib/                    (2 957 LOC)
-|   |   |-- actions/            (Server Actions)
-|   |   |-- db/
-|   |   |   |-- migrations/     (4 migrations)
-|   |   |   |   |-- 0000_remarkable_carnage.sql
-|   |   |   |   |-- 0001_cuddly_namora.sql
-|   |   |   |   |-- 0002_add_logo_url_to_launch.sql
-|   |   |   |   |-- 0003_groovy_hannibal_king.sql
-|   |   |   |-- schema.ts       (20 tables)
-|   |   |   |-- index.ts
-|   |   |-- auth.ts, auth-client.ts
-|   |   |-- cache.ts, subscription.ts
-|   |   |-- upload.ts, utils.ts
-|   |   |-- *.test.ts           (10 fichiers de test)
-|   |-- test/                   (111 LOC)
-|   |-- types/
-|-- next.config.ts
-|-- package.json
-|-- tsconfig.json
-|-- vitest.config.ts
-|-- playwright.config.ts
-|-- drizzle.config.ts
-|-- docker-compose.test.yml
-\end{lstlisting}
-\end{codebox}
-
-\newpage
-
 \subsection*{Annexe C : Dependances Principales}
 \addcontentsline{toc}{subsection}{Annexe C : Dependances Principales}
 
