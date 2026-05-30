@@ -1,4 +1,4 @@
-% Chapitres 1-9 - Tous les faits verifies contre le codebase
+﻿% Chapitres 1-9 - Tous les faits verifies contre le codebase
 
 % ======================== CHAPITRE 1 ========================
 \section{Chapitre 1 : Rappels}
@@ -25,7 +25,7 @@ Une m\'ethode est un processus disciplin\'e qui g\'en\`ere un ensemble de mod\`e
 
 Un \textbf{outil} d\'esigne un programme ou un ensemble de programmes aidant \`a la mise en oeuvre des techniques. L'\textbf{Atelier de G\'enie Logiciel (AGL)} regroupe l'ensemble des outils utilis\'es pour le d\'eveloppement, la maintenance et la documentation.
 
-La \textbf{m\'ethodologie} est la d\'emarche g\'en\'erale qui fait appel \`a des m\'ethodes et des outils pour aboutir au logiciel final. Pour SaaS Directory, la m\'ethodologie adopt\'ee combine l'approche incrémentale it\'erative avec les principes du cycle de vie en V.
+La \textbf{m\'ethodologie} est la d\'emarche g\'en\'erale qui fait appel \`a des m\'ethodes et des outils pour aboutir au logiciel final. Pour SaaS Directory, la m\'ethodologie adopt\'ee combine l'approche incrÃ©mentale it\'erative avec les principes du cycle de vie en V.
 
 \subsection{Application \`a SaaS Directory}
 
@@ -51,7 +51,7 @@ Trois niveaux de s\'eparation sont appliqu\'es : s\'eparation dans le temps (d\'
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{assets/architecture_layers.png}
+\includegraphics[width=0.85\textwidth,height=0.70\textheight,keepaspectratio]{assets/architecture_layers.png}
 \caption{Architecture en Couches --- SaaS Directory}
 \label{fig:layers}
 \end{figure}
@@ -70,14 +70,14 @@ Les composants UI sont con\,cus comme des composants r\'eutilisables param\'etra
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.90\textwidth]{assets/auth_activity.png}
+\includegraphics[width=0.90\textwidth,height=0.70\textheight,keepaspectratio]{assets/auth_activity.png}
 \caption{Diagramme d'Activit\'e --- Flux d'Authentification}
 \label{fig:auth-activity}
 \end{figure}
 
 \subsubsection{Construction Incr\'ementale}
 
-Le d\'eveloppement a suivi une approche incrémentale document\'ee dans l'historique Git. Les phases principales sont : fondations (Next.js 16.2.4, shadcn, Drizzle), infrastructure de tests (Vitest, Playwright), base de donn\'ees (sch\'ema Drizzle, migrations, seed), authentification TDD (login/signup, tests), fonctionnalit\'es core (marketplace, profils, messages, notifications), et polissage final (recherche, responsive, build fixes).
+Le d\'eveloppement a suivi une approche incrÃ©mentale document\'ee dans l'historique Git. Les phases principales sont : fondations (Next.js 16.2.4, shadcn, Drizzle), infrastructure de tests (Vitest, Playwright), base de donn\'ees (sch\'ema Drizzle, migrations, seed), authentification TDD (login/signup, tests), fonctionnalit\'es core (marketplace, profils, messages, notifications), et polissage final (recherche, responsive, build fixes).
 
 \subsubsection{Anticipation du Changement}
 
@@ -85,7 +85,7 @@ L'architecture anticipe plusieurs \'evolutions : le sch\'ema Drizzle inclut d\'e
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.90\textwidth]{assets/subscription_state.png}
+\includegraphics[width=0.90\textwidth,height=0.70\textheight,keepaspectratio]{assets/subscription_state.png}
 \caption{Diagramme d'\'Etat --- Cycle de Vie des Abonnements}
 \label{fig:subscription-state}
 \end{figure}
@@ -126,19 +126,19 @@ Pour SaaS Directory, nous avons adopt\'e un \textbf{mod\`ele hybride} combinant 
 
 \subsection{Application au Projet SaaS Directory}
 
-Le d\'eveloppement de SaaS Directory s'est d\'eroul\'e en plusieurs phases document\'ees dans l'historique Git, chacune apportant des fonctionnalit\'es concr\`etes.
+Le d\'eveloppement de SaaS Directory s'est d\'eroul\'e sur environ trois semaines, du 5 au 21 mai 2026, comme l'atteste l'historique Git du projet. Le travail a \'et\'e r\'eparti entre trois d\'eveloppeurs selon une approche incr\'ementale it\'erative.
 
-\textbf{Phase 1 : Fondations.} Initialisation du projet Next.js 16.2.4 avec TypeScript et Tailwind CSS v4, configuration de Drizzle ORM 0.45.2 avec PostgreSQL, mise en place de Better Auth 1.6.9, et cr\'eation des tables de base (user, session, account, verification).
+\textbf{Phase 1 : Fondations (5 mai).} Initialisation du projet Next.js 16.2.4 avec TypeScript et Tailwind CSS v4, configuration de Drizzle ORM 0.45.2 avec PostgreSQL, mise en place de Better Auth 1.6.9, et cr\'eation des tables de base (user, session, account, verification).
 
-\textbf{Phase 2 : Infrastructure de tests.} Mise en place de Vitest 4.1.5, React Testing Library, Playwright 1.59.1, et configuration des seuils de couverture.
+\textbf{Phase 2 : Infrastructure de tests (5--6 mai).} Mise en place de Vitest 4.1.5, React Testing Library, Playwright 1.59.1, et configuration des seuils de couverture.
 
-\textbf{Phase 3 : Base de donn\'ees et sch\'ema.} D\'efinition du sch\'ema Drizzle ORM complet (20 tables), cr\'eation des 4 migrations versionn\'ees, et script de seed.
+\textbf{Phase 3 : Base de donn\'ees et sch\'ema (6 mai).} D\'efinition du sch\'ema Drizzle ORM complet (20 tables), cr\'eation des 4 migrations versionn\'ees, et script de seed.
 
-\textbf{Phase 4 : Authentification et profils.} D\'eveloppement des pages login/signup avec TDD, gestion des profils utilisateurs, et syst\`eme de lancement de produits.
+\textbf{Phase 4 : Authentification et profils (6 mai).} D\'eveloppement des pages login/signup avec TDD, gestion des profils utilisateurs, et syst\`eme de lancement de produits.
 
-\textbf{Phase 5 : Fonctionnalit\'es core.} D\'eveloppement du marketplace (votes, commentaires), messagerie, et syst\`eme d'abonnements Free/Pro.
+\textbf{Phase 5 : Fonctionnalit\'es core (6--7 mai).} D\'eveloppement du marketplace (votes, commentaires), messagerie en temps r\'eel, et syst\`eme d'abonnements Free/Pro.
 
-\textbf{Phase 6 : Polissage et optimisation.} Ajout de la recherche, reset de mot de passe, corrections responsive, et build fixes.
+\textbf{Phase 6 : Polissage et optimisation (7--8 mai, 21 mai).} Ajout de la recherche, reset de mot de passe, pagination infinie, corrections responsive, et build fixes.
 
 
 % ======================== CHAPITRE 4 ========================
@@ -160,7 +160,7 @@ Le diagramme de cas d'utilisation mod\'elise les interactions entre les acteurs 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/use_case.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/use_case.png}
 \caption{Diagramme de Cas d'Utilisation --- SaaS Directory}
 \label{fig:use-case}
 \end{figure}
@@ -171,7 +171,7 @@ Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de cla
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=0.90\textwidth]{assets/class.png}
+\includegraphics[width=0.90\textwidth,height=0.70\textheight,keepaspectratio]{assets/class.png}
 \caption{Diagramme de Classes (20 tables)}
 \label{fig:class}
 \end{figure}
@@ -184,7 +184,7 @@ Le diagramme de s\'equence illustre l'interaction entre les acteurs et le syst\`
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/sequence.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/sequence.png}
 \caption{Diagramme de S\'equence --- Envoi d'un Message}
 \label{fig:sequence}
 \end{figure}
@@ -261,7 +261,7 @@ La figure~\ref{fig:test-pyramid} illustre la strat\'egie de tests de SaaS Direct
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{assets/test_pyramid.png}
+\includegraphics[width=0.85\textwidth,height=0.70\textheight,keepaspectratio]{assets/test_pyramid.png}
 \caption{Pyramide des Tests --- Strat\'egie de validation de SaaS Directory}
 \label{fig:test-pyramid}
 \end{figure}
@@ -292,18 +292,18 @@ Le \textbf{Work Breakdown Structure (WBS)} d\'ecompose le projet en t\^aches hi\
 
 Le \textbf{Product Breakdown Structure (PBS)} identifie les livrables : authentification fonctionnelle, profil utilisateur op\'erationnel, marketplace avec votes et commentaires, syst\`eme de messagerie, et abonnements Free/Pro.
 
-Le \textbf{Organizational Breakdown Structure (OBS)} r\'epartit les responsabilit\'es entre les deux d\'eveloppeurs du projet.
+Le \textbf{Organizational Breakdown Structure (OBS)} r\'epartit les responsabilit\'es entre les trois d\'eveloppeurs du projet.
 
 \subsection{Planification (GANTT, PERT)}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/gantt.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/gantt.png}
 \caption{Diagramme de GANTT --- Planification du Projet SaaS Directory}
 \label{fig:gantt}
 \end{figure}
 
-La figure~\ref{fig:gantt} pr\'esente la r\'epartition temporelle des phases du projet sur une \'echelle de 130 jours. Le diagramme PERT mod\'elise les d\'ependances entre t\^aches de type ``fin \`a d\'ebut''.
+La figure~\ref{fig:gantt} pr\'esente une planification hypoth\'etique \`a vis\'ee p\'edagogique sur une \'echelle de 130 jours, illustrant le d\'ecoupage type d'un projet web de cette envergure. Le diagramme PERT mod\'elise les d\'ependances entre t\^aches de type ``fin \`a d\'ebut''.
 
 \subsection{Estimation des Co\^uts par COCOMO}
 
@@ -311,7 +311,7 @@ L'estimation des co\^uts d'un projet logiciel est un exercice d\'elicat. Pour co
 
 \subsubsection{Taille du Projet}
 
-Le codebase de SaaS Directory compte 12 166 lignes de code r\'eparties sur 108 fichiers TypeScript/TSX, soit approximativement 14 KLOC. R\'epartition principale : application (3 198 LOC), composants (5 234 LOC), utilitaires serveur (2 957 LOC), tests (111 LOC), end-to-end (33 LOC).
+Le codebase de SaaS Directory compte 12 166 lignes de code r\'eparties sur 108 fichiers TypeScript/TSX, soit approximativement 14 KLOC. R\'epartition principale : application (2 309 LOC), composants (5 234 LOC), utilitaires serveur et librairies (2 957 LOC), tests unitaires et d'int\'egration (1 083 LOC), tests end-to-end (33 LOC).
 
 \subsubsection{Application du COCOMO de Base}
 
@@ -331,12 +331,12 @@ Effort estim\'e & $E = a \times (\text{KLOC})^b$ & $E \approx 58$ Personnes-Mois
 Dur\'ee estim\'ee & $D = 2{,}5 \times E^{0{,}35}$ & $D \approx 9{,}5$ mois \\
 Taille d'\'equipe th\'eorique & $N = E / D$ & $N \approx 6$ personnes \\
 \midrule
-\textbf{Taille d'\'equipe r\'eelle} & \textbf{2 d\'eveloppeurs sur 5 mois} & \textbf{10 Personnes-Mois} \\
+\textbf{Taille d'\'equipe r\'eelle} & \textbf{3 d\'eveloppeurs sur 3 semaines} & \textbf{2,3 Personnes-Mois} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Ces chiffres constituent une estimation th\'eorique \`a vis\'ee p\'edagogique. En r\'ealit\'e, le projet a \'et\'e r\'ealis\'e par deux d\'eveloppeurs sur environ 10 Personnes-Mois, illustrant l'\'ecart fr\'equent entre les mod\`eles pr\'e dictifs et la r\'ealit\'e des projets acad\'emiques.
+Ces chiffres constituent une estimation th\'eorique \`a vis\'ee p\'edagogique. En r\'ealit\'e, le projet a \'et\'e r\'ealis\'e par trois d\'eveloppeurs sur environ 2,3 Personnes-Mois (17 jours de d\'eveloppement), illustrant l'\'ecart fr\'equent entre les mod\`eles pr\'edictifs et la r\'ealit\'e des projets acad\'emiques intensifs.
 
 
 % ======================== CHAPITRE 8 ========================
@@ -386,7 +386,7 @@ La conduite du changement est la discipline qui vise \`a accompagner les transfo
 
 \subsection{Nature des Changements}
 
-Plusieurs types de changements ont affect\'e le projet. Les \textbf{changements technologiques} incluent la mise \`a jour de Next.js 15 vers 16.2.4 (breaking changes sur le App Router), la migration de Tailwind CSS v3 vers v4, et l'ajout de Redis pour le cache c\^ot\'e serveur. Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalit\'es : syst\`eme de notifications, \'edition et suppression des commentaires, pagination infinie pour la messagerie. Les \textbf{changements organisationnels} touchent la r\'epartition des t\^aches entre les deux d\'eveloppeurs.
+Plusieurs types de changements ont affect\'e le projet. Les \textbf{changements technologiques} incluent l'ajout de Framer Motion pour les animations, l'int\'egration de Redis pour le cache c\^ot\'e serveur, et l'\'evolution du sch\'ema Drizzle avec les migrations successives. Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalit\'es : syst\`eme de notifications, \'edition et suppression des commentaires, pagination infinie pour la messagerie. Les \textbf{changements organisationnels} touchent la r\'epartition des t\^aches entre les deux d\'eveloppeurs.
 
 \subsection{Gestion des Versions}
 
@@ -396,7 +396,7 @@ Les migrations Drizzle constituent un m\'ecanisme de gestion du changement au ni
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/schema_evolution.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/schema_evolution.png}
 \caption{Chronologie de l'\'Evolution du Sch\'ema --- Migrations Drizzle}
 \label{fig:evolution}
 \end{figure}
