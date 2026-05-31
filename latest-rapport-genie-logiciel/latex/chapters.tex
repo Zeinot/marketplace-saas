@@ -167,18 +167,36 @@ Le diagramme de cas d'utilisation mod\'elise les interactions entre les acteurs 
 
 \subsubsection{Diagramme de Classes}
 
-Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables.
+Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables regroup\'ees en trois packages fonctionnels. Pour pr\'eserver la lisibilit\'e, le diagramme est d\'ecompos\'e en trois sous-diagrammes. Les classes externes (affich\'ees en gris) indiquent les d\'ependances inter-packages.
 
-\clearpage
+\textbf{Package Authentification.} Ce package regroupe les quatre tables de gestion des utilisateurs : \textbf{User} (utilisateur central avec email et image), \textbf{Session} (tokens et expiration), \textbf{Account} (comptes OAuth Google/GitHub), et \textbf{Verification} (codes de v\'erification). La classe User constitue le pivot du sch\'ema avec des relations vers tous les autres packages.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/class.png}
-\caption{Diagramme de Classes (20 tables)}
-\label{fig:class}
+\includegraphics[width=0.95\textwidth]{assets/class_auth.png}
+\caption{Diagramme de Classes --- Package Authentification (4 tables)}
+\label{fig:class-auth}
 \end{figure}
 
-Les tables sont regroup\'ees en trois cat\'egories : \textbf{Better Auth} (user, session, account, verification) ; \textbf{m\'etier principal} (profile, launch, category, plan, subscription) ; et \textbf{interaction sociale} (upvote, comment, post, postUpvote, postComment, conversation, conversationParticipant, message, notification).
+\textbf{Package M\'etier Principal.} Ce package contient cinq tables : \textbf{Profile} (profil utilisateur avec bio et avatar), \textbf{Launch} (produit SaaS avec titre, description et logo), \textbf{Category} (cat\'egories du marketplace), \textbf{Plan} (abonnements Free/Pro avec tarification), et \textbf{Subscription} (lien entre utilisateur et plan). La table Launch est au centre du domaine m\'etier avec des relations vers votes, commentaires, images et cat\'egories.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/class_metier.png}
+\caption{Diagramme de Classes --- Package M\'etier Principal (5 tables)}
+\label{fig:class-metier}
+\end{figure}
+
+\textbf{Package Interaction Sociale.} Ce package rassemble onze tables : \textbf{Upvote} et \textbf{PostUpvote} (votes sur produits et posts), \textbf{Comment} et \textbf{PostComment} (commentaires), \textbf{Post} (publications utilisateur), \textbf{Conversation} et \textbf{Message} (messagerie), \textbf{ConversationParticipant} (membres d'une conversation), \textbf{Notification} (alertes utilisateur), et \textbf{LaunchImage} / \textbf{LaunchCategory} (relations Launch-Image et Launch-Cat\'egorie).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/class_social.png}
+\caption{Diagramme de Classes --- Package Interaction Sociale (11 tables)}
+\label{fig:class-social}
+\end{figure}
+
+Cette d\'ecomposition modulaire refl\`ete l'organisation du sch\'ema Drizzle ORM en packages s\'epar\'es. Chaque package encapsule un domaine fonctionnel tout en maintenant des relations explicites via les cl\'es \'etrang\`eres. Le package Authentification agit comme pivot central, tandis que le package Social repr\'esente la couche d'interaction utilisateur la plus dynamique.
 
 \subsubsection{Diagramme de S\'equence}
 
