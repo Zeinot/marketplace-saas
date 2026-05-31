@@ -61,3 +61,6 @@ postgres_data/
 # OS
 Thumbs.db
 .playwright-mcp/
+
+# report prompt
+PROMPT.md

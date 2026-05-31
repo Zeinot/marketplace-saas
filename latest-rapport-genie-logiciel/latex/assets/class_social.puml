@@ -1,0 +1,100 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+skinparam note {
+  BackgroundColor #FFFFCC
+  BorderColor #AAAA00
+}
+scale 2.0
+
+package "Package Social & Communication" {
+  class Post {
+    id : serial [PK]
+    userId : text [NN, FK→User]
+    content : text [NN]
+    launchId : int [FK→Launch]
+    upvoteCount : int [NN, D=0]
+    commentCount : int [NN, D=0]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class PostUpvote {
+    userId : text [NN, PK, FK→User]
+    postId : int [NN, PK, FK→Post]
+    createdAt : ts [NN, D=now]
+  }
+
+  class PostComment {
+    id : serial [PK]
+    postId : int [NN, FK→Post]
+    userId : text [NN, FK→User]
+    content : text [NN]
+    isDeleted : bool [NN, D=false]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Comment {
+    id : serial [PK]
+    launchId : int [NN, FK→Launch]
+    userId : text [NN, FK→User]
+    content : text [NN]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Conversation {
+    id : serial [PK]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class ConversationParticipant {
+    conversationId : int [NN, PK, FK→Conversation]
+    userId : text [NN, PK, FK→User]
+    lastReadAt : ts
+    createdAt : ts [NN, D=now]
+  }
+
+  class Message {
+    id : serial [PK]
+    conversationId : int [NN, FK→Conversation]
+    senderId : text [NN, FK→User]
+    content : text [NN]
+    isDeleted : bool [NN, D=false]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Notification {
+    id : serial [PK]
+    userId : text [NN, FK→User]
+    type : enum [NN]
+    actorId : text [FK→User]
+    launchId : int [FK→Launch]
+    commentId : int [FK→Comment]
+    messageId : int [FK→Message]
+    read : bool [NN, D=false]
+    createdAt : ts [NN, D=now]
+  }
+}
+
+Post "1" -- "0..*" PostUpvote : reçoit >
+Post "1" -- "0..*" PostComment : contient >
+Conversation "1" -- "0..*" ConversationParticipant : regroupe >
+Conversation "1" -- "0..*" Message : contient >
+
+note bottom of Notification
+  Références externes (schéma Drizzle) :
+  • type ∈ {upvote, comment, message, follow, mention}
+  • actorId, launchId, commentId, messageId : clés étrangères polymorphes
+end note
+
+@enduml

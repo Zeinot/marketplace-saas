@@ -1,0 +1,76 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+skinparam note {
+  BackgroundColor #FFFFCC
+  BorderColor #AAAA00
+}
+scale 2.0
+
+package "Package Authentification" {
+  class User {
+    id : text [PK]
+    name : text [NN]
+    email : text [NN, UQ]
+    emailVerified : bool [NN, D=false]
+    image : text
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Session {
+    id : text [PK]
+    userId : text [NN, FK→User]
+    token : text [NN, UQ]
+    expiresAt : ts [NN]
+    ipAddress : text
+    userAgent : text
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Account {
+    id : text [PK]
+    userId : text [NN, FK→User]
+    accountId : text [NN]
+    providerId : text [NN]
+    accessToken : text
+    refreshToken : text
+    idToken : text
+    accessTokenExpiresAt : ts
+    refreshTokenExpiresAt : ts
+    scope : text
+    password : text
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Verification {
+    id : text [PK]
+    identifier : text [NN]
+    value : text [NN]
+    expiresAt : ts [NN]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+}
+
+User "1" -- "0..*" Session : gère >
+User "1" -- "0..*" Account : possède >
+
+note bottom of User
+  Références externes (schéma Drizzle) :
+  • Profile.id, Subscription.userId, Launch.makerId
+  • Post.userId, Upvote.userId, Comment.userId
+  • PostComment.userId, PostUpvote.userId
+  • Message.senderId, Notification.userId
+  • ConversationParticipant.userId
+end note
+
+@enduml

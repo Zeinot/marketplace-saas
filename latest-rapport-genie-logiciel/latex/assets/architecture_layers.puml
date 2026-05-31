@@ -1,0 +1,48 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam monochrome false
+
+skinparam package {
+  BackgroundColor<<Client>> #E3F2FD
+  BackgroundColor<<Serveur>> #E8F5E9
+  BackgroundColor<<Donnees>> #FFF3E0
+  BackgroundColor<<Persistance>> #FCE4EC
+  BorderColor Black
+}
+
+skinparam component {
+  BackgroundColor White
+  BorderColor Black
+}
+
+title Architecture en Couches --- SaaS Directory
+
+package "Couche Client" <<Client>> {
+  [Navigateur] as Browser
+  [React 19.2.4] as React
+  [Composants UI] as UI
+}
+
+package "Couche Serveur" <<Serveur>> {
+  [Next.js 16.2.4] as Next
+  [App Router] as Router
+  [Server Actions] as Actions
+}
+
+package "Couche Acces Donnees" <<Donnees>> {
+  [Requetes type-safe] as Queries
+  [Drizzle ORM 0.45.2] as Drizzle
+}
+
+package "Couche Persistance" <<Persistance>> {
+  database "PostgreSQL" as Postgres
+  storage "Redis Cache" as Redis
+}
+
+UI --> Router : Requete HTTPS
+Actions --> Queries : Requete ORM
+Drizzle --> Postgres : Requête SQL
+Drizzle --> Redis : Lecture / écriture cache
+
+@enduml

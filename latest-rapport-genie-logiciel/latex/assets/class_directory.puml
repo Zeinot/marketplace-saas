@@ -1,0 +1,121 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+skinparam note {
+  BackgroundColor #FFFFCC
+  BorderColor #AAAA00
+}
+scale 2.0
+
+package "Package Annuaire (Directory)" {
+  class Profile {
+    id : text [PK, FK→User]
+    displayName : text
+    bio : text
+    website : text
+    twitter : text
+    github : text
+    avatarUrl : text
+    notificationPreferences : jsonb [D=...]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Category {
+    id : serial [PK]
+    name : text [NN, UQ]
+    slug : text [NN, UQ]
+    description : text
+    color : text
+    createdAt : ts [NN, D=now]
+  }
+
+  class Plan {
+    id : serial [PK]
+    name : text [NN]
+    slug : text [NN, UQ]
+    description : text
+    stripeProductId : text
+    stripeMonthlyPriceId : text
+    stripeYearlyPriceId : text
+    features : json [D=[]]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Subscription {
+    id : serial [PK]
+    userId : text [NN, UQ, FK→User]
+    planId : int [FK→Plan]
+    billingInterval : enum {month,year}
+    status : enum [NN, D=incomplete]
+    stripeCustomerId : text
+    stripeSubscriptionId : text
+    currentPeriodStart : ts
+    currentPeriodEnd : ts
+    cancelAtPeriodEnd : bool [NN, D=false]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class Launch {
+    id : serial [PK]
+    slug : text [NN, UQ]
+    title : text [NN]
+    tagline : text [NN]
+    description : text [NN]
+    websiteUrl : text
+    demoUrl : text
+    makerId : text [NN, FK→User]
+    isForSale : bool [NN, D=false]
+    askingPrice : int
+    monthlyRecurringRevenue : int
+    logoUrl : text
+    isFeatured : bool [NN, D=false]
+    upvoteCount : int [NN, D=0]
+    commentCount : int [NN, D=0]
+    createdAt : ts [NN, D=now]
+    updatedAt : ts [NN, D=now]
+  }
+
+  class LaunchImage {
+    id : serial [PK]
+    launchId : int [NN, FK→Launch]
+    url : text [NN]
+    alt : text
+    sortOrder : int [NN, D=0]
+    createdAt : ts [NN, D=now]
+  }
+
+  class LaunchCategory {
+    launchId : int [NN, PK, FK→Launch]
+    categoryId : int [NN, PK, FK→Category]
+  }
+
+  class Upvote {
+    userId : text [NN, PK, FK→User]
+    launchId : int [NN, PK, FK→Launch]
+    createdAt : ts [NN, D=now]
+  }
+}
+
+Profile "1" -- "0..1" Subscription : appartient à >
+Plan "1" -- "0..*" Subscription : définit >
+Launch "1" -- "0..*" LaunchImage : contient >
+Launch "1" -- "0..*" LaunchCategory : classé dans >
+Category "1" -- "0..*" LaunchCategory : regroupe >
+Launch "1" -- "0..*" Upvote : reçoit >
+
+note bottom of Launch
+  Références externes (schéma Drizzle) :
+  • Post.launchId (nullable), Comment.launchId
+  • Notification.launchId
+end note
+
+@enduml

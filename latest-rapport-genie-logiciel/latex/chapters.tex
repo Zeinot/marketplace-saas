@@ -25,7 +25,7 @@ Une m\'ethode est un processus disciplin\'e qui g\'en\`ere un ensemble de mod\`e
 
 Un \textbf{outil} d\'esigne un programme ou un ensemble de programmes aidant \`a la mise en oeuvre des techniques. L'\textbf{Atelier de G\'enie Logiciel (AGL)} regroupe l'ensemble des outils utilis\'es pour le d\'eveloppement, la maintenance et la documentation.
 
-La \textbf{m\'ethodologie} est la d\'emarche g\'en\'erale qui fait appel \`a des m\'ethodes et des outils pour aboutir au logiciel final. Pour SaaS Directory, la m\'ethodologie adopt\'ee combine l'approche incrÃ©mentale it\'erative avec les principes du cycle de vie en V.
+La \textbf{m\'ethodologie} est la d\'emarche g\'en\'erale qui fait appel \`a des m\'ethodes et des outils pour aboutir au logiciel final. Pour SaaS Directory, la m\'ethodologie adopt\'ee combine l'approche incr\'ementale it\'erative avec les principes du cycle de vie en V.
 
 \subsection{Application \`a SaaS Directory}
 
@@ -77,7 +77,7 @@ Les composants UI sont con\,cus comme des composants r\'eutilisables param\'etra
 
 \subsubsection{Construction Incr\'ementale}
 
-Le d\'eveloppement a suivi une approche incrÃ©mentale document\'ee dans l'historique Git. Les phases principales sont : fondations (Next.js 16.2.4, shadcn, Drizzle), infrastructure de tests (Vitest, Playwright), base de donn\'ees (sch\'ema Drizzle, migrations, seed), authentification TDD (login/signup, tests), fonctionnalit\'es core (marketplace, profils, messages, notifications), et polissage final (recherche, responsive, build fixes).
+Le d\'eveloppement a suivi une approche incr\'ementale document\'ee dans l'historique Git. Les phases principales sont : fondations (Next.js 16.2.4, shadcn, Drizzle), infrastructure de tests (Vitest, Playwright), base de donn\'ees (sch\'ema Drizzle, migrations, seed), authentification TDD (login/signup, tests), fonctionnalit\'es core (marketplace, profils, messages, notifications), et polissage final (recherche, responsive, build fixes).
 
 \subsubsection{Anticipation du Changement}
 
@@ -132,7 +132,7 @@ Le d\'eveloppement de SaaS Directory s'est d\'eroul\'e sur environ trois semaine
 
 \textbf{Phase 2 : Infrastructure de tests (5--6 mai).} Mise en place de Vitest 4.1.5, React Testing Library, Playwright 1.59.1, et configuration des seuils de couverture.
 
-\textbf{Phase 3 : Base de donn\'ees et sch\'ema (6 mai).} D\'efinition du sch\'ema Drizzle ORM complet (20 tables), cr\'eation des 4 migrations versionn\'ees, et script de seed.
+\textbf{Phase 3 : Base de donn\'ees et sch\'ema (6 mai).} D\'efinition du sch\'ema Drizzle ORM complet (20 tables) et g\'en\'eration progressive des 4 migrations versionn\'ees (0000 \`a 0003), avec script de seed.
 
 \textbf{Phase 4 : Authentification et profils (6 mai).} D\'eveloppement des pages login/signup avec TDD, gestion des profils utilisateurs, et syst\`eme de lancement de produits.
 
@@ -167,36 +167,36 @@ Le diagramme de cas d'utilisation mod\'elise les interactions entre les acteurs 
 
 \subsubsection{Diagramme de Classes}
 
-Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables regroup\'ees en trois packages fonctionnels. Pour pr\'eserver la lisibilit\'e, le diagramme est d\'ecompos\'e en trois sous-diagrammes. Les classes externes (affich\'ees en gris) indiquent les d\'ependances inter-packages.
+Le sch\'ema Drizzle ORM constitue l'impl\'ementation directe du diagramme de classes. Le syst\`eme compte 20 tables regroup\'ees en trois packages fonctionnels. Pour pr\'eserver la lisibilit\'e, le diagramme est d\'ecompos\'e en trois sous-diagrammes. Les notes en bas de chaque diagramme indiquent les d\'ependances inter-packages sans introduire de classes externes fant\^omes.
 
-\textbf{Package Authentification.} Ce package regroupe les quatre tables de gestion des utilisateurs : \textbf{User} (utilisateur central avec email et image), \textbf{Session} (tokens et expiration), \textbf{Account} (comptes OAuth Google/GitHub), et \textbf{Verification} (codes de v\'erification). La classe User constitue le pivot du sch\'ema avec des relations vers tous les autres packages.
+\textbf{Package Authentification.} Ce package regroupe les quatre tables de gestion des identit\'es : \textbf{User} (identifiant textuel, nom, email, v\'erification email, image), \textbf{Session} (token, expiration, adresse IP, user-agent), \textbf{Account} (comptes OAuth et locaux avec tokens, scopes, mots de passe), et \textbf{Verification} (codes de v\'erification avec expiration). La classe User constitue le pivot du sch\'ema avec des cl\'es \'etrang\`eres dans tous les autres packages.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/class_auth.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/class_auth.png}
 \caption{Diagramme de Classes --- Package Authentification (4 tables)}
 \label{fig:class-auth}
 \end{figure}
 
-\textbf{Package M\'etier Principal.} Ce package contient cinq tables : \textbf{Profile} (profil utilisateur avec bio et avatar), \textbf{Launch} (produit SaaS avec titre, description et logo), \textbf{Category} (cat\'egories du marketplace), \textbf{Plan} (abonnements Free/Pro avec tarification), et \textbf{Subscription} (lien entre utilisateur et plan). La table Launch est au centre du domaine m\'etier avec des relations vers votes, commentaires, images et cat\'egories.
+\textbf{Package Annuaire (Directory).} Ce package contient huit tables structurant le c\oe ur m\'etier du marketplace : \textbf{Profile} (profil utilisateur avec bio, liens sociaux, pr\'ef\'erences JSONB), \textbf{Category} (cat\'egories avec slug et couleur), \textbf{Plan} (abonnements Free/Pro avec identifiants Stripe et features JSON), \textbf{Subscription} (lien utilisateur-plan avec intervalle de facturation, statut, p\'eriodes Stripe), \textbf{Launch} (produit SaaS avec slug, tagline, URLs, prix, revenus r\'ecurrents, logo, votes et commentaires agr\'eg\'es), \textbf{LaunchImage} (images associ\'ees avec ordre de tri), \textbf{LaunchCategory} (relation many-to-many composite Launch-Cat\'egorie), et \textbf{Upvote} (vote utilisateur sur un produit, cl\'e primaire composite). La table Launch est au centre du domaine avec des indexes sur maker, slug, \`a vendre et mis en avant.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/class_metier.png}
-\caption{Diagramme de Classes --- Package M\'etier Principal (5 tables)}
-\label{fig:class-metier}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/class_directory.png}
+\caption{Diagramme de Classes --- Package Annuaire (Directory) (8 tables)}
+\label{fig:class-directory}
 \end{figure}
 
-\textbf{Package Interaction Sociale.} Ce package rassemble onze tables : \textbf{Upvote} et \textbf{PostUpvote} (votes sur produits et posts), \textbf{Comment} et \textbf{PostComment} (commentaires), \textbf{Post} (publications utilisateur), \textbf{Conversation} et \textbf{Message} (messagerie), \textbf{ConversationParticipant} (membres d'une conversation), \textbf{Notification} (alertes utilisateur), et \textbf{LaunchImage} / \textbf{LaunchCategory} (relations Launch-Image et Launch-Cat\'egorie).
+\textbf{Package Social \& Communication.} Ce package rassemble huit tables g\'erant l'interaction utilisateur : \textbf{Post} (publications avec contenu, r\'ef\'erence optionnelle vers un produit, compteurs de votes et commentaires), \textbf{PostUpvote} (vote sur une publication, cl\'e primaire composite), \textbf{PostComment} (commentaire sur publication avec marqueur de suppression logique), \textbf{Comment} (commentaire sur un produit Launch), \textbf{Conversation} (canal de messagerie), \textbf{ConversationParticipant} (membre d'une conversation avec horodatage de derni\`ere lecture, cl\'e primaire composite), \textbf{Message} (message avec contenu, marqueur de suppression logique), et \textbf{Notification} (alerte typ\'ee avec r\'ef\'erences polymorphes vers acteur, produit, commentaire ou message).
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{assets/class_social.png}
-\caption{Diagramme de Classes --- Package Interaction Sociale (11 tables)}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/class_social.png}
+\caption{Diagramme de Classes --- Package Social \& Communication (8 tables)}
 \label{fig:class-social}
 \end{figure}
 
-Cette d\'ecomposition modulaire refl\`ete l'organisation du sch\'ema Drizzle ORM en packages s\'epar\'es. Chaque package encapsule un domaine fonctionnel tout en maintenant des relations explicites via les cl\'es \'etrang\`eres. Le package Authentification agit comme pivot central, tandis que le package Social repr\'esente la couche d'interaction utilisateur la plus dynamique.
+Cette d\'ecomposition modulaire refl\`ete l'organisation fonctionnelle du sch\'ema Drizzle ORM. Le package Authentification agit comme pivot central (toutes les tables r\'ef\'erencent User), le package Annuaire structure le marketplace et la mon\'etisation, et le package Social g\`ere les interactions utilisateur (publications, messagerie, notifications).
 
 \subsubsection{Diagramme de S\'equence}
 
@@ -271,13 +271,13 @@ La strat\'egie de tests de SaaS Directory repose sur une pyramide de tests class
 
 Les tests unitaires sont impl\'ement\'es avec Vitest 4.1.5. Dix fichiers de test couvrent l'authentification, la souscription, le sch\'ema de base de donn\'ees, les actions serveur, et les composants UI.
 
-\subsubsection{Tests d'Int\'egration et End-to-End}
+\subsubsection{Tests End-to-End}
 
-Les tests end-to-end sont r\'ealis\'es avec Playwright 1.59.1. La configuration d\'efinit un projet Chromium avec tracing activ\'e. Les tests end-to-end de la page d'accueil valident le parcours utilisateur critique.
+Les tests end-to-end sont r\'ealis\'es avec Playwright 1.59.1. La configuration d\'efinit un projet Chromium avec tracing activ\'e. Un fichier de test end-to-end valide le parcours utilisateur critique sur la page d'accueil.
 
 \subsubsection{Pyramide des Tests}
 
-La figure~\ref{fig:test-pyramid} illustre la strat\'egie de tests de SaaS Directory selon le mod\`ele de la pyramide classique.
+La figure~\ref{fig:test-pyramid} illustre la strat\'egie de tests de SaaS Directory. Contrairement \`a la pyramide classique \`a trois niveaux, le projet ne compte pas de tests d'int\'egration distincts ; les 10 fichiers de test utilisent Vitest avec React Testing Library pour les tests unitaires et de composants, et un fichier Playwright couvre les parcours utilisateur complets.
 
 \begin{figure}[htbp]
 \centering
@@ -288,7 +288,35 @@ La figure~\ref{fig:test-pyramid} illustre la strat\'egie de tests de SaaS Direct
 
 \subsubsection{Tests de Performance}
 
-La performance est \'evalu\'ee par l'optimisation des requ\^etes Drizzle ORM et la configuration des indexes PostgreSQL. Le projet inclut un script de benchmark pour le cache Redis.
+La performance de SaaS Directory a \'et\'e \'evalu\'ee par benchmark comparatif mesurant l'impact du cache Redis sur les op\'erations de lecture fr\'equentes. Le test a \'et\'e r\'ealis\'e le 10 mai 2026 via le script \texttt{scripts/benchmark-cache.ts} qui compare les temps de r\'eponse avec et sans cache distribu\'e.
+
+\textbf{Architecture du cache.} Le syst\`eme utilise le pattern \textit{Cache-Aside} (Lazy Loading) avec un client Redis (\texttt{ioredis} 5.10.1) encapsul\'e dans le module \texttt{src/lib/cache.ts}. Chaque op\'eration dispose d'un TTL configur\'e : 5 minutes pour la liste des produits, 30 minutes pour les cat\'egories, 10 minutes pour le d\'etail d'un produit, et 3 minutes pour la liste des publications. L'invalidation est g\'er\'ee en \'ecriture (Write-Through) : toute mutation (cr\'eation, vote, commentaire) supprime les cl\'es affect\'ees du cache.
+
+\textbf{R\'esultats mesur\'es.} Le tableau~\ref{tab:perf-cache} pr\'esente les temps de r\'eponse en millisecondes pour trois op\'erations critiques. L'op\'eration ``Get Launch Detail'' n'a pas pu \^etre mesur\'ee car la base de donn\'ees ne contenait aucun produit lors du benchmark.
+
+\begin{table}[H]
+\centering
+\caption{R\'esultats du benchmark Cache Redis --- SaaS Directory (10 mai 2026)}
+\label{tab:perf-cache}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Op\'eration} & \textbf{Sans Cache (ms)} & \textbf{Cache Warm (ms)} & \textbf{Gain} \\
+\midrule
+Liste des produits & 9.17 & 0.05 & \textdownarrow 99.4\% \\
+Cat\'egories & 1.69 & 0.07 & \textdownarrow 95.6\% \\
+Liste des publications & 1.88 & 0.06 & \textdownarrow 97.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La figure~\ref{fig:perf-benchmark} illustre la comparaison visuelle des temps de r\'eponse. Le cache warm (donn\'ees en m\'emoire Redis) r\'eduit les temps de r\'eponse de plus de 95\%, passant de quelques millisecondes de requ\^etes SQL complexes \`a des r\'eponses inf\'erieures \`a 0.1\,ms.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth,height=0.60\textheight,keepaspectratio]{assets/performance_benchmark.png}
+\caption{Impact du Cache Redis sur les Performances --- Comparaison avant/apr\`es}
+\label{fig:perf-benchmark}
+\end{figure}
 
 \subsection{Outils et Environnement de Test}
 
@@ -406,7 +434,7 @@ La conduite du changement est la discipline qui vise \`a accompagner les transfo
 
 \subsection{Nature des Changements}
 
-Plusieurs types de changements ont affect\'e le projet. Les \textbf{changements technologiques} incluent l'ajout de Framer Motion pour les animations, l'int\'egration de Redis pour le cache c\^ot\'e serveur, et l'\'evolution du sch\'ema Drizzle avec les migrations successives. Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalit\'es : syst\`eme de notifications, \'edition et suppression des commentaires, pagination infinie pour la messagerie. Les \textbf{changements organisationnels} touchent la r\'epartition des t\^aches entre les deux d\'eveloppeurs.
+Plusieurs types de changements ont affect\'e le projet. Les \textbf{changements technologiques} incluent l'ajout de Framer Motion pour les animations, l'int\'egration de Redis pour le cache c\^ot\'e serveur, et l'\'evolution du sch\'ema Drizzle avec les migrations successives. Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalit\'es : syst\`eme de notifications, \'edition et suppression des commentaires, pagination infinie pour la messagerie. Les \textbf{changements organisationnels} touchent la r\'epartition des t\^aches entre les trois d\'eveloppeurs.
 
 \subsection{Gestion des Versions}
 
@@ -425,6 +453,6 @@ Cette approche garantit la coh\'erence du sch\'ema entre les environnements.
 
 \subsection{Adaptation et Communication}
 
-L'architecture modulaire du projet a facilit\'e l'adaptation aux changements. L'ajout du champ logo dans la table des produits (migration 0002) n'a n\'ecessit\'e que la modification du sch\'ema de base de donn\'ees et de l'interface associ\'ee.
+L'architecture modulaire du projet a facilit\'e l'adaptation aux changements. La migration 0002 a ajout\'e le champ logoUrl dans la table Launch et les champs isDeleted et updatedAt dans la table Message. La migration 0003 a ajout\'e les pr\'ef\'erences de notification (JSONB) dans la table Profile. Chaque \'evolution n'a n\'ecessit\'e que la modification du sch\'ema Drizzle ORM et de l'interface associ\'ee.
 
 La communication autour des changements repose sur plusieurs canaux : la documentation technique maintenue \`a jour, les messages de commit suivant une convention descriptive, et les discussions techniques document\'ees dans les revues de code.
