@@ -1,5 +1,5 @@
 % main.tex - Rapport de Genie Logiciel - SaaS Directory
-% HEEC Marrakech - 2026
+% HEEC Marrakech - 2025/2026
 \documentclass[12pt,a4paper]{article}
 
 % ===== PACKAGES =====
@@ -25,7 +25,7 @@
 \usepackage{amsmath}
 
 % hyperref MUST be loaded last
-\usepackage[colorlinks=true,linkcolor=HEECnavy,citecolor=darkgray,urlcolor=blue,bookmarks=true,bookmarksnumbered=true,unicode=true,pdftitle={Rapport de Genie Logiciel --- SaaS Directory},pdfauthor={Omar SARSAR, Iliass HARIZ, Soulaymane Elfakir}]{hyperref}
+\usepackage[colorlinks=true,linkcolor=HEECnavy,citecolor=darkgray,urlcolor=blue,bookmarks=true,bookmarksnumbered=true,unicode=true,pdftitle={Rapport de Genie Logiciel --- SaaS Directory},pdfauthor={Omar Sarsar, Iliass Hariz, Soulaymane Elfakir}]{hyperref}
 
 % ===== COLORS =====
 \definecolor{HEECnavy}{RGB}{27,58,107}
@@ -73,51 +73,55 @@
 \thispagestyle{empty}
 \begin{tikzpicture}[remember picture,overlay]
   % Top navy banner
-  \fill[HEECnavy] (current page.north west) rectangle ([yshift=-3cm]current page.north east);
+  \fill[HEECnavy] (current page.north west) rectangle ([yshift=-3.5cm]current page.north east);
   % Gold accent line below banner
-  \draw[HEECgold, line width=2pt] ([yshift=-3cm]current page.north west) -- ([yshift=-3cm]current page.north east);
+  \draw[HEECgold, line width=2pt] ([yshift=-3.5cm]current page.north west) -- ([yshift=-3.5cm]current page.north east);
   % Bottom gold accent line
   \draw[HEECgold, line width=1.5pt] ([yshift=2.5cm]current page.south west) -- ([yshift=2.5cm]current page.south east);
   % Bottom navy strip
   \fill[HEECnavy] (current page.south west) rectangle ([yshift=1cm]current page.south east);
 \end{tikzpicture}
 
-\vspace*{0.5cm}
+\vspace*{0.3cm}
 \begin{center}
 {\color{white}\Huge\bfseries HEEC}\\[0.3em]
 {\color{white}\large École des Hautes Études Économiques Commerciales\\et d'Ingénierie de Marrakech}
 \end{center}
 
-\vspace{2.5cm}
+\vspace{1.8cm}
 
 \begin{center}
-{\color{HEECgold}\rule{0.7\textwidth}{2pt}}\\[1cm]
+{\color{HEECgold}\rule{0.7\textwidth}{2pt}}\\[0.8cm]
 
-{\LARGE\bfseries\color{HEECnavy} RAPPORT DE GÉNIE LOGICIEL\\ET CONDUITE DE PROJET}\\[0.5cm]
+{\Large\bfseries\color{HEECnavy} RAPPORT DE GÉNIE LOGICIEL\\ET CONDUITE DE PROJET}\\[0.4cm]
 
-{\large\color{HEECnavy} Application des concepts de Génie Logiciel\\et de Conduite de Projet au développement de\\[0.5em]
-\textbf{SaaS Directory}}\\[0.8cm]
+{\large\color{HEECnavy} Application des concepts de Génie Logiciel\\et de Conduite de Projet au développement de\\[0.4em]
+\textbf{SaaS Directory}}\\[0.6cm]
 
-{\color{HEECgold}\rule{0.5\textwidth}{1pt}}\\[0.8cm]
+{\color{HEECgold}\rule{0.5\textwidth}{1pt}}\\[0.6cm]
+
+{\large\bfseries Module : Génie Logiciel et Conduite de Projet}\\[0.3cm]
+
+{\large\bfseries Encadrant : Pr. Zahid Noureddine}\\[0.8cm]
 
 {\large\bfseries Présenté par :}\\[0.3cm]
 
 {\large\bfseries\color{HEECnavy} Omar SARSAR\\Iliass HARIZ\\Soulaymane ELFAKIR}\\[0.5cm]
 
-{\Huge\bfseries\color{HEECgold} 2026}
+{\Huge\bfseries\color{HEECgold} 2025 / 2026}
 \end{center}
 
 \newpage
 
-% ======================== DÉDICACE & REMERCIEMENTS ========================
+% ======================== DÉDICACE ========================
 \thispagestyle{empty}
-\vspace*{3cm}
+\vspace*{5cm}
 
 \begin{center}
 {\large\bfseries\color{HEECnavy} Dédicace}
 \end{center}
 
-\vspace{0.8cm}
+\vspace{1cm}
 
 \begin{center}
 {\large\textit{Nous dédions ce travail à nos familles pour leur soutien indéfectible,\\
@@ -125,13 +129,18 @@
 et à tous ceux qui croient en l'innovation technologique au service de la communauté.}}
 \end{center}
 
-\vspace{2.5cm}
+\addcontentsline{toc}{section}{Dédicace}
+\newpage
+
+% ======================== REMERCIEMENTS ========================
+\thispagestyle{empty}
+\vspace*{3cm}
 
 \begin{center}
 {\large\bfseries\color{HEECnavy} Remerciements}
 \end{center}
 
-\vspace{0.8cm}
+\vspace{1cm}
 
 {\large\textit{Nous tenons à exprimer notre profonde gratitude envers l'ensemble de nos enseignants qui nous ont accompagnés tout au long de notre parcours académique. Leurs conseils avisés, leur patience et leur exigence ont été des facteurs déterminants dans la réussite de ce projet.}}
 
@@ -139,7 +148,6 @@ et à tous ceux qui croient en l'innovation technologique au service de la commu
 
 {\large\textit{Nous remercions également nos camarades de promotion pour les échanges enrichissants et l'entraide collective qui ont contribué à notre progression.}}
 
-\addcontentsline{toc}{section}{Dédicace}
 \addcontentsline{toc}{section}{Remerciements}
 \newpage
 
@@ -150,12 +158,10 @@ et à tous ceux qui croient en l'innovation technologique au service de la commu
 
 Ce rapport présente l'application systématique des concepts de Génie Logiciel et de Conduite de Projet au développement de \textbf{SaaS Directory}, une plateforme de marketplace dédiée aux produits logiciels en mode SaaS. Le projet a été réalisé avec une stack technologique moderne comprenant Next.js 16.2.4, React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2, PostgreSQL et Better Auth 1.6.9.
 
-L'étude couvre l'ensemble des neuf chapitres du cours de Génie Logiciel : rappels fondamentaux, généralités, cycle de vie du logiciel, démarche de conception, normalisation, tests, gestion de projet, analyse des risques et conduite du changement. Chaque concept théorique est illustré par sa mise en oeuvre concrète dans le projet.
-
-Le rapport inclut une estimation du coût par la méthode COCOMO appliquée à la base de code réelle de 12 166 lignes, une analyse des risques liés aux breaking changes de Next.js 16.2.4, ainsi qu'une présentation détaillée de la gestion des versions via Git et des migrations Drizzle ORM.
+L'étude couvre l'ensemble des neuf chapitres du cours de Génie Logiciel : rappels fondamentaux, généralités, cycle de vie du logiciel, démarche de conception, normalisation, tests, gestion de projet, analyse des risques et conduite du changement. Chaque concept théorique est illustré par sa mise en oeuvre concrète dans le projet. Le rapport inclut une estimation du coût par la méthode COCOMO appliquée à la base de code réelle de 12 166 lignes, ainsi qu'une présentation détaillée de la gestion des versions via Git et des migrations Drizzle ORM.
 
 \vspace{0.5cm}
-\noindent\textbf{Mots-clés :} Génie Logiciel, Conduite de Projet, Next.js, React, Drizzle ORM, PostgreSQL, COCOMO, Cycle de Vie, UML, Normalisation, Tests Logiciels, Gestion des Risques.
+\noindent\textbf{Mots-clés :} Génie Logiciel, Conduite de Projet, Next.js, React, Drizzle ORM, PostgreSQL, COCOMO, Cycle de Vie, SDLC, Scrum, Normalisation, Tests Logiciels, Gestion des Risques.
 \newpage
 
 % ======================== ABSTRACT ========================
@@ -165,12 +171,10 @@ Le rapport inclut une estimation du coût par la méthode COCOMO appliquée à l
 
 This report presents the systematic application of Software Engineering and Project Management concepts to the development of \textbf{SaaS Directory}, a marketplace platform dedicated to SaaS software products. The project was built using a modern technology stack including Next.js 16.2.4, React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2, PostgreSQL, and Better Auth 1.6.9.
 
-The study covers all nine chapters of the Software Engineering course: fundamental recalls, general concepts, software life cycle, design methodology, standardization, testing, project management, risk analysis, and change management. Each theoretical concept is illustrated by its concrete implementation in the project.
-
-The report includes a COCOMO cost estimation applied to the actual codebase of 12,166 lines, a risk analysis related to Next.js 16.2.4 breaking changes, and a detailed presentation of version control via Git and Drizzle ORM migrations.
+The study covers all nine chapters of the Software Engineering course: fundamental recalls, general concepts, software life cycle, design methodology, standardization, testing, project management, risk analysis, and change management. Each theoretical concept is illustrated by its concrete implementation in the project. The report includes a COCOMO cost estimation applied to the actual codebase of 12,166 lines, as well as a detailed presentation of version control via Git and Drizzle ORM migrations.
 
 \vspace{0.5cm}
-\noindent\textbf{Keywords:} Software Engineering,\allowbreak Project Management,\allowbreak Next.js, React,\allowbreak Drizzle ORM,\allowbreak PostgreSQL,\allowbreak COCOMO,\allowbreak Life Cycle,\allowbreak UML,\allowbreak Standardization,\allowbreak Software Testing,\allowbreak Risk Management.
+\noindent\textbf{Keywords:} Software Engineering, Project Management, Next.js, React, Drizzle ORM, PostgreSQL, COCOMO, Life Cycle, SDLC, Scrum, Standardization, Software Testing, Risk Management.
 \newpage
 
 % ======================== TOC ========================
@@ -191,11 +195,11 @@ Ce rapport a pour objectif de démontrer l'application concrète des concepts th
 
 SaaS Directory est une plateforme de marketplace dédiée aux produits logiciels en mode SaaS (Software as a Service). L'application offre un catalogue où les utilisateurs peuvent découvrir des outils logiciels, voter pour leurs produits préférés, interagir via des commentaires et une messagerie, et souscrire à des plans d'abonnement Free ou Pro.
 
-Le projet a été réalisé avec une stack technologique contemporaine et cohérente : Next.js 16.2.4 (framework React avec App Router), React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2 (ORM type-safe pour PostgreSQL), Better Auth 1.6.9 (authentification complète avec OAuth et 2FA),\allowbreak Redis (cache côté serveur),\allowbreak et Playwright 1.59.1 pour les tests end-to-end.
+Le projet a été réalisé avec une stack technologique contemporaine et cohérente : Next.js 16.2.4 (framework React avec App Router), React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2 (ORM type-safe pour PostgreSQL), Better Auth 1.6.9 (authentification complète avec OAuth et 2FA), Redis (cache côté serveur), et Playwright 1.59.1 pour les tests end-to-end.
 
 \textbf{Le codebase} compte exactement \textbf{20 tables} dans le schéma Drizzle ORM, \textbf{12 166 lignes de code} réparties sur \textbf{108 fichiers} TypeScript/TSX, avec \textbf{4 migrations} versionnées (0000 à 0003). Le projet est versionné sur Git avec une branche principale et des branches de fonctionnalités.
 
-Ce rapport s'articule autour de neuf chapitres principaux. Le premier chapitre présente les rappels fondamentaux sur les concepts de base. Le deuxième traite des généralités du Génie Logiciel et de ses principes. Le troisième décrit les modèles de cycle de vie. Le quatrième expose la démarche de conception avec UML. Le cinquième aborde la normalisation. Le sixième détaille les stratégies de tests. Le septième présente la gestion de projet et l'estimation COCOMO. Le huitième analyse les risques. Le neuvième et dernier chapitre traite de la conduite du changement.
+Ce rapport s'articule autour de neuf chapitres principaux. Le premier chapitre présente les rappels fondamentaux sur les concepts de base. Le deuxième traite des généralités du Génie Logiciel et de ses principes. Le troisième décrit les modèles de cycle de vie SDLC. Le quatrième expose la démarche de conception avec le framework Scrum. Le cinquième aborde la normalisation. Le sixième détaille les stratégies de tests. Le septième présente la gestion de projet et l'estimation COCOMO. Le huitième analyse les risques. Le neuvième et dernier chapitre traite de la conduite du changement.
 \newpage
 
 % ======================== CHAPTERS ========================
@@ -205,11 +209,11 @@ Ce rapport s'articule autour de neuf chapitres principaux. Le premier chapitre p
 \section*{Conclusion Générale et Perspectives}
 \addcontentsline{toc}{section}{Conclusion Générale et Perspectives}
 
-Ce rapport a présenté l'application systématique des concepts de Génie Logiciel et de Conduite de Projet au développement de SaaS Directory. Du point de vue du cycle de vie, le modèle incrémental itératif adopté a permis de livrer des versions fonctionnelles successives, chacune apportant une valeur métier concrète.
+Ce rapport a présenté l'application systématique des concepts de Génie Logiciel et de Conduite de Projet au développement de SaaS Directory. Du point de vue du cycle de vie, le modèle SDLC adopté a permis de structurer le développement en phases claires : analyse des besoins, conception, développement, tests, déploiement et maintenance.
 
-La démarche orientée objet, matérialisée par le schéma Drizzle ORM de 20 tables et les composants React modulaires, assure la maintenabilité et l'évolutivité du système. Les sept diagrammes UML (cas d'utilisation, classes, séquence, activité, état, déploiement, architecture en couches) et les trois visualisations de gestion de projet (GANTT, pyramide des tests, chronologie des migrations) fournissent une documentation visuelle complète du projet.
+La démarche agile, matérialisée par une adaptation académique du framework Scrum, a assuré une progression itérative avec des livrables fonctionnels à chaque sprint. Le schéma Drizzle ORM de 20 tables et les composants React modulaires garantissent la maintenabilité et l'évolutivité du système. Les diagrammes Merise (MCD et MLD) fournissent une documentation structurée de la base de données, tandis que les diagrammes UML (cas d'utilisation, séquence, activité, état, déploiement, architecture en couches) illustrent les aspects dynamiques et statiques du système.
 
-La gestion de projet, illustrée par le WBS, le diagramme de GANTT, et l'estimation COCOMO, démontre la faisabilité d'une planification rigoureuse même dans un contexte académique. L'analyse des risques a permis d'anticiper et de mitiger les principales menaces techniques et sécuritaires.
+La gestion de projet, illustrée par le WBS, le diagramme de GANTT sur 60 jours, et l'estimation COCOMO, démontre la faisabilité d'une planification rigoureuse. L'analyse des risques a permis d'anticiper et de mitiger les principales menaces techniques et sécuritaires.
 
 L'utilisation d'une stack technologique moderne et cohérente --- Next.js 16.2.4, React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2, Better Auth 1.6.9, PostgreSQL, et Redis --- a grandement facilité le développement et garanti la qualité du livrable final.
 
@@ -223,7 +227,6 @@ Les perspectives d'évolution de SaaS Directory sont nombreuses. L'intégration 
 \begin{itemize}[leftmargin=1.5em]
 \item Barry Boehm, \textit{Software Engineering Economics}, Prentice-Hall, 1977.
 \item Grady Booch, \textit{Object-Oriented Analysis and Design with Applications}, 2nd Edition, Benjamin/Cummings, 1994.
-\item Jean-Raymond Abrial, \textit{The B-Book: Assigning Programs to Meanings}, Cambridge University Press, 1996.
 \item ISO/IEC 12207:2017, Systems and software engineering --- Software life cycle processes.
 \item IEEE Std 830-1998, IEEE Recommended Practice for Software Requirements Specifications.
 \item IEEE Std 1028-2008, IEEE Standard for Software Reviews and Audits.
