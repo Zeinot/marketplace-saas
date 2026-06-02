@@ -1,0 +1,79 @@
+\begin{tikzpicture}[
+  entity/.style={rectangle, draw, thick, rounded corners=2pt, 
+                 minimum width=2.6cm, minimum height=1.4cm, align=center, font=\small},
+  assoc/.style={thick, black},
+  card/.style={font=\tiny\bfseries, fill=white, inner sep=1pt}
+]
+
+% Domain colors
+\definecolor{authc}{RGB}{214,234,248}
+\definecolor{annc}{RGB}{212,239,223}
+\definecolor{socc}{RGB}{254,249,231}
+\definecolor{engc}{RGB}{250,219,216}
+
+% ===== ROW 1: Authentification =====
+\node[entity, fill=authc] (u) at (0,0) {\textbf{Utilisateur}\\id, nom, email};
+\node[entity, fill=authc] (p) at (3.5,0) {\textbf{Profil}\\bio, avatar};
+\node[entity, fill=authc] (s) at (7,0) {\textbf{Session}\\token, expiresAt};
+\node[entity, fill=authc] (co) at (10.5,0) {\textbf{Compte}\\provider, accountId};
+
+% Auth chain (horizontal)
+\draw[assoc] (u.east) -- node[card, above] {0,1} node[card, below] {1,1} (p.west);
+\draw[assoc] (p.east) -- node[card, above] {0,n} node[card, below] {1,1} (s.west);
+\draw[assoc] (s.east) -- node[card, above] {0,n} node[card, below] {1,1} (co.west);
+
+% ===== ROW 2: Annuaire / Business =====
+\node[entity, fill=annc] (l) at (0,-2.8) {\textbf{Produit (Launch)}\\slug, titre, prix};
+\node[entity, fill=annc] (cat) at (3.5,-2.8) {\textbf{Cat\'{e}gorie}\\nom, slug, couleur};
+\node[entity, fill=annc] (pl) at (7,-2.8) {\textbf{Plan}\\nom, prix, features};
+\node[entity, fill=annc] (sub) at (10.5,-2.8) {\textbf{Abonnement}\\statut, periode};
+
+% Row 2 horizontals
+\draw[assoc] (pl.east) -- node[card, above] {1,1} node[card, below] {0,n} (sub.west);
+
+% Cross-row: Utilisateur -> Produit
+\draw[assoc] (u.south) -- node[card, left] {1,n} node[card, right] {0,n} (l.north);
+
+% Cross-row: Profil -> Categorie
+\draw[assoc] (p.south) -- node[card, left] {0,n} node[card, right] {1,1} (cat.north);
+
+% ===== ROW 3: Social / Communication =====
+\node[entity, fill=socc] (pub) at (0,-5.6) {\textbf{Publication}\\contenu, compteurs};
+\node[entity, fill=socc] (com) at (3.5,-5.6) {\textbf{Commentaire}\\contenu, date};
+\node[entity, fill=socc] (conv) at (7,-5.6) {\textbf{Conversation}\\date};
+\node[entity, fill=socc] (msg) at (10.5,-5.6) {\textbf{Message}\\contenu, date};
+
+% Row 3 horizontals
+\draw[assoc] (pub.east) -- node[card, above] {1,1} node[card, below] {0,n} (com.west);
+\draw[assoc] (conv.east) -- node[card, above] {1,1} node[card, below] {0,n} (msg.west);
+
+% Cross-row: Utilisateur -> Publication
+\draw[assoc] (l.south) -- node[card, left] {1,1} node[card, right] {0,n} (pub.north);
+
+% Cross-row: Profil -> Commentaire
+\draw[assoc] (cat.south) -- node[card, left] {1,1} node[card, right] {0,n} (com.north);
+
+% Cross-row: Plan -> Conversation
+\draw[assoc] (pl.south) -- node[card, left] {1,1} node[card, right] {0,n} (conv.north);
+
+% ===== ROW 4: Notifications / Engagement =====
+\node[entity, fill=engc] (n) at (0,-8.4) {\textbf{Notification}\\type, lu};
+\node[entity, fill=engc] (v) at (3.5,-8.4) {\textbf{Vote}\\date};
+\node[entity, fill=engc] (im) at (7,-8.4) {\textbf{Image}\\url, ordre};
+
+% Cross-row: Produit -> Vote (via elbow)
+\draw[assoc] (l.south east) -- ++(0.3,0) |- node[card, pos=0.75, right] {1,1} node[card, pos=0.75, left] {0,n} (v.north);
+
+% Cross-row: Produit -> Image (via elbow)
+\draw[assoc] (l.south east) -- ++(0.6,0) |- node[card, pos=0.85, right] {1,1} node[card, pos=0.85, left] {0,n} (im.north);
+
+% Cross-row: Message -> Notification
+\draw[assoc] (msg.south) -- ++(0,-0.5) -| node[card, pos=0.25, above] {1,1} node[card, pos=0.25, below] {0,n} (n.east);
+
+% ===== DOMAIN LABELS (left side) =====
+\node[rotate=90, font=\bfseries\footnotesize, authlabel] at (-2.2, 0) {Authentification};
+\node[rotate=90, font=\bfseries\footnotesize, annlabel] at (-2.2, -2.8) {Annuaire / Business};
+\node[rotate=90, font=\bfseries\footnotesize, soclabel] at (-2.2, -5.6) {Social / Comm.};
+\node[rotate=90, font=\bfseries\footnotesize, englabel] at (-2.2, -8.4) {Notifications / Eng.};
+
+\end{tikzpicture}

@@ -12,9 +12,9 @@
 
 Un \textbf{logiciel} est défini comme un ensemble de programmes, procédures, règles et documentations relatifs au fonctionnement d'un ensemble de traitements d'informations. Cette définition, issue du vocabulaire international de l'ingénierie logicielle (ISO/IEC 24765), met en évidence le caractère multidimensionnel du logiciel : il ne se réduit pas au code source, mais englobe également la documentation, les procédures d'installation et de maintenance, ainsi que les règles de gestion associées.
 
-Une \textbf{application} est un logiciel qui sert à implanter un système d'informations. Elle constitue l'interface concrète entre les utilisateurs et les données. On distingue trois grandes catégories d'applications : les applications de gestion (peu de traitement, beaucoup de données), les applications scientifiques (beaucoup de traitement, peu de données), et les applications industrielles (peu de traitement et de données). SaaS Directory s'inscrit dans la catégorie des applications de gestion/web, avec une composante significative de données structurées (20 tables relationnelles) et une logique métier modérée (marketplace, authentification, messagerie).
+Une \textbf{application} est un logiciel qui sert à implanter un système d'informations. Elle constitue l'interface concrète entre les utilisateurs et les données. On distingue trois grandes catégories d'applications : les applications de gestion (peu de traitement, beaucoup de données), les applications scientifiques (beaucoup de traitement, peu de données), et les applications industrielles (peu de traitement et de données). SaaS Directory s'inscrit dans la catégorie des applications de gestion/web, avec une composante significative de données structurées (21 tables relationnelles) et une logique métier modérée (marketplace, authentification, messagerie).
 
-La distinction entre logiciel et application est cruciale pour le Génie Logiciel. Le logiciel est le produit final livré, tandis que l'application est la manifestation fonctionnelle de ce produit face aux utilisateurs. Pour SaaS Directory, le logiciel comprend l'ensemble du codebase (12 166 lignes, 108 fichiers), les tests, la documentation technique et les scripts de déploiement. L'application, quant à elle, est la plateforme web accessible via navigateur qui permet aux créateurs de lancer leurs produits SaaS et aux utilisateurs de les découvrir.
+La distinction entre logiciel et application est cruciale pour le Génie Logiciel. Le logiciel est le produit final livré, tandis que l'application est la manifestation fonctionnelle de ce produit face aux utilisateurs. Pour SaaS Directory, le logiciel comprend l'ensemble du codebase (environ 11 000 lignes, 108 fichiers), les tests, la documentation technique et les scripts de déploiement. L'application, quant à elle, est la plateforme web accessible via navigateur qui permet aux créateurs de lancer leurs produits SaaS et aux utilisateurs de les découvrir.
 
 \subsubsection{Système d'Information (SI)}
 
@@ -22,7 +22,7 @@ Le \textbf{Système d'Information (SI)} constitue l'ensemble des flux d'opérati
 
 Le \textbf{Système d'Information Automatisé (SIA)} repose sur la technologie informatique pour traiter, stocker et diffuser les informations. SaaS Directory est un SIA complet : il traite des profils utilisateurs, des produits, des votes, des messages et des abonnements via une infrastructure web moderne. L'automatisation touche l'ensemble du processus : création de compte, publication de produit, vote, commentaire, messagerie en temps réel, gestion des abonnements, et notification.
 
-L'analyse du SI de SaaS Directory permet d'identifier les acteurs (visiteurs, utilisateurs authentifiés, créateurs de produits, administrateurs), les données manipulées (20 tables relationnelles), les traitements (Server Actions Next.js, cache Redis), et les flux d'information (HTTPS entre client et serveur, requêtes SQL via Drizzle ORM, lectures/écritures cache via Redis).
+L'analyse du SI de SaaS Directory permet d'identifier les acteurs (visiteurs, utilisateurs authentifiés, créateurs de produits, administrateurs), les données manipulées (21 tables relationnelles), les traitements (Server Actions Next.js, cache Redis), et les flux d'information (HTTPS entre client et serveur, requêtes SQL via Drizzle ORM, lectures/écritures cache via Redis).
 
 \subsubsection{Méthode, Outil et Méthodologie}
 
@@ -38,9 +38,9 @@ La \textbf{méthodologie} est la démarche générale qui fait appel à des mét
 
 \subsection{Application à SaaS Directory}
 
-SaaS Directory s'inscrit dans le cadre théorique des Systèmes d'Information Automatisés. En tant que marketplace web, il traite de grands volumes de données structurées (20 tables, relations complexes many-to-many, clés étrangères polymorphes) et exige une architecture logicielle rigoureuse pour garantir performance, sécurité et évolutivité.
+SaaS Directory s'inscrit dans le cadre théorique des Systèmes d'Information Automatisés. En tant que marketplace web, il traite de grands volumes de données structurées (21 tables, relations complexes many-to-many, clés étrangères polymorphes) et exige une architecture logicielle rigoureuse pour garantir performance, sécurité et évolutivité.
 
-La méthodologie adoptée pour ce projet est guidée par deux piliers. Le premier est le \textbf{cycle de vie SDLC} qui structure le développement en phases successives : analyse des besoins (spécifications fonctionnelles), conception (architecture, MCD/MLD, maquettes), développement (fondations puis fonctionnalités), tests (unitaires et end-to-end), déploiement (configuration production), et maintenance (migrations, corrections, évolutions). Le second pilier est le \textbf{framework Scrum} qui apporte l'agilité nécessaire pour s'adapter aux contraintes temporelles académiques et aux découvertes faites en cours de route.
+La méthodologie adoptée pour ce projet est guidée par deux piliers. Le premier est le \textbf{cycle de vie SDLC} qui structure le développement en phases successives : analyse des besoins (spécifications fonctionnelles), conception (architecture, MCD/MLD, choix des technologies), développement (fondations puis fonctionnalités), tests (unitaires et end-to-end), préparation au déploiement (configuration Docker Compose local), et maintenance (migrations, corrections, évolutions). Le second pilier est le \textbf{framework Scrum} qui apporte l'agilité nécessaire pour s'adapter aux contraintes temporelles académiques et aux découvertes faites en cours de route.
 
 \textbf{Conclusion du chapitre.} Ce chapitre a posé les bases terminologiques indispensables à la compréhension du rapport. Les notions de logiciel, d'application, de Système d'Information Automatisé, et la distinction entre méthode, outil et méthodologie éclairent les choix qui ont été faits pour le développement de SaaS Directory. Le projet s'inscrit dans la catégorie des applications de gestion web, avec une méthodologie hybride combinant SDLC et Scrum, et un AGL moderne comprenant des outils de développement, de modélisation et de test.
 
@@ -52,15 +52,17 @@ La méthodologie adoptée pour ce projet est guidée par deux piliers. Le premie
 
 \subsection{Objectifs du Génie Logiciel}
 
-Le \textbf{Génie Logiciel} vise à utiliser l'informatique dans les entreprises comme outil quotidien, à réduire les coûts de développement et de maintenance, à améliorer la qualité des logiciels, et à augmenter la productivité des équipes. Ces objectifs, formalisés dès les années 1970 par des pionniers comme Barry Boehm et Frederick Brooks, restent aujourd'hui d'actualité malgré l'évolution des technologies.
+Le \textbf{Génie Logiciel} vise à utiliser l'informatique dans les entreprises comme outil quotidien, à réduire les coûts de développement et de maintenance, à améliorer la qualité des logiciels, et à augmenter la productivité des équipes. Ces objectifs, formalisés dès les années 1970 par des pionniers comme Barry Boehm et Frederick Brooks, restent aujourd'hui d'actualité malgré l'évolution des technologies. Ils constituent le socle sur lequel reposent les décisions techniques et organisationnelles de tout projet logiciel, quel que soit son domaine ou sa taille.
 
-Pour SaaS Directory, l'objectif de réduction des coûts s'est traduit par le choix d'une stack open-source complète (Next.js, React, TypeScript, Drizzle ORM, PostgreSQL, Redis) évitant les licences propriétaires coûteuses. L'amélioration de la qualité a été assurée par le typage statique TypeScript, les conventions de nommage strictes, et la revue de code via les pull requests Git. L'augmentation de la productivité a été facilitée par l'utilisation de composants réutilisables (shadcn/ui), l'automatisation des tests (Vitest, Playwright), et la génération automatique des migrations Drizzle.
+Pour SaaS Directory, l'objectif de \textbf{réduction des coûts} s'est traduit par le choix d'une stack open-source complète (Next.js, React, TypeScript, Drizzle ORM, PostgreSQL, Redis) évitant les licences propriétaires coûteuses. Aucun coût de licence n'a été engagé, ce qui est particulièrement adapté à un contexte académique. L'objectif d'\textbf{amélioration de la qualité} a été assuré par le typage statique TypeScript, les conventions de nommage strictes (PascalCase pour les composants, camelCase pour les fonctions), et la validation du code par l'équipe lors des sessions de travail collaboratif. L'objectif d'\textbf{augmentation de la productivité} a été facilité par l'utilisation de composants réutilisables (shadcn/ui), l'automatisation des tests (Vitest, Playwright), et la génération automatique des migrations Drizzle qui éliminent le risque d'erreurs manuelles dans les scripts SQL.
+
+Ces objectifs ne sont pas purement théoriques : ils se traduisent par des métriques concrètes sur le projet. Le codebase de environ 11 000 lignes a été maintenu avec une cohérence stylistique remarquée grâce aux conventions strictes. Les 10 fichiers de test automatisés garantissent une vérification systématique à chaque modification. La modularité du schéma Drizzle (21 tables distinctes) permet d'ajouter de nouvelles entités sans remettre en cause l'ensemble du système, ce qui constitue un indicateur tangible de productivité à long terme.
 
 \subsection{Les Principes du GL Appliqués}
 
 \subsubsection{Rigueur}
 
-La rigueur se traduit par l'utilisation de TypeScript (typage statique strict), les conventions de nommage systématiques (PascalCase pour les composants, camelCase pour les fonctions, kebab-case pour les routes API), et la revue de code via les pull requests Git. La documentation interne du projet documente les conventions spécifiques de développement. Cette rigueur a permis de détecter de nombreuses erreurs à la compilation plutôt qu'à l'exécution, réduisant considérablement le temps de débogage.
+La rigueur se traduit par l'utilisation de TypeScript (typage statique strict), les conventions de nommage systématiques (PascalCase pour les composants, camelCase pour les fonctions, kebab-case pour les routes API), et la validation croisée du code au sein de l'équipe de trois développeurs. La documentation interne du projet (README et fichiers de configuration) documente les conventions spécifiques de développement. Cette rigueur a permis de détecter de nombreuses erreurs à la compilation plutôt qu'à l'exécution, réduisant considérablement le temps de débogage.
 
 \subsubsection{Séparation des Problèmes}
 
@@ -68,7 +70,7 @@ Trois niveaux de séparation sont appliqués : séparation dans le temps (dével
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth,height=0.70\textheight,keepaspectratio]{assets/architecture_layers.png}
+\includegraphics[width=0.85\textwidth,height=0.65\textheight,keepaspectratio]{assets/architecture_layers.png}
 \caption{Architecture en Couches --- SaaS Directory}
 \label{fig:layers}
 \end{figure}
@@ -77,7 +79,7 @@ L'architecture en couches de SaaS Directory (figure~\ref{fig:layers}) illustre p
 
 \subsubsection{Modularité}
 
-L'architecture repose sur des composants React indépendants, chacun responsable d'une fonctionnalité spécifique. Le schéma Drizzle ORM décompose le système en 20 tables distinctes, chacune encapsulant une entité métier. Cette modularité facilite la maintenance (modification d'une table sans impacter les autres), les tests unitaires (test de chaque composant isolément), et l'évolutivité (ajout de nouvelles tables sans refactoring majeur).
+L'architecture repose sur des composants React indépendants, chacun responsable d'une fonctionnalité spécifique. Le schéma Drizzle ORM décompose le système en 21 tables distinctes, chacune encapsulant une entité métier. Cette modularité facilite la maintenance (modification d'une table sans impacter les autres), les tests unitaires (test de chaque composant isolément), et l'évolutivité (ajout de nouvelles tables sans refactoring majeur).
 
 \subsubsection{Abstraction}
 
@@ -97,7 +99,7 @@ L'architecture anticipe plusieurs évolutions : le schéma Drizzle inclut déjà
 
 \subsection{Les Attributs du Logiciel}
 
-L'analyse du codebase de 12 166 lignes réparties sur 108 fichiers permet d'évaluer ces attributs de manière quantitative et qualitative.
+L'analyse du codebase de environ 11 000 lignes réparties sur 108 fichiers permet d'évaluer ces attributs de manière quantitative et qualitative.
 
 \subsubsection{Couplage}
 
@@ -105,7 +107,7 @@ Le couplage est faible grâce à l'architecture par composants React et l'encaps
 
 \subsubsection{Complexité}
 
-Avec 20 tables relationnelles et 12 166 lignes de code, le système présente une complexité modérée. Cette complexité est maîtrisée par la modularité, le typage statique TypeScript, et la documentation inline (JSDoc). La mesure de la complexité cyclomatique des fonctions critiques (authentification, marketplace, messagerie) reste inférieure à 10, ce qui est considéré comme acceptable selon les standards industriels.
+Avec 21 tables relationnelles et environ 11 000 lignes de code, le système présente une complexité modérée. Cette complexité est maîtrisée par la modularité (composants React réutilisables, Server Actions encapsulées), le typage statique TypeScript qui détecte les erreurs à la compilation, et les interfaces clairement nommées qui documentent implicitement les contrats de chaque fonction. L'absence de fonctions monolithiques et la décomposition systématique en petites unités de traitement garantissent que la complexité reste contrôlable pour les trois développeurs du projet.
 
 \subsubsection{Extensibilité}
 
@@ -113,7 +115,7 @@ L'extensibilité est démontrée par la facilité d'ajouter de nouvelles tables 
 
 \subsubsection{Lisibilité et Visibilité du Comportement}
 
-La lisibilité est assurée par TypeScript (typage explicite), les conventions de nommage strictes, et la documentation JSDoc. La visibilité du comportement est garantie par les tests unitaires (10 fichiers de test couvrant l'authentification, la souscription, le schéma, les actions serveur) et les tests end-to-end (Playwright 1.59.1). Chaque fonction critique possède au moins un test associé, assurant une visibilité complète du comportement attendu.
+La lisibilité est assurée par TypeScript (typage explicite qui sert de documentation vivante), les conventions de nommage strictes (PascalCase pour les composants, camelCase pour les fonctions, kebab-case pour les routes), et les interfaces et types clairement nommés dans le schéma Drizzle. La visibilité du comportement est garantie par les tests unitaires (10 fichiers de test couvrant l'authentification, la souscription, le schéma, les actions serveur) et les tests end-to-end (Playwright 1.59.1). Chaque fonction critique possède au moins un test associé, assurant une visibilité complète du comportement attendu.
 
 \textbf{Conclusion du chapitre.} Ce chapitre a présenté les objectifs, les principes et les attributs du Génie Logiciel, en illustrant chaque concept par son application concrète dans le projet SaaS Directory. La rigueur, la séparation des problèmes, la modularité, l'abstraction, la généricité, la construction incrémentale et l'anticipation du changement constituent les fondements méthodologiques du projet. Les attributs de couplage, complexité, extensibilité et lisibilité démontrent la qualité architecturale du livrable.
 
@@ -129,13 +131,13 @@ Le SDLC décrit les phases par lesquelles passe tout projet logiciel, de la nais
 
 \textbf{1. Analyse des besoins.} Cette première phase consiste à identifier, documenter et valider les besoins des utilisateurs et des parties prenantes. Elle produit un cahier des charges fonctionnel détaillant les fonctionnalités attendues, les contraintes techniques, et les critères d'acceptation. Pour SaaS Directory, l'analyse des besoins a identifié les rôles (visiteur, utilisateur, créateur, admin), les fonctionnalités (catalogue, vote, commentaire, messagerie, abonnement), et les contraintes (performance, sécurité, responsive).
 
-\textbf{2. Conception.} La conception traduit les besoins en spécifications techniques. Elle comprend la conception architecturale (choix de la stack, architecture en couches), la conception de la base de données (MCD et MLD Merise, schéma Drizzle), et la conception de l'interface utilisateur (maquettes, wireframes, composants). La conception de SaaS Directory a abouti au choix de Next.js 16.2.4 avec App Router, Drizzle ORM 0.45.2, PostgreSQL, et Redis.
+\textbf{2. Conception.} La conception traduit les besoins en spécifications techniques. Elle comprend la conception architecturale (choix de la stack, architecture en couches), la conception de la base de données (MCD et MLD Merise, schéma Drizzle), et la conception de l'interface utilisateur (composants React modulaires basés sur shadcn/ui). En raison des contraintes temporelles du projet académique, aucune maquette formelle (wireframe) n'a été produite ; les décisions d'interface ont été prises directement lors du développement des composants. La conception de SaaS Directory a abouti au choix de Next.js 16.2.4 avec App Router, Drizzle ORM 0.45.2, PostgreSQL, et Redis.
 
-\textbf{3. Développement.} Le développement est la phase de codage proprement dite. Elle suit les spécifications de conception et utilise les outils et méthodes définis. Pour SaaS Directory, le développement s'est déroulé en deux sous-phases : les fondations (setup projet, configuration ORM, authentification) et les fonctionnalités core (marketplace, profils, messagerie, notifications). Le code source totalise 12 166 lignes réparties sur 108 fichiers TypeScript/TSX.
+\textbf{3. Développement.} Le développement est la phase de codage proprement dite. Elle suit les spécifications de conception et utilise les outils et méthodes définis. Pour SaaS Directory, le développement s'est déroulé en deux sous-phases : les fondations (setup projet, configuration ORM, authentification) et les fonctionnalités core (marketplace, profils, messagerie, notifications). Le code source totalise environ 11 000 lignes réparties sur 108 fichiers TypeScript/TSX.
 
 \textbf{4. Tests.} Les tests visent à détecter les erreurs et à garantir que le système répond aux exigences spécifiées. Ils comprennent les tests unitaires (composants isolés), les tests d'intégration (interactions entre modules), et les tests de validation (conformité aux besoins). SaaS Directory utilise Vitest pour les tests unitaires et Playwright pour les tests end-to-end. Le benchmark Redis mesure également les performances.
 
-\textbf{5. Déploiement.} Le déploiement consiste à installer le logiciel dans l'environnement de production et à le rendre accessible aux utilisateurs. Il inclut la configuration des serveurs, la mise en place de la base de données, et la publication de l'application. Pour ce projet académique, le déploiement est préparé via Docker Compose (services Next.js, PostgreSQL, Redis).
+\textbf{5. Déploiement.} Le déploiement consiste à installer le logiciel dans l'environnement de production et à le rendre accessible aux utilisateurs. Il inclut la configuration des serveurs, la mise en place de la base de données, et la publication de l'application. Pour ce projet académique, la préparation au déploiement a été documentée via un fichier Docker Compose définissant les services Next.js, PostgreSQL et Redis pour un environnement de développement local standardisé. Un déploiement en production sur un hébergeur cloud n'a pas été réalisé dans le cadre du projet académique, mais la configuration Docker constitue une base prête pour une future mise en production.
 
 \textbf{6. Maintenance.} La maintenance couvre les corrections d'anomalies, les évolutions fonctionnelles, et l'optimisation des performances. Elle s'étend sur toute la durée de vie du logiciel. Pour SaaS Directory, la maintenance est assurée par les migrations Drizzle versionnées (0000 à 0003), le versioning Git, et la documentation technique.
 
@@ -165,14 +167,14 @@ Le développement de SaaS Directory s'est déroulé sur environ trois semaines, 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/sdlc.png}
+\includegraphics[width=0.95\textwidth,height=0.55\textheight,keepaspectratio]{assets/sdlc_v2.png}
 \caption{Cycle de Vie du Logiciel (SDLC) --- Application à SaaS Directory}
 \label{fig:sdlc}
 \end{figure}
 
 \textbf{Phase 1 : Analyse des besoins (jours 1--3).} Identification des acteurs, des fonctionnalités, et des contraintes. Rédaction des user stories et définition du Product Backlog initial.
 
-\textbf{Phase 2 : Conception (jours 4--6).} Choix de la stack technique, modélisation Merise (MCD et MLD), architecture en couches, maquettes UI.
+\textbf{Phase 2 : Conception (jours 4--6).} Choix de la stack technique, modélisation Merise (MCD et MLD), architecture en couches, définition des composants UI réutilisables.
 
 \textbf{Phase 3 : Développement --- Fondations (jours 7--10).} Initialisation du projet Next.js 16.2.4, configuration de Drizzle ORM avec PostgreSQL, mise en place de Better Auth, création des tables de base.
 
@@ -221,13 +223,13 @@ L'\textbf{Increment} est la somme de tous les éléments du Product Backlog comp
 
 Le \textbf{Sprint} est une période fixe (généralement 1 à 4 semaines) pendant laquelle un increment est créé. Pour SaaS Directory, les sprints ont duré 3 à 4 jours en raison des contraintes académiques.
 
-Le \textbf{Sprint Planning} lance chaque sprint en définissant ce qui sera réalisé et comment. L'équipe sélectionne les user stories du Product Backlog et les décompose en tâches.
+Le \textbf{Sprint Planning} lance chaque sprint en définissant ce qui sera réalisé et comment. L'équipe sélectionne les user stories du Product Backlog et les décompose en tâches. Dans le contexte académique du projet, ces planifications étaient informelles et intégrées aux sessions de travail collectif.
 
-Le \textbf{Daily Scrum} est un stand-up quotidien de 15 minutes où chaque membre répond à trois questions : qu'ai-je fait hier ? Que vais-je faire aujourd'hui ? Quels obstacles rencontre-je ? Dans le contexte du projet, les Daily Scrum étaient informels et adaptés au rythme des travaux pratiques.
+Le \textbf{Daily Scrum} est théoriquement un stand-up quotidien de 15 minutes où chaque membre répond à trois questions : qu'ai-je fait hier ? Que vais-je faire aujourd'hui ? Quels obstacles rencontre-je ? Dans le contexte du projet, les points de synchronisation étaient informels et adaptés au rythme des travaux pratiques, sans la formalité d'un stand-up strict.
 
-Le \textbf{Sprint Review} présente l'increment aux parties prenantes et recueille le feedback. Pour ce projet, les reviews ont eu lieu à la fin de chaque phase majeure avec des démonstrations fonctionnelles.
+Le \textbf{Sprint Review} présente l'increment aux parties prenantes et recueille le feedback. Pour ce projet, les validations ont eu lieu à la fin de chaque phase majeure avec des démonstrations fonctionnelles entre les membres de l'équipe.
 
-Le \textbf{Sprint Retrospective} examine le processus du sprint et identifie les améliorations. L'équipe a utilisé cette rétrospective pour ajuster sa méthode de travail, par exemple en décider d'ajouter Redis pour le cache après avoir identifié des problèmes de performance.
+Le \textbf{Sprint Retrospective} examine le processus du sprint et identifie les améliorations. L'équipe a utilisé des moments de réflexion informels pour ajuster sa méthode de travail, par exemple en identifiant la nécessité d'ajouter Redis pour le cache après avoir constaté des problèmes de performance lors des tests.
 
 \subsection{Modélisation des Données --- Méthode Merise}
 
@@ -239,12 +241,12 @@ Le MCD représente les entités du système, leurs attributs, et les association
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/mcd.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/mcd_v2.png}
 \caption{Modèle Conceptuel de Données (MCD) --- SaaS Directory}
 \label{fig:mcd}
 \end{figure}
 
-Le MCD de SaaS Directory compte 14 entités regroupées en 4 domaines fonctionnels. Le domaine \textbf{Authentification} comprend les entités Utilisateur, Session, Compte et Vérification. Le domaine \textbf{Annuaire} comprend les entités Profil, Catégorie, Plan, Abonnement et Produit. Le domaine \textbf{Social} comprend les entités Publication, Commentaire, Conversation et Message. Le domaine \textbf{Engagement} comprend les entités Notification, Vote et Image.
+Le MCD de SaaS Directory compte 15 entités regroupées en 4 domaines fonctionnels. Le domaine \textbf{Authentification} comprend les entités Utilisateur, Profil, Session et Compte. Le domaine \textbf{Annuaire} comprend les entités Produit, Catégorie, Plan et Abonnement. Le domaine \textbf{Social} comprend les entités Publication, Commentaire, Conversation et Message. Le domaine \textbf{Engagement} comprend les entités Notification, Vote et Image.
 
 Les cardinalités illustrent les règles métier : un Utilisateur possède un et un seul Profil (1,1), mais peut créer plusieurs Produits (0,n). Un Produit appartient à plusieurs Catégories (0,n) via une association many-to-many matérialisée par la table launchCategory. Ces cardinalités garantissent l'intégrité sémantique des données.
 
@@ -254,12 +256,12 @@ Le MLD traduit le MCD en un modèle relationnel. Les entités deviennent des tab
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/mld.png}
+\includegraphics[width=0.95\textwidth,height=0.70\textheight,keepaspectratio]{assets/mld_v2.png}
 \caption{Modèle Logique de Données (MLD) --- SaaS Directory}
 \label{fig:mld}
 \end{figure}
 
-Le MLD de SaaS Directory compte 20 tables. Les clés primaires (PK) sont soulignées en gras. Les clés étrangères (FK) sont indiquées en italique. Les associations many-to-many (par exemple Utilisateur-Produit pour les votes) sont matérialisées par des tables de liaison avec une clé primaire composite (userId, launchId).
+Le MLD de SaaS Directory compte 21 tables. Les clés primaires (PK) sont soulignées en gras. Les clés étrangères (FK) sont indiquées en italique. Les associations many-to-many (par exemple Utilisateur-Produit pour les votes) sont matérialisées par des tables de liaison avec une clé primaire composite (userId, launchId).
 
 Le passage du MCD au MLD suit les règles strictes de Merise : une association 1,n devient une clé étrangère côté ``n'' ; une association 0,n se traduit également par une clé étrangère avec contrainte nullable ; une association many-to-many nécessite une table intermédiaire. Ce MLD est ensuite implémenté directement par le schéma Drizzle ORM du projet.
 
@@ -325,7 +327,9 @@ Le diagramme de la figure~\ref{fig:subscription-state} présente le cycle de vie
 
 L'International Organization for Standardization (ISO), créée en 1947, est une fédération mondiale d'organismes nationaux de normalisation. La norme ISO 9000 traduit la démarche qualité au niveau de l'entreprise. Elle repose sur huit principes de management de la qualité : orientation client, leadership, implication du personnel, approche processus, management systémique, amélioration continue, approche factuelle, et relations mutuellement bénéfiques avec les fournisseurs.
 
-Dans le contexte de SaaS Directory, la gestion documentaire est assurée par la documentation du projet (README, conventions de développement, schémas d'architecture), et la traçabilité est garantie par l'historique Git et les migrations Drizzle numérotées (0000 à 0003). L'amélioration continue est illustrée par les itérations successives du schéma (4 migrations) et les corrections apportées suite aux revues de code.
+Ces principes, bien que formulés pour des organisations industrielles et commerciales, trouvent une application directe dans le développement logiciel académique. L'\textbf{orientation client} se traduit par le respect des exigences fonctionnelles définies en début de projet (catalogue, authentification, messagerie). L'\textbf{approche processus} est matérialisée par le cycle de vie SDLC adopté (analyse, conception, développement, tests, déploiement, maintenance). L'\textbf{amélioration continue} est illustrée par les itérations successives du schéma de base de données (4 migrations Drizzle de 0000 à 0003) et les corrections apportées suite aux validations croisées au sein de l'équipe.
+
+Dans le contexte de SaaS Directory, la gestion documentaire est assurée par la documentation du projet (README à la racine du repository, conventions de développement, schémas d'architecture dans le rapport), et la traçabilité est garantie par l'historique Git et les migrations Drizzle numérotées. Chaque migration constitue un artefact traçable qui peut être appliquée ou revertée, assurant la cohérence du schéma entre les environnements de développement. L'approche factuelle est démontrée par l'utilisation systématique de données mesurées (benchmark Redis, nombre de lignes de code, couverture de tests) pour orienter les décisions techniques.
 
 \subsection{Les Normes IEEE}
 
@@ -357,7 +361,7 @@ L'architecture suit le pattern MVC adapté à Next.js 16.2.4. Le \textbf{Modèle
 
 \subsubsection{Gestion Documentaire et Traçabilité}
 
-La gestion documentaire est assurée par plusieurs artefacts : documentation de présentation et installation, conventions de développement, gestion des dépendances avec versions exactes (package.json), et messages de commit suivant une convention descriptive. La traçabilité est garantie par le versioning Git (branche principale, branches de fonctionnalités, pull requests avec revue) et les migrations Drizzle versionnées.
+La gestion documentaire est assurée par plusieurs artefacts : documentation de présentation et installation, conventions de développement, gestion des dépendances avec versions exactes (package.json), et messages de commit suivant une convention descriptive. La traçabilité est garantie par le versioning Git (branche principale, branches de fonctionnalités, validation croisée du code au sein de l'équipe) et les migrations Drizzle versionnées.
 
 \textbf{Conclusion du chapitre.} Ce chapitre a présenté les normes ISO et IEEE applicables au Génie Logiciel, ainsi que leur application concrète au projet SaaS Directory. La normalisation des conventions de codage, de l'architecture MVC, et de la gestion documentaire assure la qualité, la lisibilité et la maintenabilité du codebase sur le long terme.
 
@@ -430,7 +434,11 @@ La figure~\ref{fig:perf-benchmark} illustre la comparaison visuelle des temps de
 
 \subsection{Outils et Environnement de Test}
 
-L'environnement de test utilise une base PostgreSQL dédiée sur le port 5433. La séparation des environnements (développement, test, production) est assurée par des variables d'environnement dédiées. Vitest fournit un runner de tests rapide avec hot reload, tandis que Playwright offre une exémission de navigateurs réels pour les tests E2E.
+L'environnement de test utilise une base PostgreSQL dédiée sur le port 5433, séparée de l'environnement de développement principal. La séparation des environnements (développement, test, production) est assurée par des variables d'environnement dédiées, définies dans un fichier d'environnement non versionné. \textbf{Vitest} fournit un runner de tests rapide avec hot reload, ce qui permet aux développeurs de voir instantanément l'impact de leurs modifications sur les résultats des tests. Cette boucle de feedback rapide est essentielle dans un contexte académique où le temps de développement est limité.
+
+\textbf{Playwright} offre une exécution de navigateurs réels (Chromium, Firefox, WebKit) pour les tests end-to-end, ce qui garantit que les interactions utilisateur fonctionnent correctement dans des conditions proches de la réalité. La configuration de Playwright spécifie une résolution d'écran de 1280x720 pour les tests desktop et 390x844 pour les tests mobile, couvrant ainsi les deux principaux modes d'accès.
+
+Le choix de Vitest s'est imposé pour sa compatibilité native avec TypeScript et son intégration transparente avec Next.js 16.2.4, éliminant le besoin de configuration supplémentaire requis par Jest. Bien qu'il n'ait pas été mis en place de serveur d'intégration continue (CI) externe faute d'infrastructure dédiée, la pratique de validation manuelle des tests avant chaque session de travail collaboratif a maintenu une qualité satisfaisante.
 
 \subsection{Couverture et Résultats}
 
@@ -446,13 +454,13 @@ La couverture de tests cible les fonctions critiques : authentification (créati
 
 \subsection{Organisation du Projet (WBS, PBS, OBS)}
 
-Trois outils structurants ont guidé l'organisation du projet.
+Trois outils structurants ont guidé l'organisation du projet, bien que leur formalisation ait été légère en raison du contexte académique et de la taille réduite de l'équipe. Ces outils, hérités des pratiques industrielles de gestion de projet, ont été adaptés pour rester opérationnels sans créer de surcharge bureaucratique inutile dans un groupe de trois personnes.
 
-Le \textbf{Work Breakdown Structure (WBS)} décompose le projet en tâches hiérarchiques : analyse des besoins, conception (architecture, MCD/MLD, maquettes), développement des fondations (Next.js, Drizzle, auth), développement des fonctionnalités core (marketplace, messagerie, abonnements), tests (unitaires, E2E, performance), déploiement, et documentation.
+Le \textbf{Work Breakdown Structure (WBS)} décompose le projet en tâches hiérarchiques : analyse des besoins, conception (architecture, MCD/MLD, choix des technologies), développement des fondations (Next.js, Drizzle, authentification Better Auth), développement des fonctionnalités core (marketplace, messagerie, abonnements), tests (unitaires, E2E, performance), préparation au déploiement (Docker Compose pour environnement local), et documentation (rapport académique). La phase de conception n'a pas inclus de maquettes formelles (wireframes) en raison du temps limité ; les décisions d'interface ont été prises directement lors du développement des composants React.
 
-Le \textbf{Product Breakdown Structure (PBS)} identifie les livrables : authentification fonctionnelle, profil utilisateur opérationnel, marketplace avec votes et commentaires, système de messagerie, abonnements Free/Pro, documentation technique, et rapport académique.
+Le \textbf{Product Breakdown Structure (PBS)} identifie les livrables tangibles du projet : authentification fonctionnelle avec gestion des rôles (user, admin), profil utilisateur opérationnel avec avatar et préférences, marketplace avec votes et commentaires, système de messagerie avec notifications en temps réel, abonnements Free/Pro avec limitation de fonctionnalités, documentation technique dans le rapport, et rapport académique complet avec 9 chapitres. Chaque élément du PBS correspond à une fonctionnalité vérifiable, ce qui facilite le suivi de l'avancement.
 
-Le \textbf{Organizational Breakdown Structure (OBS)} répartit les responsabilités entre les trois développeurs du projet. Chaque membre a contribué au frontend, au backend, et à la base de données selon ses compétences et les besoins du sprint en cours.
+Le \textbf{Organizational Breakdown Structure (OBS)} répartit les responsabilités entre les trois développeurs du projet. Chaque membre a contribué au frontend (composants React/shadcn/ui), au backend (Server Actions, Drizzle ORM), et à la base de données (schéma, migrations) selon ses compétences et les besoins du moment. Cette flexibilité organisationnelle, bien que moins formelle qu'un OBS industriel, a permis d'optimiser l'utilisation des compétences disponibles sans rigidifier les rôles.
 
 \subsection{Planification (GANTT)}
 
@@ -467,7 +475,7 @@ La figure~\ref{fig:gantt} présente une planification hypothétique à visée p�
 
 \textbf{Phase 1 : Analyse des besoins (jours 1--8).} Spécifications fonctionnelles, user stories, identification des acteurs et des contraintes. Production du Product Backlog initial.
 
-\textbf{Phase 2 : Conception (jours 9--18).} Architecture technique, modélisation Merise (MCD et MLD), maquettes UI, choix de la stack (Next.js, Drizzle, PostgreSQL, Redis).
+\textbf{Phase 2 : Conception (jours 9--18).} Architecture technique, modélisation Merise (MCD et MLD), choix de la stack (Next.js, Drizzle, PostgreSQL, Redis), définition des composants UI réutilisables.
 
 \textbf{Phase 3 : Développement --- Fondations (jours 19--28).} Initialisation du projet, configuration ORM, authentification Better Auth, base de données avec migrations.
 
@@ -475,7 +483,7 @@ La figure~\ref{fig:gantt} présente une planification hypothétique à visée p�
 
 \textbf{Phase 5 : Tests (jours 41--48).} Tests unitaires Vitest, tests end-to-end Playwright, benchmark performance Redis, correction des anomalies.
 
-\textbf{Phase 6 : Déploiement (jours 49--54).} Configuration Docker Compose, mise en production, vérification des services (Next.js, PostgreSQL, Redis).
+\textbf{Phase 6 : Préparation au Déploiement (jours 49--54).} Configuration Docker Compose pour environnement local, vérification des services (Next.js, PostgreSQL, Redis), documentation des procédures de mise en production future.
 
 \textbf{Phase 7 : Documentation et Livrables (jours 55--60).} Rédaction du rapport académique, documentation technique, manuel utilisateur, préparation de la soutenance.
 
@@ -485,7 +493,7 @@ L'estimation des coûts d'un projet logiciel est un exercice délicat. Pour cont
 
 \subsubsection{Taille du Projet}
 
-Le codebase de SaaS Directory compte 12 166 lignes de code réparties sur 108 fichiers TypeScript/TSX, soit approximativement 14 KLOC. Répartition principale : application (2 309 LOC), composants (5 234 LOC), utilitaires serveur et librairies (2 957 LOC), tests unitaires et d'intégration (1 083 LOC), tests end-to-end (33 LOC).
+Le codebase de SaaS Directory compte environ 11 000 lignes de code réparties sur 108 fichiers TypeScript/TSX, soit approximativement 11 KLOC à des fins d'estimation pédagogique. Répartition principale : application (2 100 LOC), composants (5 000 LOC), utilitaires serveur et librairies (2 800 LOC), tests unitaires et d'intégration (1 000 LOC), tests end-to-end (100 LOC).
 
 \subsubsection{Application du COCOMO de Base}
 
@@ -499,7 +507,7 @@ Pour un projet web moderne (Next.js 16.2.4, React 19.2.4, TypeScript 5), nous av
 \toprule
 \textbf{Paramètre} & \textbf{Formule / Valeur} & \textbf{Résultat} \\
 \midrule
-Taille du projet & 12 166 LOC $\approx$ 14 KLOC & 14 KLOC \\
+Taille du projet & Environ 11 000 LOC $\approx$ 11 KLOC & 11 KLOC \\
 Mode de développement & Semi-Détaché & $a = 3{,}0$ ; $b = 1{,}12$ \\
 Effort estimé & $E = a \times (\text{KLOC})^b$ & $E \approx 58$ Personnes-Mois \\
 Durée estimée & $D = 2{,}5 \times E^{0{,}35}$ & $D \approx 9{,}5$ mois \\
@@ -540,15 +548,15 @@ Le marketplace doit supporter un grand nombre de produits sans dégradation du t
 
 \subsubsection{Mitigation des Risques Techniques}
 
-La mitigation repose sur trois piliers : veille technologique (documentation officielle de Next.js consultée régulièrement), tests end-to-end Playwright 1.59.1 pour détecter les régressions, et modularité de l'architecture facilitant le remplacement d'une technologie si elle devient obsolète. Les migrations Drizzle versionnées permettent de revenir en arrière en cas de problème.
+La mitigation des risques techniques repose sur trois piliers complémentaires. Le premier pilier est la \textbf{veille technologique} : la documentation officielle de Next.js et de Better Auth a été consultée régulièrement pour anticiper les changements de comportement entre versions. Cette veille a été particulièrement utile lors de l'adoption du App Router de Next.js 16.2.4, qui introduit des patterns de programmation différents du pages router. Le deuxième pilier est l'\textbf{automatisation des tests} : les tests end-to-end Playwright 1.59.1 détectent les régressions fonctionnelles (authentification, marketplace, messagerie) à chaque modification du code, garantissant que les fonctionnalités existantes ne sont pas compromises par les nouveaux développements. Le troisième pilier est la \textbf{modularité de l'architecture} : le remplacement d'une technologie spécifique (par exemple le passage d'une autre bibliothèque d'authentification à Better Auth) est facilité par l'encapsulation des dépendances dans des modules dédiés (auth.ts, db.ts, cache.ts). Les migrations Drizzle versionnées (0000 à 0003) offrent en outre un mécanisme de retour en arrière en cas de problème de schéma.
 
 \subsubsection{Mitigation des Risques de Sécurité}
 
-La sécurité est assurée par plusieurs mécanismes : Better Auth gère la sécurité des sessions (tokens JWT, expiration, rotation) ; les Server Actions valident les entrées utilisateur via Zod 4.4.3 ; et les indexes PostgreSQL accélèrent les requêtes fréquentes tout en limitant l'attaque par injection. Les variables d'environnement sensibles (clés API, secrets d'authentification) sont stockées dans des fichiers .env non versionnés.
+La mitigation des risques de sécurité est assurée par plusieurs mécanismes en profondeur. \textbf{Better Auth 1.6.9} gère nativement la sécurité des sessions (tokens JWT avec expiration, rotation automatique, rate limiting sur les endpoints d'authentification), ce qui réduit la surface d'attaque sans nécessiter de développement spécifique. Les \textbf{Server Actions} valident systématiquement les entrées utilisateur via Zod 4.4.3 avant toute interaction avec la base de données, ce qui prévient l'injection SQL même si Drizzle ORM utilise déjà des requêtes paramétrées. Les \textbf{variables d'environnement} sensibles (clés API, secrets d'authentification, URL de base de données) sont stockées dans des fichiers .env explicitement exclus du versioning Git (fichier .gitignore), garantissant que ces secrets ne sont jamais exposés dans le repository public. Un risque résiduel demeure : la compromission d'une variable d'environnement par un membre de l'équipe lors d'un transfert de fichier. Ce risque a été mitigué par la sensibilisation aux bonnes pratiques de sécurité.
 
 \subsubsection{Mitigation des Risques de Performance}
 
-La performance est optimisée par : les indexes PostgreSQL définis dans le schéma Drizzle (indexes sur makerId, slug, isForSale, isFeatured pour la table Launch), le cache Redis pour les données fréquemment accédées (sessions, profils, listes de catégories), et la pagination côté serveur pour le marketplace et la messagerie. Le benchmark a mesuré des gains de plus de 95\% sur les lectures fréquentes grâce au cache.
+La mitigation des risques de performance s'appuie sur trois techniques. Premièrement, les \textbf{indexes PostgreSQL} définis dans le schéma Drizzle (indexes sur makerId, slug, isForSale, isFeatured pour la table Launch) accélèrent les requêtes de filtrage et de recherche les plus fréquentes. Deuxièmement, le \textbf{cache Redis} stocke les données fréquemment accédées (sessions utilisateur, profils, listes de catégories) en mémoire, évitant des lectures répétées sur le disque de la base de données. Le benchmark de performance a mesuré des gains de plus de 95\% sur les lectures fréquentes grâce à ce cache. Troisièmement, la \textbf{pagination côté serveur} pour le marketplace et la messagerie limite le nombre de lignes transférées à chaque requête, garantissant des temps de réponse constants indépendamment du volume total de données.
 
 \subsection{Plan de Continuité}
 
@@ -570,11 +578,11 @@ Les \textbf{changements technologiques} incluent l'ajout de Framer Motion pour l
 
 Les \textbf{changements fonctionnels} concernent l'ajout de fonctionnalités non prévues initialement : système de notifications, édition et suppression des commentaires, pagination infinie pour la messagerie, reset de mot de passe. Ces évolutions ont été intégrées dans les sprints successifs sans perturbation du calendrier global.
 
-Les \textbf{changements organisationnels} touchent la répartition des tâches entre les trois développeurs. Au fil des sprints, les rôles se sont adaptés en fonction des compétences émergentes et des blocages rencontrés. Cette flexibilité organisationnelle est un des avantages du framework Scrum.
+Les \textbf{changements organisationnels} touchent la répartition des tâches entre les trois développeurs. Au fur et à mesure de l'avancement, les responsabilités se sont adaptées en fonction des compétences émergentes et des blocages rencontrés. Par exemple, le développeur ayant le plus d'expérience avec Drizzle ORM a naturellement pris en charge les migrations complexes, tandis que celui le plus à l'aise avec React a dirigé la refonte des composants UI. Cette flexibilité organisationnelle, bien que non formelle comme dans un cadre Scrum industriel, a permis d'optimiser l'utilisation des compétences disponibles sans rigidifier les rôles.
 
 \subsection{Gestion des Versions}
 
-Le contrôle de versions est assuré par Git avec une stratégie de branches structurée. La branche principale constitue la version de production stable. Les branches de fonctionnalités isolent le développement de chaque incrément. Les pull requests avec revue de code assurent la qualité avant fusion.
+Le contrôle de versions est assuré par Git avec une stratégie de branches simple adaptée à un contexte académique. La branche principale constitue la version stable du projet. Les branches de fonctionnalités isolent le développement de chaque incrément lorsque plusieurs développeurs travaillent simultanément sur des parties différentes du code. La qualité avant fusion est assurée par la validation croisée du code au sein de l'équipe, bien qu'il n'ait pas été mis en place de processus formel de pull requests sur une plateforme d'hébergement externe.
 
 Les migrations Drizzle constituent un mécanisme de gestion du changement au niveau de la persistance. Chaque migration est un fichier SQL versionné (de 0000 à 0003) qui peut être appliquée et revertée. La figure~\ref{fig:evolution} présente la chronologie de l'évolution du schéma.
 
@@ -591,6 +599,6 @@ La migration 0000 a créé le schéma initial avec 16 tables. La migration 0001 
 
 L'architecture modulaire du projet a facilité l'adaptation aux changements. L'ajout du cache Redis n'a nécessité que la création du module cache.ts et la modification des actions serveur concernées, sans impact sur les composants UI. L'ajout des préférences de notification (migration 0003) n'a concerné que la table Profile et l'interface associée.
 
-La communication autour des changements repose sur plusieurs canaux : la documentation technique maintenue à jour, les messages de commit suivant une convention descriptive (type: description), et les discussions techniques documentées dans les revues de code. Le Daily Scrum informel permettait de synchroniser l'équipe sur les changements en cours et les obstacles rencontrés.
+La communication autour des changements repose sur plusieurs canaux adaptés au contexte académique. La documentation technique est maintenue à jour dans le fichier README du projet et dans le rapport académique. Les messages de commit suivent une convention descriptive indiquant le type de modification (feat, fix, docs, refactor) et la nature du changement. Les discussions techniques entre développeurs, bien que non formalisées dans des revues de code structurées sur une plateforme externe, ont permis de valider les décisions d'architecture et de partager les connaissances sur les technologies utilisées. Des points de synchronisation informels, lors des sessions de travail collectif, permettaient d'aligner l'équipe sur les changements en cours et les obstacles rencontrés.
 
 \textbf{Conclusion du chapitre.} Ce chapitre a présenté la conduite du changement du projet SaaS Directory. Les changements technologiques (Redis), fonctionnels (notifications, pagination) et organisationnels ont été gérés via le versioning Git, les migrations Drizzle, et la communication régulière de l'équipe. L'architecture modulaire et l'approche agile ont permis d'intégrer ces changements sans dégradation de la qualité ou des délais.

@@ -1,0 +1,43 @@
+\begin{tikzpicture}[scale=0.92, transform shape,
+  node distance=0.5cm and 0.7cm,
+  box/.style={rectangle, draw, rounded corners=3pt, fill=sdlcblue, text=white, 
+              font=\bfseries\footnotesize, minimum width=2.0cm, minimum height=0.95cm, align=center},
+  modelbox/.style={rectangle, draw, rounded corners=3pt, thick, 
+                   minimum width=2.6cm, minimum height=1.1cm, align=center, font=\bfseries\small},
+  arrow/.style={->, >=stealth, thick, black},
+  feedback/.style={->, >=stealth, thick, sdlcorange, dashed}
+]
+
+% ===== TOP ROW: 6 SDLC Steps =====
+\node[box] (a) {Analyse des besoins};
+\node[box, right=of a] (c) {Conception};
+\node[box, right=of c] (d) {D\'{e}veloppement};
+\node[box, right=of d] (t) {Tests};
+\node[box, right=of t] (dp) {D\'{e}ploiement};
+\node[box, right=of dp] (m) {Maintenance};
+
+% Forward arrows
+\draw[arrow] (a) -- (c);
+\draw[arrow] (c) -- (d);
+\draw[arrow] (d) -- (t);
+\draw[arrow] (t) -- (dp);
+\draw[arrow] (dp) -- (m);
+
+% Feedback loop: Maintenance -> Analyse (curved above)
+\draw[feedback] (m.north) to[out=120, in=60, looseness=1.8] node[above=2pt, font=\small\itshape, sdlcorange] {Boucle de retour} (a.north);
+
+% ===== DIVIDER =====
+\draw[thick, gray] (-0.3,-1.9) -- (11.5,-1.9);
+\node at (5.6,-2.3) {\bfseries\small Les 3 mod\`{e}les du SDLC};
+
+% ===== BOTTOM ROW: 3 Models =====
+\node[modelbox, fill=wfcolor, below=0.9cm of a.south west, anchor=north west, xshift=0.3cm] (w) {Waterfall (Cascade)};
+\node[modelbox, fill=vcolor, below=0.9cm of c.south, anchor=north] (v) {Mod\`{e}le en V (Validation)};
+\node[modelbox, fill=agcolor, below=0.9cm of d.south east, anchor=north east, xshift=-0.3cm] (ag) {Agile (It\'{e}ratif)};
+
+% Dashed connections from steps to models
+\draw[gray, dashed, thick] (a.south) -- (w.north);
+\draw[gray, dashed, thick] (c.south) -- (v.north);
+\draw[gray, dashed, thick] (d.south) -- (ag.north);
+
+\end{tikzpicture}

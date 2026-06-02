@@ -35,6 +35,16 @@
 \definecolor{HEEClight}{RGB}{113,128,150}
 \definecolor{BoxBg}{RGB}{240,245,250}
 \definecolor{CodeBg}{RGB}{245,245,245}
+\definecolor{sdlcblue}{RGB}{68,114,196}
+\definecolor{sdlcorange}{RGB}{197,90,17}
+\definecolor{tblhdr}{RGB}{91,155,213}
+\definecolor{authlabel}{RGB}{46,89,132}
+\definecolor{annlabel}{RGB}{30,132,73}
+\definecolor{soclabel}{RGB}{183,149,11}
+\definecolor{englabel}{RGB}{169,50,38}
+\definecolor{wfcolor}{RGB}{214,234,248}
+\definecolor{vcolor}{RGB}{212,239,223}
+\definecolor{agcolor}{RGB}{254,249,231}
 
 % ===== SPACING =====
 \onehalfspacing
@@ -73,9 +83,9 @@
 \thispagestyle{empty}
 \begin{tikzpicture}[remember picture,overlay]
   % Top navy banner
-  \fill[HEECnavy] (current page.north west) rectangle ([yshift=-3.5cm]current page.north east);
+  \fill[HEECnavy] (current page.north west) rectangle ([yshift=-2.2cm]current page.north east);
   % Gold accent line below banner
-  \draw[HEECgold, line width=2pt] ([yshift=-3.5cm]current page.north west) -- ([yshift=-3.5cm]current page.north east);
+  \draw[HEECgold, line width=2pt] ([yshift=-2.2cm]current page.north west) -- ([yshift=-2.2cm]current page.north east);
   % Bottom gold accent line
   \draw[HEECgold, line width=1.5pt] ([yshift=2.5cm]current page.south west) -- ([yshift=2.5cm]current page.south east);
   % Bottom navy strip
@@ -84,29 +94,35 @@
 
 \vspace*{0.3cm}
 \begin{center}
-{\color{white}\Huge\bfseries HEEC}\\[0.3em]
+{\color{white}\Huge\bfseries HEEC}\\[0.2em]
 {\color{white}\large École des Hautes Études Économiques Commerciales\\et d'Ingénierie de Marrakech}
 \end{center}
 
-\vspace{1.8cm}
+\vspace{0.4cm}
 
 \begin{center}
-{\color{HEECgold}\rule{0.7\textwidth}{2pt}}\\[0.8cm]
+\includegraphics[height=2.8cm]{assets/heec_logo.png}
+\end{center}
 
-{\Large\bfseries\color{HEECnavy} RAPPORT DE GÉNIE LOGICIEL\\ET CONDUITE DE PROJET}\\[0.4cm]
+\vspace{0.3cm}
 
-{\large\color{HEECnavy} Application des concepts de Génie Logiciel\\et de Conduite de Projet au développement de\\[0.4em]
-\textbf{SaaS Directory}}\\[0.6cm]
+\begin{center}
+{\color{HEECgold}\rule{0.7\textwidth}{2pt}}\\[0.5cm]
 
-{\color{HEECgold}\rule{0.5\textwidth}{1pt}}\\[0.6cm]
+{\Large\bfseries\color{HEECnavy} RAPPORT DE GÉNIE LOGICIEL\\ET CONDUITE DE PROJET}\\[0.3cm]
 
-{\large\bfseries Module : Génie Logiciel et Conduite de Projet}\\[0.3cm]
+{\large\color{HEECnavy} Application des concepts de Génie Logiciel\\et de Conduite de Projet au développement de\\[0.2em]
+\textbf{SaaS Directory}}\\[0.4cm]
 
-{\large\bfseries Encadrant : Pr. Zahid Noureddine}\\[0.8cm]
+{\color{HEECgold}\rule{0.5\textwidth}{1pt}}\\[0.4cm]
 
-{\large\bfseries Présenté par :}\\[0.3cm]
+{\large\bfseries Module : Génie Logiciel et Conduite de Projet}\\[0.2cm]
 
-{\large\bfseries\color{HEECnavy} Omar SARSAR\\Iliass HARIZ\\Soulaymane ELFAKIR}\\[0.5cm]
+{\large\bfseries Encadrant : Pr. Zahid Noureddine}\\[0.5cm]
+
+{\large\bfseries Présenté par :}\\[0.2cm]
+
+{\large\bfseries\color{HEECnavy} Omar SARSAR\\Iliass HARIZ\\Soulaymane ELFAKIR}\\[0.3cm]
 
 {\Huge\bfseries\color{HEECgold} 2025 / 2026}
 \end{center}
@@ -158,7 +174,7 @@ et à tous ceux qui croient en l'innovation technologique au service de la commu
 
 Ce rapport présente l'application systématique des concepts de Génie Logiciel et de Conduite de Projet au développement de \textbf{SaaS Directory}, une plateforme de marketplace dédiée aux produits logiciels en mode SaaS. Le projet a été réalisé avec une stack technologique moderne comprenant Next.js 16.2.4, React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2, PostgreSQL et Better Auth 1.6.9.
 
-L'étude couvre l'ensemble des neuf chapitres du cours de Génie Logiciel : rappels fondamentaux, généralités, cycle de vie du logiciel, démarche de conception, normalisation, tests, gestion de projet, analyse des risques et conduite du changement. Chaque concept théorique est illustré par sa mise en oeuvre concrète dans le projet. Le rapport inclut une estimation du coût par la méthode COCOMO appliquée à la base de code réelle de 12 166 lignes, ainsi qu'une présentation détaillée de la gestion des versions via Git et des migrations Drizzle ORM.
+L'étude couvre l'ensemble des neuf chapitres du cours de Génie Logiciel : rappels fondamentaux, généralités, cycle de vie du logiciel, démarche de conception, normalisation, tests, gestion de projet, analyse des risques et conduite du changement. Chaque concept théorique est illustré par sa mise en oeuvre concrète dans le projet. Le rapport inclut une estimation du coût par la méthode COCOMO appliquée à la base de code réelle d'environ 11 000 lignes, ainsi qu'une présentation détaillée de la gestion des versions via Git et des migrations Drizzle ORM.
 
 \vspace{0.5cm}
 \noindent\textbf{Mots-clés :} Génie Logiciel, Conduite de Projet, Next.js, React, Drizzle ORM, PostgreSQL, COCOMO, Cycle de Vie, SDLC, Scrum, Normalisation, Tests Logiciels, Gestion des Risques.
@@ -197,7 +213,7 @@ SaaS Directory est une plateforme de marketplace dédiée aux produits logiciels
 
 Le projet a été réalisé avec une stack technologique contemporaine et cohérente : Next.js 16.2.4 (framework React avec App Router), React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2 (ORM type-safe pour PostgreSQL), Better Auth 1.6.9 (authentification complète avec OAuth et 2FA), Redis (cache côté serveur), et Playwright 1.59.1 pour les tests end-to-end.
 
-\textbf{Le codebase} compte exactement \textbf{20 tables} dans le schéma Drizzle ORM, \textbf{12 166 lignes de code} réparties sur \textbf{108 fichiers} TypeScript/TSX, avec \textbf{4 migrations} versionnées (0000 à 0003). Le projet est versionné sur Git avec une branche principale et des branches de fonctionnalités.
+\textbf{Le codebase} compte exactement \textbf{21 tables} dans le schéma Drizzle ORM, \textbf{environ 11 000 lignes de code} réparties sur \textbf{108 fichiers} TypeScript/TSX, avec \textbf{4 migrations} versionnées (0000 à 0003). Le projet est versionné sur Git avec une branche principale et des branches de fonctionnalités.
 
 Ce rapport s'articule autour de neuf chapitres principaux. Le premier chapitre présente les rappels fondamentaux sur les concepts de base. Le deuxième traite des généralités du Génie Logiciel et de ses principes. Le troisième décrit les modèles de cycle de vie SDLC. Le quatrième expose la démarche de conception avec le framework Scrum. Le cinquième aborde la normalisation. Le sixième détaille les stratégies de tests. Le septième présente la gestion de projet et l'estimation COCOMO. Le huitième analyse les risques. Le neuvième et dernier chapitre traite de la conduite du changement.
 \newpage
@@ -217,7 +233,7 @@ La gestion de projet, illustrée par le WBS, le diagramme de GANTT sur 60 jours,
 
 L'utilisation d'une stack technologique moderne et cohérente --- Next.js 16.2.4, React 19.2.4, TypeScript 5, Tailwind CSS v4, Drizzle ORM 0.45.2, Better Auth 1.6.9, PostgreSQL, et Redis --- a grandement facilité le développement et garanti la qualité du livrable final.
 
-Les perspectives d'évolution de SaaS Directory sont nombreuses. L'intégration complète de Stripe pour le paiement (le schéma contient déjà les champs client et abonnement Stripe), l'ajout d'un système de recherche avancée, et le déploiement sur une infrastructure cloud avec Docker et Kubernetes constituent les axes de développement futurs.
+Les perspectives d'évolution de SaaS Directory sont nombreuses. L'intégration complète de Stripe pour le paiement (le schéma contient déjà les champs client et abonnement Stripe préparés pour cette évolution), l'ajout d'un système de recherche avancée avec indexation full-text PostgreSQL, le déploiement sur un hébergeur cloud (Vercel, AWS, ou Azure), et la mise en place d'une infrastructure de conteneurisation avec Docker pour la production constituent les axes de développement futurs envisagés.
 \newpage
 
 % ======================== BIBLIOGRAPHIE ========================

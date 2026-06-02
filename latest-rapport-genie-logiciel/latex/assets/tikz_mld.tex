@@ -1,0 +1,140 @@
+\begin{tikzpicture}[
+  table/.style={rectangle, draw, thick, rounded corners=2pt, 
+                minimum width=2.2cm, minimum height=1.5cm, align=left, font=\footnotesize},
+  hdr/.style={rectangle, draw, thick, rounded corners=2pt, fill=tblhdr, 
+              text=white, font=\bfseries\small, minimum width=2.2cm, minimum height=0.4cm, align=center}
+]
+
+\node[hdr] at (0,0.5) {user};
+\node[table] at (0,0) {};
+\node[anchor=west, font=\footnotesize] at (-1.0,-0.01) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (-1.0,-0.27) {name};
+\node[anchor=west, font=\footnotesize] at (-1.0,-0.53) {email};
+\node[anchor=west, font=\footnotesize] at (-1.0,-0.79) {emailVerified};
+\node[anchor=west, font=\footnotesize] at (-1.0,-1.05) {image};
+
+\node[hdr] at (2.7,0.5) {session};
+\node[table] at (2.7,0) {};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-0.01) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-0.27) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-0.53) {token};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-0.79) {expiresAt};
+
+\node[hdr] at (5.4,0.5) {account};
+\node[table] at (5.4,0) {};
+\node[anchor=west, font=\footnotesize] at (4.4,-0.01) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (4.4,-0.27) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-0.53) {providerId};
+\node[anchor=west, font=\footnotesize] at (4.4,-0.79) {accountId};
+
+\node[hdr] at (8.1,0.5) {verification};
+\node[table] at (8.1,0) {};
+\node[anchor=west, font=\footnotesize] at (7.1,-0.01) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (7.1,-0.27) {identifier};
+\node[anchor=west, font=\footnotesize] at (7.1,-0.53) {value};
+\node[anchor=west, font=\footnotesize] at (7.1,-0.79) {expiresAt};
+
+\node[hdr] at (10.8,0.5) {profile};
+\node[table] at (10.8,0) {};
+\node[anchor=west, font=\footnotesize] at (9.8,-0.01) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (9.8,-0.27) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (9.8,-0.53) {displayName};
+\node[anchor=west, font=\footnotesize] at (9.8,-0.79) {bio};
+\node[anchor=west, font=\footnotesize] at (9.8,-1.05) {notificationPrefs};
+
+\node[hdr] at (0,-1.7000000000000002) {category};
+\node[table] at (0,-2.2) {};
+\node[anchor=west, font=\footnotesize] at (-1.0,-2.21) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (-1.0,-2.47) {name};
+\node[anchor=west, font=\footnotesize] at (-1.0,-2.73) {slug};
+
+\node[hdr] at (2.7,-1.7000000000000002) {plan};
+\node[table] at (2.7,-2.2) {};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-2.21) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-2.47) {name};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-2.73) {slug};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-2.99) {stripeProductId};
+
+\node[hdr] at (5.4,-1.7000000000000002) {subscription};
+\node[table] at (5.4,-2.2) {};
+\node[anchor=west, font=\footnotesize] at (4.4,-2.21) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (4.4,-2.47) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-2.73) {FK \textit{planId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-2.99) {status};
+\node[anchor=west, font=\footnotesize] at (4.4,-3.25) {period};
+
+\node[hdr] at (8.1,-1.7000000000000002) {launch};
+\node[table] at (8.1,-2.2) {};
+\node[anchor=west, font=\footnotesize] at (7.1,-2.21) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (7.1,-2.47) {slug};
+\node[anchor=west, font=\footnotesize] at (7.1,-2.73) {title};
+\node[anchor=west, font=\footnotesize] at (7.1,-2.99) {FK \textit{makerId}};
+
+\node[hdr] at (10.8,-1.7000000000000002) {post};
+\node[table] at (10.8,-2.2) {};
+\node[anchor=west, font=\footnotesize] at (9.8,-2.21) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (9.8,-2.47) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (9.8,-2.73) {content};
+\node[anchor=west, font=\footnotesize] at (9.8,-2.99) {createdAt};
+
+\node[hdr] at (0,-3.9000000000000004) {postUpvote};
+\node[table] at (0,-4.4) {};
+\node[anchor=west, font=\footnotesize] at (-1.0,-4.41) {PK* \textbf{userId}};
+\node[anchor=west, font=\footnotesize] at (-1.0,-4.67) {PK* \textbf{postId}};
+
+\node[hdr] at (2.7,-3.9000000000000004) {postComment};
+\node[table] at (2.7,-4.4) {};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-4.41) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-4.67) {FK \textit{postId}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-4.93) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-5.19) {content};
+
+\node[hdr] at (5.4,-3.9000000000000004) {comment};
+\node[table] at (5.4,-4.4) {};
+\node[anchor=west, font=\footnotesize] at (4.4,-4.41) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (4.4,-4.67) {FK \textit{launchId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-4.93) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-5.19) {content};
+
+\node[hdr] at (8.1,-3.9000000000000004) {upvote};
+\node[table] at (8.1,-4.4) {};
+\node[anchor=west, font=\footnotesize] at (7.1,-4.41) {PK* \textbf{userId}};
+\node[anchor=west, font=\footnotesize] at (7.1,-4.67) {PK* \textbf{launchId}};
+
+\node[hdr] at (10.8,-3.9000000000000004) {conversation};
+\node[table] at (10.8,-4.4) {};
+\node[anchor=west, font=\footnotesize] at (9.8,-4.41) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (9.8,-4.67) {createdAt};
+
+\node[hdr] at (0,-6.1) {conversationParticipant};
+\node[table] at (0,-6.6) {};
+\node[anchor=west, font=\footnotesize] at (-1.0,-6.61) {PK* \textbf{conversationId}};
+\node[anchor=west, font=\footnotesize] at (-1.0,-6.87) {PK* \textbf{userId}};
+
+\node[hdr] at (2.7,-6.1) {message};
+\node[table] at (2.7,-6.6) {};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-6.61) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-6.87) {FK \textit{conversationId}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-7.13) {FK \textit{senderId}};
+\node[anchor=west, font=\footnotesize] at (1.7000000000000002,-7.39) {content};
+
+\node[hdr] at (5.4,-6.1) {notification};
+\node[table] at (5.4,-6.6) {};
+\node[anchor=west, font=\footnotesize] at (4.4,-6.61) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (4.4,-6.87) {FK \textit{userId}};
+\node[anchor=west, font=\footnotesize] at (4.4,-7.13) {type};
+\node[anchor=west, font=\footnotesize] at (4.4,-7.39) {read};
+
+\node[hdr] at (8.1,-6.1) {launchCategory};
+\node[table] at (8.1,-6.6) {};
+\node[anchor=west, font=\footnotesize] at (7.1,-6.61) {PK* \textbf{launchId}};
+\node[anchor=west, font=\footnotesize] at (7.1,-6.87) {PK* \textbf{categoryId}};
+
+\node[hdr] at (10.8,-6.1) {launchImage};
+\node[table] at (10.8,-6.6) {};
+\node[anchor=west, font=\footnotesize] at (9.8,-6.61) {PK \textbf{id}};
+\node[anchor=west, font=\footnotesize] at (9.8,-6.87) {FK \textit{launchId}};
+\node[anchor=west, font=\footnotesize] at (9.8,-7.13) {url};
+\node[anchor=west, font=\footnotesize] at (9.8,-7.39) {order};
+
+\end{tikzpicture}
