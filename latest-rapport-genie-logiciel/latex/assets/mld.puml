@@ -1,0 +1,209 @@
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor<<Auth>> #D6EAF8
+    BackgroundColor<<Annuaire>> #D5F5E3
+    BackgroundColor<<Social>> #FCF3CF
+    BackgroundColor<<Engagement>> #FADBD8
+    BorderColor Black
+    ArrowColor #555555
+    FontSize 10
+}
+
+hide circle
+hide methods
+
+title Modele Logique de Donnees (MLD) --- SaaS Directory
+
+entity "user" <<Auth>> {
+    * id : text <<PK>>
+    --
+    name : text
+    email : text
+    emailVerified : boolean
+    image : text
+}
+
+entity "profile" <<Auth>> {
+    * id : text <<PK>>
+    --
+    userId : text <<FK>>
+    bio : text
+    avatarUrl : text
+}
+
+entity "session" <<Auth>> {
+    * id : text <<PK>>
+    --
+    userId : text <<FK>>
+    token : text
+    expiresAt : timestamp
+}
+
+entity "account" <<Auth>> {
+    * id : text <<PK>>
+    --
+    userId : text <<FK>>
+    type : text
+    provider : text
+    accountId : text
+}
+
+entity "verification" <<Auth>> {
+    * id : text <<PK>>
+    --
+    identifier : text
+    value : text
+    expiresAt : timestamp
+}
+
+entity "launch" <<Annuaire>> {
+    * id : serial <<PK>>
+    --
+    slug : text
+    title : text
+    description : text
+    price : integer
+    logoUrl : text
+    makerId : text <<FK>>
+}
+
+entity "category" <<Annuaire>> {
+    * id : serial <<PK>>
+    --
+    name : text
+    slug : text
+    color : text
+}
+
+entity "plan" <<Annuaire>> {
+    * id : serial <<PK>>
+    --
+    name : text
+    price : integer
+    features : json
+}
+
+entity "launchImage" <<Annuaire>> {
+    * id : serial <<PK>>
+    --
+    launchId : integer <<FK>>
+    url : text
+    sortOrder : integer
+}
+
+entity "comment" <<Annuaire>> {
+    * id : serial <<PK>>
+    --
+    launchId : integer <<FK>>
+    userId : text <<FK>>
+    content : text
+}
+
+entity "post" <<Social>> {
+    * id : serial <<PK>>
+    --
+    userId : text <<FK>>
+    launchId : integer <<FK>>
+    content : text
+    imageUrl : text
+}
+
+entity "conversation" <<Social>> {
+    * id : serial <<PK>>
+}
+
+entity "message" <<Social>> {
+    * id : serial <<PK>>
+    --
+    conversationId : integer <<FK>>
+    senderId : text <<FK>>
+    content : text
+}
+
+entity "conversationParticipant" <<Social>> {
+    * id : serial <<PK>>
+    --
+    conversationId : integer <<FK>>
+    userId : text <<FK>>
+}
+
+entity "postComment" <<Social>> {
+    * id : serial <<PK>>
+    --
+    postId : integer <<FK>>
+    userId : text <<FK>>
+    content : text
+}
+
+entity "upvote" <<Engagement>> {
+    * id : serial <<PK>>
+    --
+    userId : text <<FK>>
+    launchId : integer <<FK>>
+}
+
+entity "notification" <<Engagement>> {
+    * id : serial <<PK>>
+    --
+    userId : text <<FK>>
+    type : text
+    read : boolean
+}
+
+entity "launchCategory" <<Engagement>> {
+    * id : serial <<PK>>
+    --
+    launchId : integer <<FK>>
+    categoryId : integer <<FK>>
+}
+
+entity "subscription" <<Engagement>> {
+    * id : serial <<PK>>
+    --
+    userId : text <<FK>>
+    planId : integer <<FK>>
+    status : text
+}
+
+entity "postUpvote" <<Engagement>> {
+    * id : serial <<PK>>
+    --
+    userId : text <<FK>>
+    postId : integer <<FK>>
+}
+
+' Auth relationships
+profile ||--|| user
+session }|--|| user
+account }|--|| user
+
+' Annuaire relationships
+launch }|--|| user : makerId
+launchImage }|--|| launch
+comment }|--|| launch
+comment }|--|| user
+
+' Social relationships
+post }|--|| user
+post }|--|| launch
+message }|--|| conversation
+message }|--|| user : senderId
+conversationParticipant }|--|| conversation
+conversationParticipant }|--|| user
+postComment }|--|| post
+postComment }|--|| user
+
+' Engagement relationships
+upvote }|--|| user
+upvote }|--|| launch
+notification }|--|| user
+launchCategory }|--|| launch
+launchCategory }|--|| category
+subscription }|--|| user
+subscription }|--|| plan
+postUpvote }|--|| user
+postUpvote }|--|| post
+
+@enduml
