@@ -393,12 +393,12 @@ La figure~\ref{fig:test-pyramid} illustre la stratégie de tests de SaaS Directo
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth,height=0.70\textheight,keepaspectratio]{assets/test_pyramid.png}
+\includegraphics[width=0.85\textwidth,height=0.70\textheight,keepaspectratio]{assets/test_pyramid_v4.png}
 \caption{Pyramide des Tests --- Stratégie de validation de SaaS Directory}
 \label{fig:test-pyramid}
 \end{figure}
 
-La base de la pyramide (large) représente les 10 fichiers de tests unitaires et de composants avec Vitest et React Testing Library. Le sommet (étroit) représente le fichier de test end-to-end Playwright. Cette structure reflète la réalité du projet : une couverture unitaire dense et une couverture E2E ciblée sur les parcours critiques.
+La base de la pyramide (large) représente les 10 fichiers de tests unitaires couvrant l'authentification, la souscription, le schéma de données, les actions serveur et les composants UI via Vitest. La couche intermédiaire regroupe les tests de composants React avec React Testing Library et Vitest. Le sommet (étroit) représente le fichier de test end-to-end Playwright ciblant la page d'accueil. Cette structure reflète la réalité du projet : une couverture unitaire dense au niveau des fonctions et des composants, et une couverture E2E ciblée sur les parcours critiques.
 
 \subsubsection{Tests de Performance}
 
